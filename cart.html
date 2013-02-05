@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]>
+<html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>
+<html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>
+<html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en"> <!--<![endif]-->
+<head>
+
+<!-- Basic Page Needs
+================================================== -->
+<meta charset="utf-8">
+<title>NaturaPure Natural Health Supplements</title>
+<meta name="description" content="">
+<meta name="author" content="">
+
+<!-- Mobile Specific Metas
+================================================== -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<!-- CSS
+================================================== -->
+<link rel="stylesheet" href="stylesheets/base.css">
+<link rel="stylesheet" href="stylesheets/skeleton.css">
+<link rel="stylesheet" href="stylesheets/layout.css">
+
+<!--[if lt IE 9]>
+<script type='text/javascript' src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- Favicons
+================================================== -->
+<link rel="shortcut icon" href="images/favicon.ico">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+
+
+<!-- ================================================== -->
+<script type='text/x-handlebars-template' id='items_template'>
+  <header>
+    <div class="itemInfo offset-by-one nine columns alpha">Item</div>
+    <div class="itemQuantity two columns omega">Qty</div>
+  </header>
+
+  <!-- individual items will be inserted here by the view code -->
+  <footer class="twelve columns alpha omega">
+    <!--<button type="button" class="btnCartUpdate">Update</button>-->
+  </footer>
+
+</script>
+
+
+<!-- ================================================== -->
+<script type='text/x-handlebars-template' id='item_template'>
+  <!-- the surrounding div tag for this item is created within the backbone view code. -->
+  <div class="itemRemove one column omega">
+    <button type="button" class="btnRemove">x</button>
+  </div>
+  <div class="itemInfo nine columns alpha">
+    {{#if imageUrl}}
+    <img src="{{imageUrl}}" class="thumb" alt="thumb"/>
+    {{/if}}
+    <span class="itemName">{{itemId}}</span><br>
+
+    <div class="itemAmount">{{unitCost}}</div>
+    <br>I
+    <div class="itemDescription">
+      <p>{{description}}</p>
+    </div>
+
+    {{#each options}}
+    <br class="clear">
+
+    <div class="itemOption">
+      <span>{{label}}</span>
+      {{#ucCompare type 'single' operator="=="}}
+      <input type='text' size='20' value="{{selectedValue}}" class='singleQualifier'
+             id='singleQualifier_{{optionOid}}'/>
+      {{/ucCompare}}
+      {{#ucCompare type 'fixed' operator="=="}}
+      <input type='text' size='20' value="{{selectedValue}}" class='fixedQualifier'
+             id='fixedQualifier_{{optionOid}}'/>
+      {{/ucCompare}}
+      {{#ucCompare type 'multiline' operator="=="}}
+      <textarea rows='3' cols='45' class='multiQualifier'
+                id='multiQualifier_{{optionOid}}'>{{selectedValue}}</textarea>
+      {{/ucCompare}}
+      {{#ucCompare type 'dropdown' operator="=="}}
+      <select class='selectQualifier' id='selectQualifier_{{optionOid}}'>
+        {{#each values}}
+        {{#ucSelectOption1 value selected}}{{value}}{{/ucSelectOption1}}
+        {{/each}}
+      </select>
+      {{/ucCompare}}
+      {{#ucCompare type 'radio' operator="=="}}
+        <span class='radioQualifierContainer' id='radioQualifier_{{optionOid}}'>
+        {{#each values}}
+          <input type='radio' class='radioQualifier'
+                 name='radioQualifier_{{../optionOid}}'
+                {{#if selected}} checked='checked' {{/if}}
+                value='{{value}}'/> {{value}}<br/>
+        {{/each}}
+        </span>
+      {{/ucCompare}}
+      {{#ucCompare type 'hidden' operator="=="}}<em>unsupported option type</em>
+      <input type='hidden' value="{{selectedValue}}" class='hiddenQualifier' id='hiddenQualifier_{{optionOid}}'/>
+      {{/ucCompare}}
+      {{#ucCompare type 'file attachment' operator="=="}}<em>unsupported option type</em>{{/ucCompare}}
+    </div>
+    {{/each}}
+
+  </div>
+  <div class="itemQuantity two columns omega">
+    <input type="number" class="itemQty" name="items[{{position}}].quantity" value="{{quantity}}" maxlength="5"/>
+  </div>
+  <br class="clear">
+</script>
+
+<!-- ================================================== -->
+<script type='text/x-handlebars-template' id='subtotal_template'>
+  <header>Subtotal</header>
+  <div class="cartSubtotal">{{subtotal}}</div>
+  <button type="button" class="btnContinueShopping">Continue Shopping</button>
+</script>
+
+
+<!-- ================================================== -->
+<script type='text/x-handlebars-template' id='shipping_template'>
+  <legend>Shipping Preference</legend>
+
+  {{#if noShippingMethods}}
+  Loading Shipping Methods...
+  {{else}}
+  {{#if showDropdown}}
+  <select class='selectShippingPreference' name="shipping[preference]">
+    {{#each methods}}
+    {{#ucSelectOption2 name ../selectedMethod}}{{cost}} {{name}}{{/ucSelectOption2}}
+    {{/each}}
+  </select>
+  {{else}}
+  {{#each methods}}
+  <label>
+    {{#ucCheckboxSelect2 name ../selectedMethod}}<input type="radio" name="shipping[preference]"
+                                                        class="inputShippingPreference"
+                                                        value='{{name}}'/>{{/ucCheckboxSelect2}}
+    <span>{{displayName}} {{cost}}</span>
+  </label>
+  {{/each}}
+  {{/if}}
+  {{/if}}
+
+</script>
+
+
+<!-- ================================================== -->
+<script type='text/x-handlebars-template' id='summary_template'>
+
+  <span class="fieldTitle">Summary</span>
+
+  <div class="summary">
+    <span class="title">Subtotal:</span><span class="value">{{subtotal}}</span>
+    <br class="clear">
+    <span class="title">Tax:</span><span class="value">{{tax}}</span>
+    <br class="clear">
+    <span class="title">Shipping:</span><span class="value">{{shippingHandling}}</span>
+    <br class="clear">
+    {{#if showBuysafe}}
+
+    <input type="hidden" id="ucBuysafeBondChangeId" value=''/>
+    {{{beginScript}}
+    function buySAFEOnClick() {
+    {{#if buysafeBondWanted}}
+    document.getElementById('ucBuysafeBondChangeId').value = 'remove';
+    {{else}}
+    document.getElementById('ucBuysafeBondChangeId').value = 'add';
+    {{/if}}
+    }
+    {{{endScript}}
+
+    <span class="title">BuySafe:</span><span class="value">{{buysafeBondCost}}</span>
+    <br class="clear">
+
+    <div class="buySafeInfo">
+      <div class="buySafe_button">
+        <div class="buySafe_logo"></div>
+        <div class="buySafe_button_info">
+
+          {{buysafeScript}}
+          {{buysafeBondingSignal}}
+          {{#if showBuysafeCartDisplay}}
+          <br><a href="{{buysafeCartDisplayUrl}}" target="_blank">{{{buysafeCartDisplayText}}}</a>
+          {{/if}}
+
+        </div>
+        <div class="buySafe_bonded"></div>
+      </div>
+      <div class="buySafe_message"></div>
+      <br class="clear">
+    </div>
+    <br class="clear">
+    {{/if}}
+    <span class="title">Total:</span><span class="value">{{total}}</span>
+    <br class="clear">
+  </div>
+</script>
+
+<!-- ================================================== -->
+<script type='text/x-handlebars-template' id='shipto_adddress_template'>
+  <legend>Shipping Address</legend>
+
+  <label class="name four columns alpha">
+    <span>*First Name</span>
+    <input type="text" id="shipToFirstName" name="shipping[firstName]" required class="required"
+           value="{{cart.shipToFirstName}}"/>
+  </label>
+
+  <label class="name four columns alpha">
+    <span>*Last Name</span>
+    <input type="text" id="shipToLastName" name="shipping[lastName]" required class="required"
+           value="{{cart.shipToLastName}}"/>
+  </label>
+
+  <label class="company">
+    <span>Company</span>
+    <input type="text" id="shipToCompany" name="shipping[company]" value="{{cart.shipToCompany}}"/>
+  </label>
+
+  <label class="address four columns alpha">
+    <span>*Address 1</span>
+    <input type="text" id="shipToAddress1" name="shipping[address1]" required class="required"
+           value="{{cart.shipToAddress1}}"/>
+  </label>
+
+  <label class="address four columns alpha">
+    <span>Address 2</span>
+    <input type="text" id="shipToAddress2" name="shipping[address2]" value="{{cart.shipToAddress2}}"/>
+  </label>
+
+  <label class="four columns alpha">
+    <span>*City</span>
+    <input type="text" id="shipToCity" name="shipping[city]" required class="required" value="{{cart.shipToCity}}"/>
+  </label>
+
+  <label class="four columns alpha">
+    <span>*State/Province/Region</span>
+    <input type="text" id="shipToState" name="shipping[state]" required class="required" value="{{cart.shipToState}}"/>
+  </label>
+
+  <label class="four columns alpha">
+    <span>*Zip/Postal Code</span>
+    <input type="text" id="shipToPostalCode" name="shipping[postalCode]" required class="required"
+           value="{{cart.shipToPostalCode}}"/>
+  </label>
+
+  <label class="four columns alpha">
+    <span>*Country</span>
+    <select name="shipping[country]" id="shipToCountry">
+      <option value=''>&nbsp;</option>
+      {{#each countries}}
+      {{#ucSelectOption1 country selected}}{{country}}{{/ucSelectOption1}}
+      {{/each}}
+    </select>
+  </label>
+
+  <br class="clear">
+
+  <label class="four columns alpha">
+    <span>*Email Address</span>
+    <input type="email" id="email" name="shipping[email]" required class="required" value="{{cart.email}}"/>
+  </label>
+
+  <label class="four columns alpha">
+    <span>*Phone</span>
+    <input type="number" id="shipToPhone" name="shipping[phone]" required class="required"
+           value="{{cart.shipToPhone}}"/>
+  </label>
+
+  <label>
+    {{#ucCheckboxSelect2 shipToResidential true}}<input type="checkbox" id="shipToResidential"
+                                                        name="shipping[isBusiness]" value='true'/>{{/ucCheckboxSelect2}}
+    <span class="bold">This address is a business</span>
+  </label>
+
+  <label>
+    <input type="checkbox" id="shippingIsBilling" name="shipping[isBilling]" checked/>
+    <span class="bold">Same as Billing Address</span>
+  </label>
+
+</script>
+
+<!-- ================================================== -->
+<script type='text/x-handlebars-template' id='billto_address_template'>
+  <legend>Billing Address</legend>
+
+  <label class="name four columns alpha">
+    <span>*First Name</span>
+    <input type="text" id="billToFirstName" name="billing[firstName]" required class="required"
+           value="{{cart.billToFirstName}}"/>
+  </label>
+
+  <label class="name four columns alpha">
+    <span>*Last Name</span>
+    <input type="text" id="billToLastName" name="billing[lastName]" required class="required"
+           value="{{cart.billToLastName}}"/>
+  </label>
+
+  <label class="company eight columns alpha">
+    <span>Company</span>
+    <input type="text" id="billToCompany" name="billing[company]" class="eight columns alpha"
+           value="{{cart.billToCompany}}"/>
+  </label>
+
+  <label class="address four columns alpha">
+    <span>*Address 1</span>
+    <input type="text" id="billToAddress1" name="billing[address1]" required class="required"
+           value="{{cart.billToAddress1}}"/>
+  </label>
+
+  <label class="address four columns alpha">
+    <span>Address 2</span>
+    <input type="text" id="billToAddress2" name="billing[address2]" value="{{cart.billToAddress2}}"/>
+  </label>
+
+  <label class="four columns alpha">
+    <span>*City</span>
+    <input type="text" id="billToCity" name="billing[city]" required class="required" value="{{cart.billToCity}}"/>
+  </label>
+
+  <label class="four columns alpha">
+    <span>*State/Province/Region</span>
+    <input type="text" id="billToState" name="billing[state]" required class="required" value="{{cart.billToState}}"/>
+  </label>
+
+  <label class="four columns alpha">
+    <span>*Zip/Postal Code</span>
+    <input type="text" id="billToPostalCode" name="billing[postalCode]" required class="required"
+           value="{{cart.billToPostalCode}}"/>
+  </label>
+
+  <label class="four columns omega">
+    <span>*Country</span>
+    <select name="billing[country]" id="billToCountry">
+      <option value=''>&nbsp;</option>
+      {{#each countries}}
+      {{#ucSelectOption1 country selected}}{{country}}{{/ucSelectOption1}}
+      {{/each}}
+    </select>
+  </label>
+</script>
+
+<!-- ================================================== -->
+<script type='text/x-handlebars-template' id='payment_template'>
+  <legend>Payment Information</legend>
+  <label class="three columns alpha">
+    <span>Credit Card Type</span>
+    <select id="creditCardType" name="shipping[creditCard]" required class="required" value="{{cart.creditCardType}}">
+      <option value="">-</option>
+      {{#each ccTypes}}
+      {{#ucSelectOption1 card selected}}{{card}}{{/ucSelectOption1}}
+      {{/each}}
+    </select>
+  </label>
+
+  <label class="four columns alpha">
+    <span>Credit Card #</span>
+    <input type="number" id="creditCardNumber" name="creditCard[number]" required class="required"
+           value="{{cart.creditCardNumber}}"/>
+  </label>
+
+  <label class="four columns alpha">
+    <span>Expiration Date</span>
+    <br class="clear">
+
+    <select id="creditCardExpirationMonth" name="shipping[expMonth]" class="two columns alpha">
+      <option value="">Month</option>
+      {{#each ccMonths}}
+      {{#ucSelectOption1 month selected}}{{name}}{{/ucSelectOption1}}
+      {{/each}}
+    </select>
+
+    <select id="creditCardExpirationYear" name="shipping[expYear]" class="two columns alpha">
+      <option value="">Year</option>
+      {{#each ccYears}}
+      {{#ucSelectOption1 year selected}}{{year}}{{/ucSelectOption1}}
+      {{/each}}
+    </select>
+  </label>
+
+  <label class="five columns alpha">
+    <span>Card Verification #</span>
+    <br class="clear">
+    <input type="number" id="creditCardVerificationNumber" value="{{cart.creditCardVerificationNumber}}"
+           name="creditCard[verification]" required
+           class="required one column alpha"/>
+
+    <a href="#" class="help-link" title="help finding this number">help finding this number</a>
+  </label>
+</script>
+
+
+<!-- ====================================================================================================== -->
+<!-- ====================================================================================================== -->
+<script type='text/x-handlebars-template' id='coupons_template'>
+  <legend>Coupons</legend>
+
+  <label class="name four columns alpha">
+    <span>Enter Coupon Code</span>
+    <input type="text" id="couponField"/>
+    <button type="button" id="addCouponButton">Apply</button>
+  </label>
+  <br class="clear">
+
+  {{#each coupons}}
+  <div class="couponRemove one column omega">
+    <button type="button" class="btnRemove removeCouponButton" id='couponRemove_{{@index}}'>x</button>
+  </div>
+  <label class="name four columns alpha">
+    <span class="bold">{{couponCode}}</span>
+  </label>
+  <br class="clear">
+  {{/each}}
+</script>
+
+
+<!-- ====================================================================================================== -->
+<!-- ====================================================================================================== -->
+<script type='text/x-handlebars-template' id='gift_certificate_template'>
+  <legend>Gift Certificate</legend>
+
+  <label class="name four columns alpha">
+    <span>Enter Gift Certificate</span>
+    <input type="text" id="giftCertificateField"/>
+    <button type="button" id="updateGiftCertificateButton">{{#if giftCertificate}}Remove{{else}}Apply{{/if}}</button>
+  </label>
+  <br class="clear">
+
+  {{#if hasGiftCertificateAmount}}
+  <span class='giftCertificateSpan'>Amount Applied:</span><span class='giftCertificateButtonSpan'><span
+    class='giftCertificateSummary'>{{giftCertificateAmount}}</span></span>
+  <br class="clear">
+  {{/if}}
+  {{#if giftCertificateRemainingBalanceAfterOrder}}
+  <span class='giftCertificateSpan'>Remaining Balance:</span><span class='giftCertificateButtonSpan'><span
+    class='giftCertificateSummary'>{{giftCertificateRemainingBalanceAfterOrder}}</span></span>
+  <br class="clear">
+  {{/if}}
+
+</script>
+
+
+<!-- ====================================================================================================== -->
+<!-- ====================================================================================================== -->
+<script type='text/x-handlebars-template' id='google_template'>
+  {{#if google}}
+  <span class='google_link fake_hyper'>
+    <img src="images/google_checkout.gif" alt='Google Checkout'/>
+  </span>
+  {{/if}}
+</script>
+
+
+<!-- ====================================================================================================== -->
+<!-- ====================================================================================================== -->
+<script type='text/x-handlebars-template' id='paypal_template'>
+  {{#if paypal}}
+        <span class='paypal_link fake_hyper'>
+          <img src="{{button}}" alt='{{alt}}'/>
+        </span>
+  {{/if}}
+</script>
+
+
+<!-- ================================================== -->
+<script type='text/x-handlebars-template' id='total_template'>
+  <button type="submit" id="btnFinalize">Finalize Order</button>
+</script>
+
+
+</head>
+<body>
+
+<!-- Primary Page Layout
+================================================== -->
+<!-- Delete everything in this .container and get started on your own site! -->
+<section class="container main-header">
+  <header class="sixteen columns alpha omega">
+    <a href="index.html"><img src="images/logo.png"></a>
+  </header>
+</section>
+
+<section class="container cart-info">
+  <div class="sixteen columns title alpha omega">Your Cart:</div>
+  <section id="cart" class="cart twelve columns">Loading Cart...</section>
+  <section id="subtotal" class="subtotal four columns"></section>
+</section>
+
+<section class="container customerInfo">
+  <form id="frmCheckout" method="post" name="checkout" action="#">
+    <fieldset id="shipToAddress" class="shippingInfo eight columns"></fieldset>
+    <fieldset id="billToAddress" class="billingInfo eight columns alpha hidden"></fieldset>
+    <fieldset id="shipping" class="shippingPreference eight columns"></fieldset>
+    <fieldset id="coupons" class="eight columns"></fieldset>
+    <fieldset id="giftCertificates" class="eight columns"></fieldset>
+    <fieldset id="summary" class="eight columns"></fieldset>
+    <br class="clear">
+    <fieldset id="google" class="payment sixteen columns"></fieldset>
+    <fieldset id="paypal" class="payment sixteen columns"></fieldset>
+    <fieldset id="payment" class="payment sixteen columns"></fieldset>
+    <div id="checkoutError" class="errorContainer hidden">
+      <p>Checkout Errors</p>
+
+      <div class="errorContent"></div>
+    </div>
+    <fieldset id="total" class="total sixteen columns"></fieldset>
+  </form>
+</section>
+<!-- container -->
+
+<script type="text/javascript" src="scripts/accounting.min.js"></script>
+<script type="text/javascript" src="scripts/moment.min.js"></script>
+<script type="text/javascript" src="scripts/json2.js"></script>
+<script type="text/javascript" src="scripts/jquery.1.8.3.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.cookie.js"></script>
+
+<script type="text/javascript" src="scripts/underscore-1.4.3.min.js"></script>
+<script type="text/javascript" src="scripts/backbone-0.9.2.min.js"></script>
+<script type="text/javascript" src="scripts/backbone-deep-model.js"></script>
+<script type="text/javascript" src="scripts/backbone-modelbinder-0.1.6.js"></script>
+<script type="text/javascript" src="scripts/backbone-uc-common-functions-1.3.js"></script>
+
+<script type="text/javascript" src="scripts/handlebars-1.0.rc.1.js"></script>
+<script type="text/javascript" src="scripts/handlebars-uc-extensions-1.1.js"></script>
+
+<script type="text/javascript" src="scripts/master.js"></script>
+
+
+<script type="text/javascript">
+
+  var merchantId = 'DEMO';
+  var cartCookieName = 'UltraCartShoppingCartId'; // the cookie name has a strong convention with UltraCart. Use this cookie name.
+  var continueShoppingUrl = '/index.html';
+  var serverName = "secure.ultracart.com";
+
+  //See http://josscrowcroft.github.com/accounting.js/ for documentation
+  accounting.settings = {
+    currency: {
+      symbol: "$",   // default currency symbol is '$'
+      format: "%s%v", // controls output: %s = symbol, %v = value/number (can be object: see below)
+      decimal: ".",  // decimal point separator
+      thousand: ",",  // thousands separator
+      precision: 2   // decimal places
+    },
+    number: {
+      precision: 0,  // default precision on numbers is 0
+      thousand: ",",
+      decimal: "."
+    }
+  };
+
+</script>
+<!-- End Document
+================================================== -->
+</body>
+</html>

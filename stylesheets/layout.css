@@ -1,0 +1,472 @@
+/*
+* Skeleton V1.2
+* Copyright 2011, Dave Gamache
+* www.getskeleton.com
+* Free to use under the MIT license.
+* http://www.opensource.org/licenses/mit-license.php
+* 6/20/2012
+*/
+
+/* Table of Content
+==================================================
+	#Site Styles
+	#Page Styles
+	#Media Queries
+	#Font-Face */
+
+/* #Site Styles
+================================================== */
+body {
+  background: url(../images/bg.jpg) repeat-x 0 0;
+}
+
+.container {
+  background: #fff;
+}
+
+.main-header header {
+  background: transparent url(../images/headerbg.png) no-repeat 0 0;
+  display: block;
+  padding: 0 20px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#MB_overlay {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 8000;
+  border: 0;
+  background-color: #000 !important;
+  display: none;
+
+}
+
+/* remove spinner from number type inputs */
+input[type=number]::-moz-inner-spin-button,
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-moz-outer-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* #Page Styles
+================================================== */
+
+.main-header {
+  overflow: hidden;
+}
+
+.fieldTitle {
+  font-weight: bold;
+  font-size: 13px;
+  margin: 10px 0px;
+  display: block;
+}
+
+/* @group cart */
+.cart-info {
+
+/
+/
+border-bottom:
+
+1
+px solid #ccc
+
+;
+  }
+
+.cart-info .title {
+  font-weight: bold;
+  font-size: 1.5em;
+  line-height: 1.7em;
+  padding: 10px 0px;
+  border-bottom: 1px solid #ccc;
+}
+
+.cart header {
+  font-weight: bold;
+  color: #999;
+  overflow: hidden;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0px;
+}
+
+.cart header .itemQuantity {
+  text-align: right;
+}
+
+.cart footer {
+  text-align: right;
+  border-top: 1px solid #ccc;
+}
+
+.cart footer button,
+.subtotal button {
+  margin-top: 20px;
+}
+
+.subtotal {
+  text-align: center;
+  line-height: 1.5em;
+  padding: 20px 0;
+}
+
+.subtotal header {
+  font-weight: bold;
+  font-size: 1.5em;
+  line-height: 1.7em;
+}
+
+.cartSubtotal {
+  font-size: 1.2em;
+}
+
+/* @end cart */
+
+/* @group item */
+.item {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  overflow: hidden;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
+
+.item-odd {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+.item-last {
+  border-bottom: 0;
+}
+
+.item .thumb {
+  float: left;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.itemRemove button {
+  padding: 0 4px 2px;
+  line-height: 1em;
+  font-size: 10px;
+}
+
+.itemName {
+  float: left;
+  font-weight: bold;
+}
+
+.itemAmount {
+  font-style: italic;
+  float: left;
+}
+
+.itemDescription {
+  float: left;
+}
+
+.itemOption {
+  float: left;
+}
+
+.itemOption span {
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.itemQuantity input {
+  width: 20px;
+  padding: 5px;
+  text-align: center;
+  float: right;
+}
+
+/* @end item */
+
+/* @group checkout */
+#frmCheckout {
+  padding: 40px 0;
+}
+
+#frmCheckout fieldset {
+  padding: 10px 0;
+}
+
+/* @end checkout */
+
+/* @group Summary */
+.summary {
+  border: 1px solid #dadada;
+  padding: 20px;
+}
+
+.summary .title {
+  display: block;
+  font-weight: bold;
+  width: 90px;
+  float: left;
+  margin-bottom: 10px;
+}
+
+.summary .value {
+  display: block;
+  width: 100px;
+  float: left;
+}
+
+.summary .buySafeInfo {
+  display: block;
+  background: #002c5d;
+  margin-bottom: 10px;
+}
+
+.summary .buySafe_button {
+  cursor: pointer;
+}
+
+.summary .buySafe_logo {
+  height: 50px;
+  width: 140px;
+  float: left;
+  background: url(../images/buysafe-logo.gif);
+}
+
+.summary .buySafe_button_info {
+  height: 40px;
+  width: 150px;
+  margin-left: 10px;
+  margin-top: 10px;
+  line-height: 1.5em;
+  float: left;
+  color: #fff;
+  font-size: 10px;
+}
+
+.summary .buySafe_button_info strong {
+  color: #fff;
+}
+
+.summary .buySafe_bonded {
+  height: 20px;
+  width: 80px;
+  float: right;
+  background: url(../images/buysafe-bonded.gif);
+  margin-top: 15px;
+  margin-right: 10px;
+}
+
+.summary .buySafe_message {
+  clear: both;
+  height: 250px;
+  background: url(../images/buysafe-info.gif) center center no-repeat #002c5d;
+  display: none;
+
+}
+
+/* @end Summary */
+
+/* @group Coupon */
+.couponRemove button {
+  padding: 0 4px 2px;
+  line-height: 1em;
+  font-size: 10px;
+}
+
+.fake_hyper {
+  cursor: pointer;
+}
+
+/* @group Error Handling */
+
+.errorContainer {
+  font-size: 12px;
+  padding: 10px 10px;
+  margin: 10px 0px;
+  text-align: center;
+  color: #fff;
+  font-weight: bold;
+  background: rgba(255, 0, 0, 0.7);
+  border-bottom: 1px solid #cc3333;
+  z-index: 999;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+
+  text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.4);
+  clear: both;
+}
+
+.errorContainer .errorContent {
+  text-align: left;
+}
+
+.error input {
+  background: rgba(255, 0, 0, 0.7) !important;
+}
+
+/* @end Error Handeling */
+
+/* #Media Queries
+================================================== */
+
+/* Smaller than standard 960 (devices and browsers) */
+@media only screen and (max-width: 959px) {
+}
+
+/* Tablet Portrait size to standard 960 (devices and browsers) */
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+  .summary .buySafe_button_info {
+    display: none;
+  }
+}
+
+/* All Mobile Sizes (devices and browser) */
+@media only screen and (max-width: 767px) {
+  input[type="radio"],
+  input[type="checkbox"] {
+    width: 20px !important;
+  }
+
+  /* @group cart */
+  .cart .itemDescription {
+    display: none;
+  }
+
+  .cart .itemQuantity {
+    width: 30px !important;
+  }
+
+  /* @end cart */
+
+  /* @group item */
+  .item {
+    border-left: none;
+    border-right: none;
+  }
+
+  .item .itemRemove {
+    width: 20px !important;
+    margin-left: 0 !important;
+  }
+
+  /* @end item */
+
+  /* @group checkout */
+  #frmCheckout #creditCardVerification {
+    width: 100px;
+    margin-right: 10px;
+  }
+
+  #frmCheckout input {
+    width: 390px;
+  }
+
+  #frmCheckout select {
+    width: auto;
+    max-width: 400px;
+  }
+
+  /* @end checkout */
+
+  .summary .buySafe_button_info {
+
+  }
+}
+
+/* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+  /* @group cart */
+  .cart header .itemInfo {
+    width: 350px !important;
+  }
+
+  /* @end cart */
+
+
+  /* @group item */
+  .item {
+    border-left: none;
+    border-right: none;
+  }
+
+  .item .itemInfo {
+    width: 330px !important;
+  }
+
+  /* @end item */
+
+  .summary .buySafe_button_info {
+    display: none;
+  }
+}
+
+/* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
+@media only screen and (max-width: 479px) {
+  /* @group cart */
+  .cart header .itemInfo {
+    width: 230px !important;
+  }
+
+  /* @end cart */
+
+
+  /* @group item */
+  .item {
+    border-left: none;
+    border-right: none;
+  }
+
+  .item .itemInfo {
+    width: 210px !important;
+    font-size: 0.9em !important;
+  }
+
+  /* @end item */
+
+  /* @group checkout */
+  #frmCheckout input {
+    width: 270px;
+  }
+
+  #frmCheckout select {
+    width: auto;
+    max-width: 280px;
+  }
+
+  /* @end checkout */
+
+  .summary .buySafe_button_info {
+    display: none;
+  }
+}
+
+/* #Font-Face
+================================================== */
+/* 	This is the proper syntax for an @font-face file
+		Just create a "fonts" folder at the root,
+		copy your FontName into code below and remove
+		comment brackets */
+
+/*	@font-face {
+	    font-family: 'FontName';
+	    src: url('../fonts/FontName.eot');
+	    src: url('../fonts/FontName.eot?iefix') format('eot'),
+	         url('../fonts/FontName.woff') format('woff'),
+	         url('../fonts/FontName.ttf') format('truetype'),
+	         url('../fonts/FontName.svg#webfontZam02nTh') format('svg');
+	    font-weight: normal;
+	    font-style: normal; }
+*/
