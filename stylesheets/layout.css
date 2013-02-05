@@ -17,7 +17,7 @@
 /* #Site Styles
 ================================================== */
 body {
-  background: url(../images/bg.jpg) repeat-x 0 0;
+  background: #eaeaea;
 }
 
 .container {
@@ -25,9 +25,14 @@ body {
 }
 
 .main-header header {
-  background: transparent url(../images/headerbg.png) no-repeat 0 0;
+  background: transparent url(../images/header-bg.png) 0 0;
   display: block;
-  padding: 0 20px;
+}
+
+.main-header .logo-left {
+  float:left;
+  padding:20px;
+  width:230px;
 }
 
 .hidden {
