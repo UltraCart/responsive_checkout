@@ -542,18 +542,14 @@
 <script type="text/javascript" src="scripts/handlebars-uc-extensions-1.1.js"></script>
 
 <!--
- If you are running this checkout hosted on the UltraCart server, use master.js.   Otherwise, you must have the rest_proxy.php
- script installed on your machine and use master-using-proxy.js.  Make sure the path in the js file points correctly to
- the rest_proxy.php script.
+IMPORTANT: If you are running this cart on your own server (not hosting on UltraCart), you must have rest_proxy.php
+installed on your machine and update the path below appropriately.
 -->
-<!--
-<script type="text/javascript" src="scripts/master.js"></script>
--->
-<script type="text/javascript" src="scripts/master-using-proxy.js"></script>
-
-
 <script type="text/javascript">
 
+  var i_am_using_a_proxy = true;
+  var pathToProxy = 'rest_proxy.php';  // relative or absolute.  it doesn't matter.
+  var restUrl = i_am_using_a_proxy ? pathToProxy + '?_url=/rest/cart' : '/rest/cart';
   var merchantId = 'DEMO';
   var cartCookieName = 'UltraCartShoppingCartId'; // the cookie name has a strong convention with UltraCart. Use this cookie name.
   var continueShoppingUrl = '/index.html';
@@ -576,6 +572,9 @@
   };
 
 </script>
+<script type="text/javascript" src="scripts/master.js"></script>
+
+
 <!-- End Document
 ================================================== -->
 </body>

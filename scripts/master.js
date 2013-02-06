@@ -135,7 +135,7 @@ app.commonFunctions.checkout = function (paymentMethod) {
     };
 
     jQuery.ajax({
-      url: '/rest/cart/checkout',
+      url: restUrl + '/checkout', // restUrl is defined in the html page.
       type: 'POST', // Notice
       headers: { "cache-control": "no-cache" },
       contentType: 'application/json; charset=UTF-8',
@@ -231,7 +231,7 @@ app.commonFunctions.estimateShipping = function () {
     app.data.bootstrap.set({'fetchingShipping': true});
 
     jQuery.ajax({
-      url: '/rest/cart/estimateShipping',
+      url: restUrl + '/estimateShipping', // restUrl is defined in the html page.
       type: 'POST',
       async: true,
       'contentType': 'application/json; charset=UTF-8',
@@ -312,7 +312,7 @@ app.models.Cart = uc.models.DeepAndNestedModel.extend({
     {'attributeName': 'items', 'collection': (new app.collections.Items())}
   ],
   idAttribute: "cartId",
-  url: "/rest/cart"
+  url: restUrl // restUrl is defined in the html page.
 });
 
 app.models.ShippingEstimate = Backbone.Model.extend({
