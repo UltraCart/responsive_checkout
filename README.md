@@ -19,7 +19,7 @@ ____________
    Test #3:  call this: rest_proxy.php?_url=/rest/cart&_mid=DEMO, you should receive back the json for an empty cart.
 
  * Edit cart.html
-   Scroll to the bottom and look for a <script> tag.  Change the following:
+   Scroll to the bottom and look for a script tag.  Change the following:
    
    merchantId: change this to your Merchant ID.
    
