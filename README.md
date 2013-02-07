@@ -5,7 +5,7 @@ An UltraCart Javascript checkout designed to render well on all displays, especi
 
 This checkout using the UltraCart REST API.
 The documentation for the REST API is found on docs.ultracart.com.
-https://github.com/UltraCart/responsive_checkout
+http://docs.ultracart.com/display/ucdoc/UltraCart+REST+Checkout+API
 
 Quick Start:
 ____________
