@@ -50,7 +50,9 @@ you'll see the models defined to give us detailed control of every part of the C
 With a normal backbone.js model, all properties are access via the model.get('property') method.  With our model, we
 follow this convention, but we also map the items as a direct property of the cart.
 
-So, you'll see within the code app.data.cart.get('shipToFirstName') as well as app.data.cart.items
+So, you'll see within the code app.data.cart.get('shipToFirstName') as well as app.data.cart.items where
+it lives as a backbone collection of CartItems instead of a normal array of CartItems.  This allows
+for event binding, etc. 
 
 Just a head's up.
 
