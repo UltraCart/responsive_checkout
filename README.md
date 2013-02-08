@@ -1,5 +1,5 @@
-responsive_checkout
-===================
+responsive_checkout (version 0.5) BETA
+======================================
 
 An UltraCart Javascript checkout designed to render well on all displays, especially mobile devices.
 
