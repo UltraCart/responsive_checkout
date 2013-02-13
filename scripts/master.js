@@ -254,10 +254,15 @@ app.commonFunctions.estimateShipping = function () {
                       return estimate.name == selectedMethod;
                     });
                     if (selectedEstimate) {
-                      app.data.cart.save({'shippingHandling': selectedEstimate.cost});
+                      app.data.cart.set({
+                        'shippingHandling': selectedEstimate.cost,
+                        'total': app.data.cart.get('total') + selectedEstimate.cost
+                      });
                     } else {
                       // the current shipping method wasn't found.  I need to remove the cart.shippingMethod
-                      app.data.cart.save({'shippingMethod': null, 'shippingHandling': 0});
+                      app.data.cart.set({
+                        'shippingMethod': null, 'shippingHandling': 0
+                      });
                       selectedMethod = null;
                     }
                   }
