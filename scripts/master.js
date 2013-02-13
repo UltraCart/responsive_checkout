@@ -403,7 +403,7 @@ app.views.ShippingAddress = Backbone.View.extend({
   events: {
     'click #shippingIsBilling': 'showHideBilling',
     'focus input[type=text]': 'selectText',
-    'change input[type=text],input[type=number],input[type=email]': 'copyFieldToCart'
+    'change input[type=text],input[type=number],input[type=email],select': 'copyFieldToCart'
   },
 
   'onClose': function () {
