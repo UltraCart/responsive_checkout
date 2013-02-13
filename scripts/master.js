@@ -265,7 +265,13 @@ app.commonFunctions.estimateShipping = function () {
                   // this is not an if-else connected to the above logic because selectedMethod may change within the if statement,
                   // so this is evaluated separately.
                   if (!selectedMethod) {
-                    app.data.cart.save({'shippingMethod': shippingEstimates[0].name, 'shippingHandling': shippingEstimates[0].cost});
+                    // also, update the total to increment with the shipping cost.
+                    app.data.cart.set({
+                      'shippingMethod': shippingEstimates[0].name,
+                      'shippingHandling': shippingEstimates[0].cost,
+                      'total': app.data.cart.get('total') + shippingEstimates[0].cost
+                    });
+
                   }
                 }
 
