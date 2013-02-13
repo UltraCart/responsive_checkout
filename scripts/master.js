@@ -1045,6 +1045,8 @@ app.views.GiftCertificate = Backbone.View.extend({
 app.views.Summary = Backbone.View.extend({
   el: '#summary',
   events: {
+    ".buySafe_button click": "showBuysafeInfo",
+    ".buySafe_bonded_option click": "toggleBuysafe"
   },
 
   'onClose': function () {
@@ -1059,19 +1061,26 @@ app.views.Summary = Backbone.View.extend({
   render: function () {
 
 
-    var buysafeBondCost = (this.model.get('buysafeBondCost') || 0) == 0 ? "Free!" : accounting.formatMoney(this.model.get('buysafeBondCost'));
+    var buysafeBondCost = this.model.get('buysafeBondCost') || 0;
+    // cart bond cost is different from the actual bond cost, since it will be zero if the bond is not wanted.
+    // this variable makes the assumption that a bond is available.  If it's not, the template will hide it from displaying any way.
+    var cartBondCost = null;
+    if (buysafeBondCost == 0) {
+      cartBondCost = "Free!";
+    } else if (this.model.get('buysafeBondWanted')) {
+      cartBondCost = accounting.formatMoney(this.model.get('buysafeBondCost'))
+    } else {
+      cartBondCost = accounting.formatMoney(0);
+    }
 
     var context = {
       'beginScript': "<script type='text/javascript'>",
       'endScript': "</script>",
-      'buysafeBondCost': buysafeBondCost,
-      'showBuysafe': this.model.get('buysafeBondAvailable') || false,
+      'buysafeBondCost': accounting.formatMoney(buysafeBondCost),
+      'cartBondCost': cartBondCost,
+      'buysafeBondAvailable': this.model.get('buysafeBondAvailable') || false,
       'buysafeBondWanted': this.model.get('buysafeBondWanted') || false,
-      'buysafeScript': "<script type='text/javascript' src = '" + this.model.get('buysafeBondingSignalJavascript') + "'></script>",
-      'buysafeBondingSignal': this.model.get('buysafeBondingSignal'),
-      'buysafeCartDisplayText': this.model.get('buysafeCartDisplayText'),
-      'buysafeCartDisplayUrl': this.model.get('buysafeCartDisplayUrl'),
-
+      'buysafeBondFree': buysafeBondCost == 0,
       'subtotal': accounting.formatMoney(this.model.get('subtotal')),
       'tax': accounting.formatMoney(this.model.get('tax')),
       'shippingHandling': accounting.formatMoney(this.model.get('shippingHandling')),
@@ -1081,10 +1090,20 @@ app.views.Summary = Backbone.View.extend({
     this.$el.html(app.templates.summary(context));
     return this;
 
+  },
+
+  'showBuysafeInfo': function () {
+    jQuery('.buySafe_message').toggle('fast', function () {
+      /* Animation complete. */
+    });
+  },
+
+  'toggleBuysafe': function () {
+    this.model.save({'buysafeBondWanted': !this.model.get('buysafeBondWanted')});
   }
 
-});
 
+});
 
 
 // ---------------------------------------------------------------------
@@ -1252,6 +1271,7 @@ app.data.bootstrap = new app.models.Bootstrap({
 app.data.shippingEstimates = new app.collections.ShippingEstimates(); // initially empty;
 
 app.data.cart = new app.models.Cart({
+  'merchantId': window.merchantId,
   'country': app.data.bootstrap.get('defaultCountry'),
   'shipToCountry': app.data.bootstrap.get('defaultCountry')
 });  // initially empty, except default countries.

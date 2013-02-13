@@ -132,7 +132,7 @@
   <legend>Shipping Preference</legend>
 
   {{#if noShippingMethods}}
-  Loading Shipping Methods...
+  No available shipping methods found.
   {{else}}
   {{#if showDropdown}}
   <select class='selectShippingPreference' name="shipping[preference]">
@@ -167,43 +167,51 @@
     <br class="clear">
     <span class="title">Shipping:</span><span class="value">{{shippingHandling}}</span>
     <br class="clear">
-    {{#if showBuysafe}}
 
-    <input type="hidden" id="ucBuysafeBondChangeId" value=''/>
-    {{{beginScript}}
-    function buySAFEOnClick() {
-    {{#if buysafeBondWanted}}
-    document.getElementById('ucBuysafeBondChangeId').value = 'remove';
-    {{else}}
-    document.getElementById('ucBuysafeBondChangeId').value = 'add';
-    {{/if}}
-    }
-    {{{endScript}}
-
-    <span class="title">BuySafe:</span><span class="value">{{buysafeBondCost}}</span>
+    {{#if buysafeBondAvailable}}
+    <span class="title">BuySafe:</span><span class="value">{{cartBondCost}}</span>
     <br class="clear">
+
+    {{#if buysafeBondFree}}
 
     <div class="buySafeInfo">
       <div class="buySafe_button">
         <div class="buySafe_logo"></div>
         <div class="buySafe_button_info">
-
-          {{buysafeScript}}
-          {{buysafeBondingSignal}}
-          {{#if showBuysafeCartDisplay}}
-          <br><a href="{{buysafeCartDisplayUrl}}" target="_blank">{{{buysafeCartDisplayText}}}</a>
-          {{/if}}
-
+          <strong>YOUR PURCHASE IS GUARANTEED WITH A BOND</strong>
         </div>
         <div class="buySafe_bonded"></div>
       </div>
       <div class="buySafe_message"></div>
       <br class="clear">
     </div>
+
+    {{else}}
+
+    <div class="buySafeInfo">
+      <div class="buySafe_button_option">
+        <div class="buySafe_logo_option"></div>
+        <div class="buySafe_button_info_option">
+          <strong>YOUR PURCHASE IS GUARANTEED WITH A BOND</strong>
+        </div>
+        <div class="buySafe_bonded_option {{#if buysafeBondWanted}} {{else}}buysafe_no{{/if}}"></div>
+      </div>
+      <div class="buySafe_message_option"></div>
+      <br class="clear">
+    </div>
+    {{#if buysafeBondWanted}}
+    <p class="buySafeSubtext">(Optional service click to remove)</p>
+    {{else}}
+    <p class="buySafeSubtext">Click to bond your purchase for only {{buysafeBondCost}}</p>
+    {{/if}}
+
+    {{/if}}
+
     <br class="clear">
     {{/if}}
-    <span class="title">Total:</span><span class="value">{{total}}</span>
-    <br class="clear">
+
+  <span class="title">Total:</span><span class="value">{{total}}</span>
+  <br class="clear">
   </div>
 </script>
 
@@ -490,6 +498,7 @@
 
     <div class="logo-left">
       <a href="index.html"><img src="images/ultracart-logo.png"></a>
+
       <div class="clear"></div>
     </div>
 
@@ -508,7 +517,7 @@
   <form id="frmCheckout" method="post" name="checkout" action="#">
     <fieldset id="shipToAddress" class="shippingInfo eight columns"></fieldset>
     <fieldset id="billToAddress" class="billingInfo eight columns alpha hidden"></fieldset>
-    <fieldset id="shipping" class="shippingPreference eight columns"></fieldset>
+    <fieldset id="shipping" class="shippingPreference eight columns">Loading Shipping Methods...</fieldset>
     <fieldset id="coupons" class="eight columns"></fieldset>
     <fieldset id="giftCertificates" class="eight columns"></fieldset>
     <fieldset id="summary" class="eight columns"></fieldset>
