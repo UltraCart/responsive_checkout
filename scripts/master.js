@@ -1056,8 +1056,8 @@ app.views.GiftCertificate = Backbone.View.extend({
 app.views.Summary = Backbone.View.extend({
   el: '#summary',
   events: {
-    ".buySafe_button click": "showBuysafeInfo",
-    ".buySafe_bonded_option click": "toggleBuysafe"
+    "click .buySafe_button": "showBuysafeInfo",
+    "click .buySafe_bonded_option": "toggleBuysafe"
   },
 
   'onClose': function () {
