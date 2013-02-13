@@ -1213,7 +1213,8 @@ app.views.Total = Backbone.View.extend({
 
   },
 
-  placeOrder: function () {
+  placeOrder: function (event) {
+    event.preventDefault();
     app.commonFunctions.checkout('Credit Card');
   }
 
