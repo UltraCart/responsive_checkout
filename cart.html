@@ -378,7 +378,7 @@
            value="{{cart.creditCardNumber}}"/>
   </label>
 
-  <label class="four columns alpha">
+  <label class="two columns alpha">
     <span>Expiration Date</span>
     <br class="clear">
 
@@ -388,6 +388,11 @@
       {{#ucSelectOption1 month selected}}{{name}}{{/ucSelectOption1}}
       {{/each}}
     </select>
+  </label>
+
+  <label class="two columns alpha">
+    <span>&nbsp;</span>
+    <br class="clear">
 
     <select id="creditCardExpirationYear" name="shipping[expYear]" class="two columns alpha">
       <option value="">Year</option>
