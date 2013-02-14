@@ -473,7 +473,8 @@ app.views.Payment = Backbone.View.extend({
   el: '#payment',
   events: {
     'focus input[type=text]': 'selectText',
-    'change input[type=text],input[type=number],input[type=email],select': 'copyFieldToCart'
+    'change input[type=text],input[type=number],input[type=email],select': 'copyFieldToCart',
+    'click .ccv-help-link': 'toggleCvv'
   },
 
   'onClose': function () {
@@ -538,6 +539,12 @@ app.views.Payment = Backbone.View.extend({
     var changes = {};
     changes[fieldName] = value;
     this.model.set(changes);
+  },
+
+  'toggleCvv': function(){
+    jQuery('.ccv_message').toggle('fast', function() {
+        		// Animation complete.
+      	});
   }
 
 });

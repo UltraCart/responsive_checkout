@@ -98,20 +98,20 @@
 	.fieldTitle{
 		font-weight: bold;
 		font-size: 13px;
-		margin: 10px 0;
+		margin: 10px 0px;
 		display: block;
 	}
 
 	/* @group cart */
 	.cart-info{
-		/* border-bottom:1px solid #ccc; */
+		//border-bottom:1px solid #ccc;
 	}
 
 	.cart-info .title{
 		font-weight: bold;
 		font-size: 1.5em;
 		line-height: 1.7em;
-		padding:10px 0;
+		padding:10px 0px;
 		border-bottom:1px solid #ccc;
 	}
 
@@ -120,7 +120,7 @@
 		color:#999;
 		overflow: hidden;
 		border-bottom:1px solid #ccc;
-		padding: 10px 0;
+		padding: 10px 0px;
 	}
 
 	.cart header .itemQuantity{
@@ -374,15 +374,26 @@
 		font-size:11px;
 		color:#002c5d;
 	}
+
+	.ccv-help-link {
+		cursor: pointer;
+	}
+
+	.ccv_message{
+		clear: both;
+		height:250px;
+		background:url(../images/ccv-info.gif) center center no-repeat #dadada;
+		display: none;
+	}
 	/* @end Summary */
 
 
-	/* @group Error Handling */
+	/* @group Error Handeling */
 
 	.errorContainer {
 		font-size: 12px;
 		padding:10px 10px;
-		margin:10px 0;
+		margin:10px 0px;
 		text-align: center;
 		color:#fff;
 		font-weight:bold;
@@ -394,7 +405,7 @@
 		-moz-border-radius: 3px;
 		border-radius: 3px;
 
-		text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+		text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.4);
 		clear: both;
 	}
 
@@ -405,7 +416,7 @@
 	.error input {
 		background: rgba(255, 0, 0, 0.7) !important;
 	}
-	/* @end Error Handling */
+	/* @end Error Handeling */
 
 
 /* #Media Queries
