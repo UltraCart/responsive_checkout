@@ -98,20 +98,20 @@
 	.fieldTitle{
 		font-weight: bold;
 		font-size: 13px;
-		margin: 10px 0px;
+		margin: 10px 0;
 		display: block;
 	}
 
 	/* @group cart */
 	.cart-info{
-		//border-bottom:1px solid #ccc;
+		/* border-bottom:1px solid #ccc; */
 	}
 
 	.cart-info .title{
 		font-weight: bold;
 		font-size: 1.5em;
 		line-height: 1.7em;
-		padding:10px 0px;
+		padding:10px 0;
 		border-bottom:1px solid #ccc;
 	}
 
@@ -120,7 +120,7 @@
 		color:#999;
 		overflow: hidden;
 		border-bottom:1px solid #ccc;
-		padding: 10px 0px;
+		padding: 10px 0;
 	}
 
 	.cart header .itemQuantity{
@@ -393,7 +393,7 @@
 	.errorContainer {
 		font-size: 12px;
 		padding:10px 10px;
-		margin:10px 0px;
+		margin:10px 0;
 		text-align: center;
 		color:#fff;
 		font-weight:bold;
@@ -405,7 +405,7 @@
 		-moz-border-radius: 3px;
 		border-radius: 3px;
 
-		text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.4);
+		text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
 		clear: both;
 	}
 

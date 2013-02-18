@@ -383,7 +383,7 @@
     <br class="clear">
 
     <select id="creditCardExpirationMonth" name="shipping[expMonth]" class="two columns alpha">
-      <option value="">Month</option>
+      <option value="0">Month</option>
       {{#each ccMonths}}
       {{#ucSelectOption1 month selected}}{{name}}{{/ucSelectOption1}}
       {{/each}}
@@ -395,7 +395,7 @@
     <br class="clear">
 
     <select id="creditCardExpirationYear" name="shipping[expYear]" class="two columns alpha">
-      <option value="">Year</option>
+      <option value="0">Year</option>
       {{#each ccYears}}
       {{#ucSelectOption1 year selected}}{{year}}{{/ucSelectOption1}}
       {{/each}}
