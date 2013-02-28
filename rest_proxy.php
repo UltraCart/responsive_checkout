@@ -93,6 +93,9 @@ if ( strlen($post_data)>0 ){
 }
 
 $response = curl_exec($ch);
+error_log("start response ===============");
+error_log($response);
+error_log("end response ===============");
 
 if (curl_errno($ch)) {
     print curl_error($ch);
@@ -102,7 +105,12 @@ if (curl_errno($ch)) {
     $response_headers = http_parse_headers($header);
     foreach($response_headers as $i=>$val) {
       if($i != 'Content-Encoding' && $i != 'Vary' && $i != 'Connection' && $i != 'Transfer-Encoding'){
-        header("$i: $val");
+        if($i == 'Content-Length' && $val == "0"){
+          /* ignore this, it's from an HTTP 1.1 100 Continue and will destroy the result if passed along. */
+        } else {
+          error_log("$i: $val");
+          header("$i: $val");
+        }
       }
     }
     $body = substr($response, $header_size);

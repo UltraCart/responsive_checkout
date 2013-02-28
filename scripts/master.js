@@ -165,7 +165,7 @@ app.commonFunctions.showHideBilling = function (show, update) {
 
   var attr = null;
 
-  if (show === 'undefined') {
+  if (typeof show === 'undefined') {
 
     var theyAreTheSame = true;  // if there is no cart, the fields should be hidden by default.
     if (app.data.cart) {
@@ -186,27 +186,27 @@ app.commonFunctions.showHideBilling = function (show, update) {
     app.commonFunctions.showHideBilling(!theyAreTheSame, false);
 
   } else {
-    var billingInfo = jQuery('.billingInfo');
+    var billingInfo = jQuery('#billToAddress');
     if (show) {
       billingInfo.removeClass('hidden');
     } else {
       billingInfo.addClass('hidden');
-      if (update) {
-        attr = app.data.cart.attributes;
-        app.data.cart.set({
-          'billToLastName': attr.shipToLastName,
-          'billToFirstName': attr.shipToFirstName,
-          'billToCompany': attr.shipToCompany,
-          'billToAddress1': attr.shipToAddress1,
-          'billToAddress2': attr.shipToAddress2,
-          'billToCity': attr.shipToCity,
-          'billToState': attr.shipToState,
-          'billToCountry': attr.shipToCountry
-        }, {silent: true});
-        app.data.cart.trigger('addressCopy');
-      }
     }
 
+    if (update) {
+      attr = app.data.cart.attributes;
+      app.data.cart.set({
+        'billToLastName': attr.shipToLastName,
+        'billToFirstName': attr.shipToFirstName,
+        'billToCompany': attr.shipToCompany,
+        'billToAddress1': attr.shipToAddress1,
+        'billToAddress2': attr.shipToAddress2,
+        'billToCity': attr.shipToCity,
+        'billToState': attr.shipToState,
+        'billToCountry': attr.shipToCountry
+      }, {silent: true});
+      app.data.cart.trigger('addressCopy');
+    }
   }
 };
 
@@ -226,7 +226,217 @@ app.commonFunctions.displayServerErrors = function () {
 };
 
 
+app.commonFunctions.isYesValue = function (val) {
+  if (!val) {
+    val = false; // take care of nulls and undefined.
+  }
+  if (typeof val == 'string') {
+    val = val.toLowerCase();
+    return "yes" == val || "true" == val || "on" == val || "Y" == val || "1" == val;
+  }
+  return val;
+};
+
+
+app.commonFunctions.parseHttpParameters = function () {
+  var result = {};
+  var searchString = window.location.search.substring(1), params = searchString.split("&");
+  for (var i = 0; i < params.length; i++) {
+    var kv = params[i].split("=");
+    var name = kv[0].toLowerCase(), value = decodeURIComponent(kv[1]);
+
+    if (!result.hasOwnProperty(name)) {
+      result[name] = [];
+    }
+    result[name].push(value);
+
+  }
+  return result;
+};
+
+
+/* this method should only be called after the cart has loaded. */
+/* see: http://docs.ultracart.com/display/ucdoc/Parameters+that+can+be+passed+to+UCEditor */
+app.commonFunctions.pretendToBeUCEditor = function () {
+
+  // note: all params are key=string, value=array, but most always we only need the first value.
+  // so you'll see [0] tacked onto every value reference, such as params[propertyName][0]. just fyi.
+
+  var params = app.commonFunctions.parseHttpParameters();
+  var simpleProperties = {
+    advertisingsource: 'advertisingSource',
+    billingfirstname: 'billToFirstName',
+    billinglastname: 'billToLastName',
+    billingcompany: 'billToCompany',
+    billingaddress1: 'billToAddress1',
+    billingaddress2: 'billToAddress2',
+    billingcity: 'billToCity',
+    billingstate: 'billToState',
+    billingpostalcode: 'billToPostalCode',
+    billingcountry: 'billToCountry',
+    billingdayphone: 'billToDayPhone',
+    billingeveningphone: 'billToEveningPhone',
+    ccemail: 'ccEmail',
+    shippingfirstname: 'shipToFirstName',
+    shippinglastname: 'shipToLastName',
+    shippingcompany: 'shipToTitle',
+    shippingaddress1: 'shipToAddress1',
+    shippingaddress2: 'shipToAddress2',
+    shippingcity: 'shipToCity',
+    shippingstate: 'shipToState',
+    shippingpostalcode: 'shipToPostalCode',
+    shippingcountry: 'shipToCountry',
+    shippingdayphone: 'shipToPhone',
+    customfield1: 'customField1',
+    customfield2: 'customField2',
+    customfield3: 'customField3',
+    customfield4: 'customField4',
+    customfield5: 'customField5',
+    customfield6: 'customField6',
+    customfield7: 'customField7',
+    creditcardtype: 'creditCardType',
+    creditcardnumber: 'creditCardNumber',
+    creditcardexpmonth: 'creditCardExpirationMonth',
+    creditcardexpyear: 'creditCardExpirationYear',
+    creditcardcvv2: 'creditCardToken',
+    shippingmethod: 'shippingMethod',
+    themecode: 'screenBrandingThemeCode'
+  };
+
+  var attr = {};
+  for (var propertyName in simpleProperties) {
+    if (simpleProperties.hasOwnProperty(propertyName)) {
+      if (params.hasOwnProperty(propertyName)) {
+        attr[simpleProperties[propertyName]] = params[propertyName][0];
+      }
+    }
+  }
+
+
+  var copyS_to_B = false;
+  var copyB_to_S = false;
+
+  if (params.hasOwnProperty('billingsameasshipping') && app.commonFunctions.isYesValue(params['billingsameasshipping'])) {
+    copyS_to_B = true;
+  }
+
+  if (params.hasOwnProperty('defaultbillingsameasshipping') && app.commonFunctions.isYesValue(params['billingdifferent'])) {
+    copyS_to_B = true;
+  }
+
+  if (params.hasOwnProperty('defaultshippingsameasbilling') && app.commonFunctions.isYesValue(params['shippingdifferent'])) {
+    copyB_to_S = true;
+  }
+
+  if (copyS_to_B) {
+    attr.billToLastName = attr.shipToLastName;
+    attr.billToFirstName = attr.shipToFirstName;
+    attr.billToCompany = attr.shipToCompany;
+    attr.billToAddress1 = attr.shipToAddress1;
+    attr.billToAddress2 = attr.shipToAddress2;
+    attr.billToCity = attr.shipToCity;
+    attr.billToState = attr.shipToState;
+    attr.billToCountry = attr.shipToCountry;
+  }
+  if (copyB_to_S) {
+    attr.shipToLastName = attr.billToLastName;
+    attr.shipToFirstName = attr.billToFirstName;
+    attr.shipToCompany = attr.billToCompany;
+    attr.shipToAddress1 = attr.billToAddress1;
+    attr.shipToAddress2 = attr.billToAddress2;
+    attr.shipToCity = attr.billToCity;
+    attr.shipToState = attr.billToState;
+    attr.shipToCountry = attr.billToCountry;
+  }
+
+
+  // need to populate both email and confirm, so can't treat email as simple property.
+  if (params.hasOwnProperty("email")) {
+    attr['email'] = params['email'][0];
+    attr['emailConfirm'] = params['email'][0];
+  }
+
+  if (params.hasOwnProperty("shippingresidentialaddress")) {
+    attr['shipToResidential'] = app.commonFunctions.isYesValue(params['shippingresidentialaddress'][0]);
+  }
+
+
+  var itemsChanged = false;
+  var items = app.data.cart.attributes.items || [];
+  if (params.hasOwnProperty("clearcart")) {
+    itemsChanged = true;
+    items = [];
+  }
+
+  if (params.hasOwnProperty(('add'))) {
+    itemsChanged = true;
+    var qty = parseInt(params['quantity'][0]);
+    if (isNaN(qty)) {
+      qty = 1;
+    }
+    var item = {itemId: params['add'][0], quantity: qty};
+    // check for options
+    for (var i = 1; i <= 10; i++) {
+      if (params.hasOwnProperty('optionname' + i) && params.hasOwnProperty('optionvalue' + i)) {
+        // we have items, make sure options property is initialized.
+        if (!item.hasOwnProperty('options')) {
+          item['options'] = [];
+        }
+        item.options.push({name: params['optionname' + i][0], selectedValue: params['optionvalue' + i][0]});
+      }
+    }
+
+    items.push(item);
+  }
+
+  // check for multiple items.  Look for "add_" parameters.
+  for (var parameterName in params) {
+    if (params.hasOwnProperty(parameterName) && parameterName.indexOf('add_') == 0) {
+      var quantity = parseInt(params[parameterName][0]);
+      var itemId = parameterName.substring('add_'.length);
+      itemsChanged = true;
+      items.push({itemId: itemId, quantity: quantity});
+    }
+  }
+
+  if (itemsChanged) {
+    attr['items'] = items;
+  }
+
+  var couponsChanged = false;
+  var coupons = app.data.cart.attributes.coupons || [];
+  if (params.hasOwnProperty('coupon')) {
+    var couponCodes = params['coupon'];
+    _.each(couponCodes, function(code){
+      if (!_.contains(_.pluck(coupons, 'couponCode'), code)) {
+        coupons.push({'couponCode': code});
+        couponsChanged = true;
+      }
+    });
+  }
+
+  if (couponsChanged) {
+    attr['coupons'] = coupons;
+  }
+
+
+  if (_.keys(attr).length) {
+    app.data.cart.save(attr, {wait:true});
+  }
+
+
+  if (params.hasOwnProperty('overridecatalogurl')) {
+    window.continueShoppingUrl = params['overridecatalogurl'];
+  }
+  if (params.hasOwnProperty('overridecontinueshoppingurl')) {
+    window.continueShoppingUrl = params['overridecontinueshoppingurl'];
+  }
+
+};
+
+
 app.commonFunctions.estimateShipping = function () {
+
   if (!app.data.bootstrap.get('fetchingShipping')) {
     app.data.bootstrap.set({'fetchingShipping': true});
 
@@ -426,10 +636,24 @@ app.views.ShippingAddress = Backbone.View.extend({
       });
     }
 
+    //are billing and shipping the same?
+    var cart = this.model.attributes;
+    var shippingIsBilling = (cart.shipToFirstName == cart.billToFirstName &&
+            cart.shipToLastName == cart.billToLastName &&
+            cart.shipToCompany == cart.billToCompany &&
+            cart.shipToCountry == cart.billToCountry &&
+            cart.shipToCity == cart.billToCity &&
+            cart.shipToState == cart.billToState &&
+            cart.shipToPostalCode == cart.billToPostalCode &&
+            cart.shipToAddress1 == cart.billToAddress1 &&
+            cart.shipToAddress2 == cart.billToAddress2
+            );
+
     var context = {
       'countries': countries,
-      'cart': this.model.attributes,
-      'shipToResidential': this.model.get('shipToResidential') || false // the custom handlebars helper I wrote doesn't work with nested properties (yet).
+      'cart': cart,
+      'shipToResidential': this.model.get('shipToResidential') || false, // the custom handlebars helper I wrote doesn't work with nested properties (yet).
+      'shippingIsBilling': shippingIsBilling
     };
 
     this.$el.html(app.templates.shipto(context));
@@ -443,7 +667,7 @@ app.views.ShippingAddress = Backbone.View.extend({
 
   'showHideBilling': function (event) {
     var checked = jQuery(event.target).is(':checked');
-    app.commonFunctions.showHideBilling(!checked, true);
+    app.commonFunctions.showHideBilling(!checked, checked);
   },
 
   'copyFieldToCart': function (event) {
@@ -541,10 +765,10 @@ app.views.Payment = Backbone.View.extend({
     this.model.set(changes);
   },
 
-  'toggleCvv': function(){
-    jQuery('.ccv_message').toggle('fast', function() {
-        		// Animation complete.
-      	});
+  'toggleCvv': function () {
+    jQuery('.ccv_message').toggle('fast', function () {
+      // Animation complete.
+    });
   }
 
 });
@@ -705,7 +929,7 @@ app.views.Item = Backbone.View.extend({
     var val = jQuery.trim(jQuery(event.target).val());
 
     var found = false;
-    _.each((this.model.get('itemOptions') || []), function (itemOption) {
+    _.each((this.model.get('options') || []), function (itemOption) {
       if (itemOption.optionOid == id) {
         itemOption.selectedValue = val;
         found = true;
@@ -727,7 +951,7 @@ app.views.Item = Backbone.View.extend({
     var val = jQuery.trim(jQuery(event.target).val());
 
     var found = false;
-    _.each((this.model.get('itemOptions') || []), function (itemOption) {
+    _.each((this.model.get('options') || []), function (itemOption) {
       if (itemOption.optionOid == id) {
         itemOption.selectedValue = val;
         found = true;
@@ -752,6 +976,7 @@ app.views.Items = Backbone.View.extend({
 
   'onClose': function () {
     this.collection.off('add sync remove reset change', this.render, this);
+    app.data.bootstrap.off('change:initialLoadDone', this.render, this);
     this.closeChildren();
     // dispose of the children
     _.each(this.childViews, function (view) {
@@ -761,12 +986,22 @@ app.views.Items = Backbone.View.extend({
 
   initialize: function () {
     this.collection.on('add sync remove reset change', this.render, this);
+    app.data.bootstrap.on('change:initialLoadDone', this.render, this);
     _.bindAll(this);
   },
 
   render: function () {
 
-    var context = {};
+    var noItems = this.collection.length <= 0;
+    if (noItems) {
+      jQuery('#checkoutFields').addClass('hidden');
+    } else {
+      jQuery('#checkoutFields').removeClass('hidden');
+    }
+
+    var stillLoading = !app.data.bootstrap.get('initialLoadDone');
+
+    var context = {'noItems': noItems, 'stillLoading': stillLoading};
     this.$el.html(app.templates.items(context));
 
     var that = this;
@@ -812,7 +1047,7 @@ app.views.Items = Backbone.View.extend({
 app.views.Subtotal = Backbone.View.extend({
   el: '#subtotal',
   events: {
-    "click #continueShopping": "continueShopping"
+    "click .btnContinueShopping": "continueShopping"
   },
 
   'onClose': function () {
@@ -1257,18 +1492,21 @@ jQuery(document).ready(function () {
       "cache-control": "no-cache"
     },
     success: function (model) {
+      app.data.bootstrap.set({'initialLoadDone': true});
       var cartId = model.get('cartId') || false;
       if (cartId) {
         var cookieName = window.cartCookieName || 'UltraCartShoppingCartId';
         jQuery.cookie(cookieName, model.get('cartId'), { expires: 7, path: '/' });
+        app.commonFunctions.pretendToBeUCEditor(); // check http query parameters for UCEditor parameters
         app.data.cart.trigger('sync');
       }
+
+      app.commonFunctions.showHideBilling(/* no arguments */);
     }
   });
 
   // this will show any errors that are query parameters to the page.
   app.commonFunctions.displayServerErrors();
-  app.commonFunctions.showHideBilling(/* no arguments */);
 
 });
 
@@ -1283,7 +1521,8 @@ app.data.bootstrap = new app.models.Bootstrap({
   'advertisingSources': [],
   'advertisingSourcesFreeForm': true,
   'taxCounties': [],
-  'defaultCountry': 'United States'
+  'defaultCountry': 'United States',
+  'initialLoadDone': false
 });
 
 
