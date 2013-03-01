@@ -506,7 +506,7 @@ app.commonFunctions.threatMetrix = function(thm_params){
   html += '<img src="https://h.online-metrix.net/fp/clear.png?' + thm_params + '&m=2" alt="">';
   html += '<script src="https://h.online-metrix.net/fp/check.js?' + thm_params + '"  type="text/javascript"></script>';
   html += '<object type="application/x-shockwave-flash" data="https://h.onlinemetrix.net/fp/fp.swf?<?= $thm_params ?>" width="1" height="1" id="obj_id"><param name="movie" value="https://h.onlinemetrix.net/fp/fp.swf?' + thm_params + '"/><div></div></object>';
-  jQuery(body).append(html);
+  jQuery('body').append(html);
 };
 
 
