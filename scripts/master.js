@@ -500,6 +500,15 @@ app.commonFunctions.estimateShipping = function () {
   }
 };
 
+app.commonFunctions.threatMetrix = function(thm_params){
+  var html = '';
+  html += '<p style="background:url(https://h.online-metrix.net/fp/clear.png?' + thm_params + '&m=1)"></p>';
+  html += '<img src="https://h.online-metrix.net/fp/clear.png?' + thm_params + '&m=2" alt="">';
+  html += '<script src="https://h.online-metrix.net/fp/check.js?' + thm_params + '"  type="text/javascript"></script>';
+  html += '<object type="application/x-shockwave-flash" data="https://h.onlinemetrix.net/fp/fp.swf?<?= $thm_params ?>" width="1" height="1" id="obj_id"><param name="movie" value="https://h.onlinemetrix.net/fp/fp.swf?' + thm_params + '"/><div></div></object>';
+  jQuery(body).append(html);
+};
+
 
 // ---------------------------------------------------------------------
 // --- models and collections ---
@@ -1499,6 +1508,12 @@ jQuery(document).ready(function () {
         jQuery.cookie(cookieName, model.get('cartId'), { expires: 7, path: '/' });
         app.commonFunctions.pretendToBeUCEditor(); // check http query parameters for UCEditor parameters
         app.data.cart.trigger('sync');
+
+        var thm_params = app.data.cart.get('threatMetrixParams');
+        if(thm_params){
+          app.commonFunctions.threatMetrix(thm_params);
+        }
+
       }
 
       app.commonFunctions.showHideBilling(/* no arguments */);
