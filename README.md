@@ -1,5 +1,7 @@
 Most people find this demo helpful:
+
 https://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demo1.html
+
 It gives examples of the REST API calls used in the responsive checkout.
 
 
