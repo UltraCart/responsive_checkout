@@ -96,10 +96,10 @@ if ( strlen($post_data)>0 ){
 }
 
 $response = curl_exec($ch);
-error_log("start response ===========================================");
-error_log("start raw response ===============");
-error_log($response);
-error_log("end raw response ===============");
+//error_log("start response ===========================================");
+//error_log("start raw response ===============");
+//error_log($response);
+//error_log("end raw response ===============");
 
 
 // grab the status code and set the proxy request result to that.
@@ -125,11 +125,11 @@ if (curl_errno($ch)) {
         } else {
           if(is_array($header_value)){
             foreach($header_value as $val){
-              error_log("$header_key: $val");
+              //error_log("$header_key: $val");
               header("$header_key: $val", false);
             }
           } else {
-          error_log("$header_key: $header_value");
+          //error_log("$header_key: $header_value");
           header("$header_key: $header_value", false);
           }
 
@@ -140,5 +140,5 @@ if (curl_errno($ch)) {
     echo $body;
     curl_close($ch);
 }
-error_log("end response ===========================================");
+//error_log("end response ===========================================");
 ?>
