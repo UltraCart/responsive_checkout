@@ -1,4 +1,7 @@
 <?php
+// Version 0.6.  06/22/2013
+//  Headers weren't being handled correctly.  Server http status wasn't being passed along.
+//  Headers with multiple values weren't iterated correctly and were being mangled (think multiple 'Set-Cookie')
 // Version 0.5.  02/07/2013  Initial Version.
 
   function http_parse_headers( $header ) {
@@ -93,9 +96,21 @@ if ( strlen($post_data)>0 ){
 }
 
 $response = curl_exec($ch);
-//error_log("start response ===============");
-//error_log($response);
-//error_log("end response ===============");
+error_log("start response ===========================================");
+error_log("start raw response ===============");
+error_log($response);
+error_log("end raw response ===============");
+
+
+// grab the status code and set the proxy request result to that.
+$first_line = '';
+if(strlen($response) > 0){
+  $first_line = substr($response, 0, strpos($response, "\n"));
+  $first_line = trim($first_line);
+}
+
+
+header($first_line);
 
 if (curl_errno($ch)) {
     print curl_error($ch);
@@ -103,13 +118,21 @@ if (curl_errno($ch)) {
     $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
     $header = substr($response, 0, $header_size);
     $response_headers = http_parse_headers($header);
-    foreach($response_headers as $i=>$val) {
-      if($i != 'Content-Encoding' && $i != 'Vary' && $i != 'Connection' && $i != 'Transfer-Encoding'){
-        if($i == 'Content-Length' && $val == "0"){
+    foreach($response_headers as $header_key=>$header_value) {
+      if($header_key != 'Content-Encoding' && $header_key != 'Vary' && $header_key != 'Connection' && $header_key != 'Transfer-Encoding'){
+        if($header_key == 'Content-Length' && $header_value == "0"){
           /* ignore this, it's from an HTTP 1.1 100 Continue and will destroy the result if passed along. */
         } else {
-          //error_log("$i: $val");
-          header("$i: $val");
+          if(is_array($header_value)){
+            foreach($header_value as $val){
+              error_log("$header_key: $val");
+              header("$header_key: $val", false);
+            }
+          } else {
+          error_log("$header_key: $header_value");
+          header("$header_key: $header_value", false);
+          }
+
         }
       }
     }
@@ -117,4 +140,5 @@ if (curl_errno($ch)) {
     echo $body;
     curl_close($ch);
 }
+error_log("end response ===========================================");
 ?>
