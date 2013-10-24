@@ -116,7 +116,7 @@
 </script>
 <script type='text/javascript'>
   function loadCart() {
-    // if there's a cart id cookie named UltraCartShoppingCartId, then it will automatically be picked up by the REST API.
+    // if there's a cart id cookie named UltraCartShoppingCartID, then it will automatically be picked up by the REST API.
     // if there's not, then a new cart will be returned.  Either way, it's a trivial call to retrieve the cart.
 
     var restUrl = i_am_using_a_proxy ? pathToProxy + '?_url=/rest/cart' : '/rest/cart';  // you shouldn't change this.
@@ -129,7 +129,7 @@
           if (cart && cart.cartId) {
             window.myCart = cart;
             // the cart id cooke may already be set, but it won't hurt to set it again.
-            jQuery.cookie('UltraCartShoppingCartId', cart.cartId, { expires: 7, path: '/' });
+            jQuery.cookie('UltraCartShoppingCartID', cart.cartId, { expires: 7, path: '/' });
             displayCart(cart);
           }
         });
@@ -189,7 +189,7 @@
 
   function loadItem() {
     // check for a cart id cookie.  If found, grab it and create a bare-bones cart to allow for wholesale pricing, if it's in play.
-    var cartId = jQuery.cookie('UltraCartShoppingCartId');
+    var cartId = jQuery.cookie('UltraCartShoppingCartID');
     var restUrl = i_am_using_a_proxy ? pathToProxy + '?_url=/rest/site/items/' + itemId : '/rest/site/items/' + itemId;  // you shouldn't change this.
     if (cartId) {
       // do a post

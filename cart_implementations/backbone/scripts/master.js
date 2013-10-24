@@ -1496,7 +1496,7 @@ jQuery(document).ready(function () {
 
   app.data.cart.fetch({
     headers: {
-      'X-UC-Merchant-Id': window.merchantId,  // could also pass merchant id as query parameter named '_mid' or cookie named 'UltraCartMerchantId'
+      'X-UC-Merchant-Id': window.merchantId,  // could also pass merchant id as query parameter named '_mid' or cookie named 'UltraCartMerchantID'
       // the cart id is not passed here as a header. to keep things simple, we'll rely on the cookie to pass in the cart id.
       "cache-control": "no-cache"
     },
@@ -1504,7 +1504,7 @@ jQuery(document).ready(function () {
       app.data.bootstrap.set({'initialLoadDone': true});
       var cartId = model.get('cartId') || false;
       if (cartId) {
-        var cookieName = window.cartCookieName || 'UltraCartShoppingCartId';
+        var cookieName = window.cartCookieName || 'UltraCartShoppingCartID';
         jQuery.cookie(cookieName, model.get('cartId'), { expires: 7, path: '/' });
         app.commonFunctions.pretendToBeUCEditor(); // check http query parameters for UCEditor parameters
         app.data.cart.trigger('sync');
