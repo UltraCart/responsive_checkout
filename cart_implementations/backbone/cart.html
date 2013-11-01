@@ -25,6 +25,13 @@
 <link rel="stylesheet" href="stylesheets/base.css">
 <link rel="stylesheet" href="stylesheets/skeleton.css">
 <link rel="stylesheet" href="stylesheets/layout.css">
+<!--[if gte IE 9]>
+<style type="text/css">
+  .gradient {
+    filter: none;
+  }
+</style>
+<![endif]-->
 
 <!--[if lt IE 9]>
 <script type='text/javascript' src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -39,10 +46,56 @@
 
 
 <!-- ================================================== -->
+<script type='text/x-handlebars-template' id='credentials_template'>
+  {{#if showButtons}}
+    <span class="credentials-main-buttons four columns alpha">
+      <button type="button" class="btnLogin" id="btnLoginShow">Login</button>
+      <button type="button" class="btnRegister" id="btnRegisterShow">Register</button>
+    </span>
+  {{/if}}
+  {{#if showLogout}}
+    <span class="credentials-main-buttons four columns alpha">
+      <button type="button" class="btnLogout" id="btnLogoutSubmit">Logout</button>
+    </span>
+  {{/if}}
+
+  {{#if showLogin}}
+  <label class="login-email three columns alpha">
+    <span>Email Address:</span>
+    <input type="text" class='credentialField' id="loginEmail" name="login[email]" value=""/>
+  </label>
+  <label class="login-password three columns alpha">
+    <span>Password:</span>
+    <input type="password" class='credentialField' id="loginPassword" name="login[password]" value=""/>
+  </label>
+    <span class="four columns alpha">
+      <button type="button" class="btnLogin" id="btnLoginSubmit">Login</button>
+      <button type="button" class="btnCancel">Cancel</button>
+    </span>
+  {{/if}}
+
+  {{#if showRegister}}
+  <label class="register-email three columns alpha">
+    <span>Email Address:</span>
+    <input type="text" class='credentialField' id="registerEmail" name="register[email]" value=""/>
+  </label>
+  <label class="register-password three columns alpha">
+    <span>Password:</span>
+    <input type="password" class='credentialField' id="registerPassword" name="register[password]" value=""/>
+  </label>
+    <span class="four columns alpha">
+      <button type="button" class="btnRegister" id="btnRegisterSubmit">Register</button>
+      <button type="button" class="btnCancel">Cancel</button>
+    </span>
+  {{/if}}
+
+</script>
+
+<!-- ================================================== -->
 <script type='text/x-handlebars-template' id='items_template'>
   {{#if noItems}}
   {{#if stillLoading}}
-  Loading shopping cart.  Please wait...
+  Loading shopping cart. Please wait...
   {{else}}
   Your cart is empty, good sir.
   {{/if}}
@@ -217,14 +270,26 @@
     <br class="clear">
     {{/if}}
 
-  <span class="title">Total:</span><span class="value">{{total}}</span>
-  <br class="clear">
+    <span class="title">Total:</span><span class="value">{{total}}</span>
+    <br class="clear">
   </div>
 </script>
 
 <!-- ================================================== -->
 <script type='text/x-handlebars-template' id='shipto_adddress_template'>
   <legend>Shipping Address</legend>
+
+  {{#if cart.customerProfile.shippingAddresses}}
+  <label class="eight columns alpha omega">
+    <span>Addresses on File</span>
+    <select id="storedShippingAddress" name="storedShippingAddress[number]">
+      <option value="0"></option>
+      {{#each cart.customerProfile.shippingAddresses}}
+      <option value="{{oid}}">{{address1}}, {{city}} {{state}}</option>
+      {{/each}}
+    </select>
+  </label>
+  {{/if}}
 
   <label class="name four columns alpha">
     <span>*First Name</span>
@@ -300,7 +365,8 @@
   </label>
 
   <label>
-    {{#ucCheckboxSelect1 shippingIsBilling}}<input type="checkbox" id="shippingIsBilling" name="shipping[isBilling]" value="true" />{{/ucCheckboxSelect1}}
+    {{#ucCheckboxSelect1 shippingIsBilling}}<input type="checkbox" id="shippingIsBilling" name="shipping[isBilling]"
+                                                   value="true"/>{{/ucCheckboxSelect1}}
     <span class="bold">Same as Billing Address</span>
   </label>
 
@@ -309,6 +375,18 @@
 <!-- ================================================== -->
 <script type='text/x-handlebars-template' id='billto_address_template'>
   <legend>Billing Address</legend>
+
+  {{#if cart.customerProfile.billingAddresses}}
+  <label class="eight columns alpha omega">
+    <span>Addresses on File</span>
+    <select id="storedBillingAddress" name="storedBillingAddress[number]">
+      <option value="0"></option>
+      {{#each cart.customerProfile.billingAddresses}}
+        <option value="{{oid}}">{{address1}}, {{city}} {{state}}</option>
+      {{/each}}
+    </select>
+  </label>
+  {{/if}}
 
   <label class="name four columns alpha">
     <span>*First Name</span>
@@ -369,9 +447,27 @@
 <!-- ================================================== -->
 <script type='text/x-handlebars-template' id='payment_template'>
   <legend>Payment Information</legend>
+
+  {{#if storedCards}}
+  <label class="sixteen columns alpha">
+    <span>Select a card on File</span>
+    <select id="customerProfileCreditCardId" name="creditCard[customerProfileCreditCardId]">
+      <option value="0"></option>
+      {{#each storedCards}}
+        {{#ucSelectOption1 id selected}}{{cardType}} {{cardNumber}} {{status}}{{/ucSelectOption1}}
+      {{/each}}
+    </select>
+  </label>
+
+  <label class="sixteen columns alpha">
+    <span>or enter a new card:</span>
+  </label>
+  {{/if}}
+
+
   <label class="three columns alpha">
     <span>Credit Card Type</span>
-    <select id="creditCardType" name="shipping[creditCard]" required class="required" value="{{cart.creditCardType}}">
+    <select id="creditCardType" name="creditCard[creditCardType]" required class="required" value="{{cart.creditCardType}}">
       <option value="">-</option>
       {{#each ccTypes}}
       {{#ucSelectOption1 card selected}}{{card}}{{/ucSelectOption1}}
@@ -389,7 +485,7 @@
     <span>Expiration Date</span>
     <br class="clear">
 
-    <select id="creditCardExpirationMonth" name="shipping[expMonth]" class="two columns alpha">
+    <select id="creditCardExpirationMonth" name="creditCard[expMonth]" class="two columns alpha">
       <option value="0">Month</option>
       {{#each ccMonths}}
       {{#ucSelectOption1 month selected}}{{name}}{{/ucSelectOption1}}
@@ -401,7 +497,7 @@
     <span>&nbsp;</span>
     <br class="clear">
 
-    <select id="creditCardExpirationYear" name="shipping[expYear]" class="two columns alpha">
+    <select id="creditCardExpirationYear" name="creditCard[expYear]" class="two columns alpha">
       <option value="0">Year</option>
       {{#each ccYears}}
       {{#ucSelectOption1 year selected}}{{year}}{{/ucSelectOption1}}
@@ -416,10 +512,23 @@
            name="creditCard[verification]" required
            class="required one column alpha"/>
     <span class="ccv-help-link">help finding this number</span>
-				<br class="clear">
-				<div class="ccv_message"></div>
+    <br class="clear">
+
+    <div class="ccv_message"></div>
 
   </label>
+
+  {{#if loggedIn}}
+  <label class="sixteen columns alpha">
+    <span>
+      {{#ucCheckboxSelect2 cart.storeCreditCard true}}<input type="checkbox" id="storeCreditCard"
+                                                          name="creditCard[storeCreditCard]" value='true'/>{{/ucCheckboxSelect2}}
+      save this card for future use
+    </span>
+  </label>
+
+  {{/if}}
+
 </script>
 
 
@@ -502,19 +611,18 @@
 
 
 </head>
-<body>
+<body class="gradient">
 
 <!-- Primary Page Layout
 ================================================== -->
 <!-- Delete everything in this .container and get started on your own site! -->
 <section class="container main-header">
-  <header>
+  <header class="sixteen columns alpha omega">
 
-    <div class="logo-left">
+    <div class="logo-left five columns">
       <a href="index.html"><img src="images/ultracart-logo.png"></a>
-
-      <div class="clear"></div>
     </div>
+    <div id="credentials" class="ten columns"></div>
 
     <div class="clear"></div>
 
@@ -522,6 +630,11 @@
 </section>
 
 <section class="container cart-info">
+  <div id="loginError" class="errorContainer hidden">
+    <p>Checkout Errors</p>
+    <div class="errorContent"></div>
+  </div>
+
   <div class="sixteen columns title alpha omega">Your Cart:</div>
   <section id="cart" class="cart twelve columns">Loading Cart...</section>
   <section id="subtotal" class="subtotal four columns"></section>
@@ -529,23 +642,24 @@
 
 <section class="container customerInfo">
   <form id="frmCheckout" method="post" name="checkout" action="#">
-    <div id="checkoutFields" class='hidden'><!-- The visibility of checkoutFields is managed by the app.views.items view.  see its render method.  It was chosen since it listens to cart item movement best. -->
-    <fieldset id="shipToAddress" class="shippingInfo eight columns"></fieldset>
-    <fieldset id="billToAddress" class="billingInfo eight columns alpha hidden"></fieldset>
-    <fieldset id="shipping" class="shippingPreference eight columns">Loading Shipping Methods...</fieldset>
-    <fieldset id="coupons" class="eight columns"></fieldset>
-    <fieldset id="giftCertificates" class="eight columns"></fieldset>
-    <fieldset id="summary" class="eight columns"></fieldset>
-    <br class="clear">
-    <fieldset id="google" class="payment sixteen columns"></fieldset>
-    <fieldset id="paypal" class="payment sixteen columns"></fieldset>
-    <fieldset id="payment" class="payment sixteen columns"></fieldset>
-    <div id="checkoutError" class="errorContainer hidden">
-      <p>Checkout Errors</p>
+    <div id="checkoutFields" class='hidden'>
+      <!-- The visibility of checkoutFields is managed by the app.views.items view.  see its render method.  It was chosen since it listens to cart item movement best. -->
+      <fieldset id="shipToAddress" class="shippingInfo eight columns"></fieldset>
+      <fieldset id="billToAddress" class="billingInfo eight columns alpha hidden"></fieldset>
+      <fieldset id="shipping" class="shippingPreference eight columns">Loading Shipping Methods...</fieldset>
+      <fieldset id="coupons" class="eight columns"></fieldset>
+      <fieldset id="giftCertificates" class="eight columns"></fieldset>
+      <fieldset id="summary" class="eight columns"></fieldset>
+      <br class="clear">
+      <fieldset id="google" class="payment sixteen columns"></fieldset>
+      <fieldset id="paypal" class="payment sixteen columns"></fieldset>
+      <fieldset id="payment" class="payment sixteen columns"></fieldset>
+      <div id="checkoutError" class="errorContainer hidden">
+        <p>Checkout Errors</p>
 
-      <div class="errorContent"></div>
-    </div>
-    <fieldset id="total" class="total sixteen columns"></fieldset>
+        <div class="errorContent"></div>
+      </div>
+      <fieldset id="total" class="total sixteen columns"></fieldset>
     </div>
   </form>
 </section>
@@ -565,6 +679,8 @@
 
 <script type="text/javascript" src="scripts/handlebars-1.0.rc.1.js"></script>
 <script type="text/javascript" src="scripts/handlebars-uc-extensions-1.1.js"></script>
+
+<script type="text/javascript" src="scripts/cart_rest_0.1.js"></script>
 
 <!--
 IMPORTANT: If you are running this cart on your own server (not hosting on UltraCart), you must have rest_proxy.php

@@ -35,6 +35,7 @@ app.templates.paypal = Handlebars.compile(jQuery('#paypal_template').html());
 app.templates.total = Handlebars.compile(jQuery('#total_template').html());
 app.templates.coupons = Handlebars.compile(jQuery('#coupons_template').html());
 app.templates.giftCertificate = Handlebars.compile(jQuery('#gift_certificate_template').html());
+app.templates.credentials = Handlebars.compile(jQuery('#credentials_template').html());
 
 
 // ---------------------------------------------------------------------
@@ -57,7 +58,7 @@ app.templates.giftCertificate = Handlebars.compile(jQuery('#gift_certificate_tem
 // ---------------------------------------------------------------------
 app.commonFunctions.enablePleaseWaitMessage = function () {
   jQuery(document).ready(function () {
-    jQuery('body').append("<div class='PW_outer'><div class='PW_inner'>Communicating with Server...<br /><img src='/js/jquery.smallhbar.indicator.gif' alt='please wait'/></div></div>");
+    jQuery('body').append("<div class='PW_outer'><div class='PW_inner'>Communicating with Server...<br /><" + "img src='/js/jquery.smallhbar.indicator.gif' alt='please wait'/></div></div>");
     jQuery('.PW_inner').hide();
     jQuery(document).ajaxStart(
             function () {
@@ -71,12 +72,19 @@ app.commonFunctions.enablePleaseWaitMessage = function () {
 
 app.commonFunctions.displayCheckoutErrors = function (errors) {
   var html = '<ul>';
-  _.each(errors, function (error) {
-    html += '<li>' + error + '</li>';
-  });
+
+  if (typeof errors == 'string') {
+    html += '<li>' + errors + '</li>';
+  } else {
+    _.each(errors, function (error) {
+      html += '<li>' + error + '</li>';
+    });
+  }
+
   html += '</ul>';
 
   jQuery('#checkoutError').removeClass('hidden').find('.errorContent').html(html).removeClass('hidden');
+  jQuery('#loginError').removeClass('hidden').find('.errorContent').html(html).removeClass('hidden');
 //  var div = document.getElementById('checkoutError');
 //  if (div) {
 //    div.scrollIntoView();
@@ -86,6 +94,7 @@ app.commonFunctions.displayCheckoutErrors = function (errors) {
 
 app.commonFunctions.clearCheckoutErrors = function () {
   jQuery('#checkoutError').addClass('hidden').find('.errorContent').html('').addClass('hidden');
+  jQuery('#loginError').addClass('hidden').find('.errorContent').html('').addClass('hidden');
 
 };
 
@@ -120,7 +129,7 @@ app.commonFunctions.checkout = function (paymentMethod) {
 
     var button = jQuery('#btnFinalize');
     var buttonHtml = button.html();
-    button.html("<img src='images/loader.gif' alt='please wait' />");
+    button.html("<" + "img src='images/loader.gif' alt='please wait' />");
 
     // Notice: The checkout call does not take a cart.  It takes a CheckoutRequest which contains a cart.
     // Since the checkout process hands of to UltraCart to handle upsells, etc., we must also provide the
@@ -217,7 +226,8 @@ app.commonFunctions.displayServerErrors = function () {
   for (var i = 0; i < params.length; i++) {
     var val = params[i].split("=");
     if (val[0] == 'error') {
-      errors.push(decodeURIComponent(val[1]));
+      // change out any plus signs to spaces, then decode.
+      errors.push(decodeURIComponent(val[1].replace(/\+/g, ' ')));
     }
   }
   if (errors.length) {
@@ -279,7 +289,7 @@ app.commonFunctions.pretendToBeUCEditor = function () {
     ccemail: 'ccEmail',
     shippingfirstname: 'shipToFirstName',
     shippinglastname: 'shipToLastName',
-    shippingcompany: 'shipToTitle',
+    shippingcompany: 'shipToCompany',
     shippingaddress1: 'shipToAddress1',
     shippingaddress2: 'shipToAddress2',
     shippingcity: 'shipToCity',
@@ -407,7 +417,7 @@ app.commonFunctions.pretendToBeUCEditor = function () {
   var coupons = app.data.cart.attributes.coupons || [];
   if (params.hasOwnProperty('coupon')) {
     var couponCodes = params['coupon'];
-    _.each(couponCodes, function(code){
+    _.each(couponCodes, function (code) {
       if (!_.contains(_.pluck(coupons, 'couponCode'), code)) {
         coupons.push({'couponCode': code});
         couponsChanged = true;
@@ -421,7 +431,7 @@ app.commonFunctions.pretendToBeUCEditor = function () {
 
 
   if (_.keys(attr).length) {
-    app.data.cart.save(attr, {wait:true});
+    app.data.cart.save(attr, {wait: true});
   }
 
 
@@ -500,13 +510,108 @@ app.commonFunctions.estimateShipping = function () {
   }
 };
 
-app.commonFunctions.threatMetrix = function(thm_params){
+app.commonFunctions.threatMetrix = function (thm_params) {
   var html = '';
   html += '<p style="background:url(https://h.online-metrix.net/fp/clear.png?' + thm_params + '&m=1)"></p>';
   html += '<img src="https://h.online-metrix.net/fp/clear.png?' + thm_params + '&m=2" alt="">';
   html += '<script src="https://h.online-metrix.net/fp/check.js?' + thm_params + '"  type="text/javascript"></script>';
   html += '<object type="application/x-shockwave-flash" data="https://h.onlinemetrix.net/fp/fp.swf?<?= $thm_params ?>" width="1" height="1" id="obj_id"><param name="movie" value="https://h.onlinemetrix.net/fp/fp.swf?' + thm_params + '"/><div></div></object>';
   jQuery('body').append(html);
+};
+
+
+app.commonFunctions.useShippingAddress = function (oid) {
+
+  if (!app.data.cart || !app.data.cart.attributes || !app.data.cart.attributes.customerProfile) {
+    return; // nothing can be done without a cart and customer profile.
+  }
+
+  var shippingAddresses = app.data.cart.attributes.customerProfile.shippingAddresses;
+  if (!shippingAddresses) return;
+
+  var address = null;
+  for (var i = 0; i < shippingAddresses.length; i++) {
+    if (shippingAddresses[i].oid == oid) {
+      address = shippingAddresses[i];
+      break;
+    }
+  }
+
+  if (address != null) {
+    app.data.cart.set({
+      'shipToAddress1': address.address1,
+      'shipToAddress2': address.address2,
+      'shipToCity': address.city,
+      'shipToCompany': address.company,
+      'shipToCountry': address.country,
+      'shipToFirstName': address.firstName,
+      'shipToLastName': address.lastName,
+      'shipToPhone': address.dayPhone,
+      'shipToPostalCode': address.postalCode,
+      'shipToState': address.state
+      //    jQuery("#shipToTitle").val(address.title);              
+    }, {silent: true});
+
+
+    var shippingIsBillingChecked = jQuery('#shippingIsBilling').is(':checked');
+    if (shippingIsBillingChecked) {
+      app.data.cart.set({
+        'billToAddress1': address.address1,
+        'billToAddress2': address.address2,
+        'billToCity': address.city,
+        'billToCompany': address.company,
+        'billToCountry': address.country,
+        'billToFirstName': address.firstName,
+        'billToLastName': address.lastName,
+        'billToPhone': address.dayPhone,
+        'billToPostalCode': address.postalCode,
+        'billToState': address.state
+      }, {silent: true});
+    }
+
+    app.data.cart.trigger('sync');
+
+
+  }
+
+
+};
+
+
+app.commonFunctions.useBillingAddress = function (oid) {
+
+  if (!app.data.cart || !app.data.cart.attributes || !app.data.cart.attributes.customerProfile) {
+    return; // nothing can be done without a cart and customer profile.
+  }
+
+  var billingAddresses = app.data.cart.attributes.customerProfile.billingAddresses;
+  if (!billingAddresses) return;
+
+  var address = null;
+  for (var i = 0; i < billingAddresses.length; i++) {
+    if (billingAddresses[i].oid == oid) {
+      address = billingAddresses[i];
+      break;
+    }
+  }
+
+  if (address != null) {
+    app.data.cart.set({
+      'billToAddress1': address.address1,
+      'billToAddress2': address.address2,
+      'billToCity': address.city,
+      'billToCompany': address.state,
+      'billToCountry': address.country,
+      'billToFirstName': address.firstName,
+      'billToLastName': address.lastName,
+      'billToPhone': address.dayPhone,
+      'billToPostalCode': address.postalCode,
+      'billToState': address.state
+    }, {silent: true});
+    app.data.cart.trigger('sync');
+
+  }
+
 };
 
 
@@ -558,6 +663,186 @@ app.collections.ShippingEstimates = Backbone.Collection.extend({
 // --- views ---
 // ---------------------------------------------------------------------
 
+
+// ---------------------------------------------------------------------
+// --- Credentials ---
+// ---------------------------------------------------------------------
+app.views.Credentials = Backbone.View.extend({
+  el: '#credentials',
+  events: {
+    "click #btnLoginShow": "showLogin",
+    "click #btnRegisterShow": "showRegister",
+    "click #btnLoginSubmit": "submitLogin",
+    "click #btnRegisterSubmit": "submitRegister",
+    "click #btnLogoutSubmit": "submitLogout",
+    "click .btnCancel": "cancelCredentials"
+  },
+
+  'onClose': function () {
+    this.model.off("change:loggedIn sync reset", this.render, this);
+  },
+
+  initialize: function () {
+    this.model.on("change:loggedIn sync reset", this.render, this);
+    _.bindAll(this);
+
+    this.inLogin = false;
+    this.inRegister = false;
+
+  },
+
+  render: function () {
+    var context = {
+      'showLogin': false,
+      'showRegister': false,
+      'showButtons': true,
+      'showLogout': false
+    };
+
+    if (this.model.get('loggedIn')) {
+      context['showButtons'] = false;
+      context['showRegister'] = false;
+      context['showLogin'] = false;
+      context['showLogout'] = true;
+    } else {
+      context['showLogin'] = this.inLogin;
+      context['showRegister'] = this.inRegister;
+      context['showButtons'] = !(this.inLogin || this.inRegister);
+    }
+
+    this.$el.html(app.templates.credentials(context));
+    return this;
+  },
+
+  'showLogin': function () {
+    this.inLogin = true;
+    this.render();
+  },
+
+  'showRegister': function () {
+    this.inRegister = true;
+    this.render();
+  },
+
+  'submitLogout': function () {
+    app.commonFunctions.clearCheckoutErrors();
+
+    var restWrapper = new ultracart.Cart(window.merchantId, window.restUrl); // both variables are defined in cart.html
+    //noinspection JSUnusedLocalSymbols
+    restWrapper.logout(app.data.cart.attributes, {
+      success: function (updatedCart) {
+        if (updatedCart && updatedCart.errors) {
+          app.commonFunctions.displayCheckoutErrors(updatedCart.errors);
+        } else {
+          app.data.cart.set(updatedCart, {silent: true});
+          app.data.cart.trigger('sync');
+        }
+        this.inLogin = false;
+        this.inRegister = false;
+        app.commonFunctions.estimateShipping();
+      },
+      failure: function (jqXHR, textStatus, errorThrown) {
+        var message = jqXHR.getResponseHeader('UC-REST-ERROR');
+        if (!message) {
+          message = textStatus;
+        }
+        app.commonFunctions.displayCheckoutErrors("Logout failed:" + message);
+      }
+    });
+
+  },
+
+  'submitLogin': function () {
+
+    app.commonFunctions.clearCheckoutErrors();
+
+    var email = jQuery.trim(jQuery('#loginEmail').val());
+    var password = jQuery.trim(jQuery('#loginPassword').val());
+
+    if (!email || !password) {
+      alert('Please enter your email and password.');
+      return;
+    }
+
+    app.data.cart.set({email: email, password: password}, {silent: true});
+
+
+    // grab the email and password.  attempt to login
+    var restWrapper = new ultracart.Cart(window.merchantId, window.restUrl); // both variables are defined in cart.html
+    //noinspection JSUnusedLocalSymbols
+    restWrapper.login(app.data.cart.attributes, {
+      success: function (updatedCart) {
+        if (updatedCart && updatedCart.errors) {
+          app.commonFunctions.displayCheckoutErrors(updatedCart.errors);
+        } else {
+          app.data.cart.set(updatedCart, {silent: true});
+          app.data.cart.trigger('sync');
+          app.commonFunctions.estimateShipping();
+        }
+      },
+      failure: function (jqXHR, textStatus, errorThrown) {
+        var message = jqXHR.getResponseHeader('UC-REST-ERROR');
+        if (!message) {
+          message = textStatus;
+        }
+        app.commonFunctions.displayCheckoutErrors("Login failed:" + message);
+      }
+    });
+
+
+  },
+
+  'submitRegister': function () {
+    app.commonFunctions.clearCheckoutErrors();
+
+    var email = jQuery.trim(jQuery('#registerEmail').val());
+    var password = jQuery.trim(jQuery('#registerPassword').val());
+
+    if (!email || !password) {
+      alert('Please enter your email and password.');
+      return;
+    }
+
+    app.data.cart.set({email: email, password: password}, {silent: true});
+
+
+    // grab the email and password.  attempt to login
+    var restWrapper = new ultracart.Cart(window.merchantId, window.restUrl); // both variables are defined in cart.html
+    //noinspection JSUnusedLocalSymbols
+    restWrapper.register(app.data.cart.attributes, {
+      success: function (updatedCart) {
+        if (updatedCart && updatedCart.errors) {
+          app.commonFunctions.displayCheckoutErrors(updatedCart.errors);
+        } else {
+          app.data.cart.set(updatedCart, {silent: true});
+          app.data.cart.trigger('sync');
+          app.commonFunctions.estimateShipping();
+        }
+      },
+      failure: function (jqXHR, textStatus, errorThrown) {
+        var message = jqXHR.getResponseHeader('UC-REST-ERROR');
+        if (!message) {
+          message = textStatus;
+        }
+        app.commonFunctions.displayCheckoutErrors("Registration failed:" + message);
+      }
+    });
+
+
+  },
+
+  'cancelCredentials': function () {
+    app.commonFunctions.clearCheckoutErrors();
+    this.inLogin = false;
+    this.inRegister = false;
+    this.render();
+
+  }
+
+
+});
+
+
 // ---------------------------------------------------------------------
 // --- Billing Address Fields ---
 // ---------------------------------------------------------------------
@@ -565,7 +850,8 @@ app.views.BillingAddress = Backbone.View.extend({
   el: '#billToAddress',
   events: {
     "focus input[type=text]": 'selectText',
-    'change input[type=text],input[type=number],input[type=email],select': 'copyFieldToCart'
+    'change input[type=text],input[type=number],input[type=email],select': 'copyFieldToCart',
+    'change #storedBillingAddress': 'useStoredAddress'
   },
 
   'onClose': function () {
@@ -604,10 +890,18 @@ app.views.BillingAddress = Backbone.View.extend({
 
   'copyFieldToCart': function (event) {
     var fieldName = event.target.id;
-    var value = jQuery.trim(jQuery(event.target).val());
-    var changes = {};
-    changes[fieldName] = value;
-    this.model.set(changes);
+
+    if (fieldName != 'storedBillingAddress') {
+      var value = jQuery.trim(jQuery(event.target).val());
+      var changes = {};
+      changes[fieldName] = value;
+      this.model.set(changes);
+    }
+  },
+
+  'useStoredAddress': function (event) {
+    var oid = event.target.value;
+    app.commonFunctions.useBillingAddress(parseInt(oid));
   }
 
 
@@ -622,7 +916,8 @@ app.views.ShippingAddress = Backbone.View.extend({
   events: {
     'click #shippingIsBilling': 'showHideBilling',
     'focus input[type=text]': 'selectText',
-    'change input[type=text],input[type=number],input[type=email],select': 'copyFieldToCart'
+    'change input[type=text],input[type=number],input[type=email],select': 'copyFieldToCart',
+    'change #storedShippingAddress': 'useStoredAddress'
   },
 
   'onClose': function () {
@@ -681,20 +976,30 @@ app.views.ShippingAddress = Backbone.View.extend({
 
   'copyFieldToCart': function (event) {
     var fieldName = event.target.id;
-    var value = jQuery.trim(jQuery(event.target).val());
-    var changes = {};
 
-    // see if the billto should be updated too.
-    var checked = jQuery('#shippingIsBilling').is(':checked');
-    changes[fieldName] = value;
+    if (fieldName != 'storedShippingAddress') {
 
-    if (checked && fieldName.substring(0, "shipTo".length) === "shipTo") {
-      fieldName = "billTo" + fieldName.substring("shipTo".length);
+      var value = jQuery.trim(jQuery(event.target).val());
+      var changes = {};
+
+      // see if the billto should be updated too.
+      var checked = jQuery('#shippingIsBilling').is(':checked');
       changes[fieldName] = value;
-    }
 
-    this.model.set(changes);
+      if (checked && fieldName.substring(0, "shipTo".length) === "shipTo") {
+        fieldName = "billTo" + fieldName.substring("shipTo".length);
+        changes[fieldName] = value;
+      }
+
+      this.model.set(changes);
+    }
+  },
+
+  'useStoredAddress': function (event) {
+    var oid = event.target.value;
+    app.commonFunctions.useShippingAddress(parseInt(oid));
   }
+
 
 });
 
@@ -707,15 +1012,18 @@ app.views.Payment = Backbone.View.extend({
   events: {
     'focus input[type=text]': 'selectText',
     'change input[type=text],input[type=number],input[type=email],select': 'copyFieldToCart',
+    'change input[type=checkbox]': 'copyCheckboxToCart',
     'click .ccv-help-link': 'toggleCvv'
   },
 
   'onClose': function () {
     this.model.off('sync reset', this.render, this);
+    this.model.off('change:customerProfileCreditCardId', this.toggleEntryFields, this);
   },
 
   initialize: function () {
     this.model.on('sync reset', this.render, this);
+    this.model.on('change:customerProfileCreditCardId', this.toggleEntryFields, this);
     _.bindAll(this);
   },
 
@@ -750,16 +1058,50 @@ app.views.Payment = Backbone.View.extend({
       ccYears.push({year: year, selected: year == ccExpYear});
     }
 
+
+    // loop through the cards, cloning them and adding a 'selected' flag to them.  this will make them handlebars friendly.
+    var storedCards = [];
+    var selectedCard = this.model.get('customerProfileCreditCardId') || 0;
+    var currentTime = new Date();
+    var currentYear = currentTime.getFullYear();
+    var currentMonth = currentTime.getMonth() + 1;
+
+    if (this.model.attributes.customerProfile && this.model.attributes.customerProfile.creditCards) {
+      _.each(this.model.attributes.customerProfile.creditCards, function (card) {
+        var clonedCard = _.clone(card);
+        clonedCard['selected'] = (clonedCard.id == selectedCard);
+
+        if (clonedCard.cardExpYear < currentYear || ( clonedCard.cardExpYear == currentYear && clonedCard.cardExpMonth < currentMonth )) {
+          clonedCard['status'] = '[expired]';
+        } else {
+          clonedCard['status'] = '';
+        }
+
+        storedCards.push(clonedCard);
+      });
+    }
+
+
     var context = {
       'ccTypes': ccTypes,
       'ccMonths': ccMonths,
       'ccYears': ccYears,
-      'cart': this.model.attributes
+      'cart': this.model.attributes,
+      'storedCards': storedCards,
+      'loggedIn': this.model.get('loggedIn')
     };
 
     this.$el.html(app.templates.payment(context));
     return this;
 
+  },
+
+
+  'toggleEntryFields': function () {
+    var id = this.model.get('customerProfileCreditCardId') || 0;
+    var disabled = id != 0 && id != "0";
+
+    jQuery("#creditCardType, #creditCardNumber, #creditCardExpirationMonth, #creditCardExpirationYear, #creditCardVerificationNumber, #storeCreditCard").attr('disabled', disabled);
   },
 
   selectText: function (event) {
@@ -773,6 +1115,15 @@ app.views.Payment = Backbone.View.extend({
     changes[fieldName] = value;
     this.model.set(changes);
   },
+
+  'copyCheckboxToCart': function (event) {
+    var fieldName = event.target.id;
+    var value = jQuery(event.target).is(':checked');
+    var changes = {};
+    changes[fieldName] = value;
+    this.model.set(changes);
+  },
+
 
   'toggleCvv': function () {
     jQuery('.ccv_message').toggle('fast', function () {
@@ -1221,6 +1572,7 @@ app.views.Coupons = Backbone.View.extend({
   },
 
   'addCoupon': function (event) {
+    app.commonFunctions.clearCheckoutErrors();
     event.stopPropagation();
     var couponCode = jQuery.trim(jQuery('#couponField').val());
     if (couponCode) {
@@ -1231,6 +1583,7 @@ app.views.Coupons = Backbone.View.extend({
   },
 
   'removeCoupon': function (event) {
+    app.commonFunctions.clearCheckoutErrors();
     var idx = uc.commonFunctions.parseOidFromId(event.target.id, 'couponRemove_');
     var coupons = app.data.cart.get('coupons') || [];
     if (coupons && coupons.length) {
@@ -1288,6 +1641,7 @@ app.views.GiftCertificate = Backbone.View.extend({
     var button = jQuery(event.target);
     var text = button.text();
     var giftCertificate = jQuery.trim(jQuery('#giftCertificateField').val());
+    app.commonFunctions.clearCheckoutErrors();
     if (text == 'Apply') {
       this.model.save({'giftCertificate': giftCertificate});
     } else {
@@ -1480,6 +1834,7 @@ jQuery(document).ready(function () {
 
   // app.commonFunctions.enablePleaseWaitMessage();
 
+  (new app.views.Credentials({model: app.data.cart})).render();
   (new app.views.Items({collection: app.data.cart.items})).render();
   (new app.views.ShippingAddress({model: app.data.cart})).render();
   (new app.views.BillingAddress({model: app.data.cart})).render();
@@ -1510,7 +1865,7 @@ jQuery(document).ready(function () {
         app.data.cart.trigger('sync');
 
         var thm_params = app.data.cart.get('threatMetrixParams');
-        if(thm_params){
+        if (thm_params) {
           app.commonFunctions.threatMetrix(thm_params);
         }
 
