@@ -5,7 +5,7 @@ https://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demo1.htm
 It gives examples of the REST API calls used in the responsive checkout.
 
 
-responsive_checkout (version 0.6) BETA
+responsive_checkout (version 1.0)
 ======================================
 
 An UltraCart Javascript checkout designed to render well on all displays, especially mobile devices.
@@ -65,4 +65,10 @@ for event binding, etc.
 
 Just a head's up.
 
+
+Release Notes:
+______________
+11/01/2013 
+We're releasing this software as version 1.0.  We've added the login/logout/register functionality, along with fields to display all customer information.
+Numerous bugs were fixed with the latest commit.
 
