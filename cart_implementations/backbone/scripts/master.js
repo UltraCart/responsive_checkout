@@ -380,7 +380,10 @@ app.commonFunctions.pretendToBeUCEditor = function () {
 
   if (params.hasOwnProperty(('add'))) {
     itemsChanged = true;
-    var qty = parseInt(params['quantity'][0]);
+    var qty = 1;
+    if(params.quantity){
+      qty = parseInt(params['quantity'][0]);
+    }
     if (isNaN(qty)) {
       qty = 1;
     }
