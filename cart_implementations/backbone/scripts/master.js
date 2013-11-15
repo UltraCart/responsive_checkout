@@ -1376,13 +1376,9 @@ app.views.Items = Backbone.View.extend({
 
     var position = 1;
     this.collection.each(function (model) {
-      if (model.get('kit')) {
-        // skip the kit components to prevent them displaying.
-      } else {
-        // add the position to the context so we can number the items in the template.
-        that.childViews.push(new app.views.Item({model: model, position: position, totalItems: that.collection.length}));
-        position++;
-      }
+      // add the position to the context so we can number the items in the template.
+      that.childViews.push(new app.views.Item({model: model, position: position, totalItems: that.collection.length}));
+      position++;
     });
 
     var footer = jQuery('footer', this.$el);
