@@ -12,7 +12,7 @@ function http_parse_headers($header)
     $fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
     foreach ($fields as $field) {
         if (preg_match('/([^:]+): (.+)/m', $field, $match)) {
-            $match[1] = preg_replace_callback('/(?<=^|[\x09\x20\x2D])./', function ($m) { return strtoupper($m[0]); }, strtolower(trim($match[1])));
+            $match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./e', 'strtoupper("\0")', strtolower(trim($match[1])));
             if (isset($retVal[$match[1]])) {
                 $retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
             } else {
@@ -23,17 +23,15 @@ function http_parse_headers($header)
     return $retVal;
 }
 
-if (! function_exists('gzdecode')) {
-    function gzdecode($data)
-    {
-        $g = tempnam('/tmp', 'ff');
-        @file_put_contents($g, $data);
-        ob_start();
-        readgzfile($g);
-        $d = ob_get_clean();
-        unlink($g);
-        return $d;
-    }
+function gzdecode($data)
+{
+    $g = tempnam('/tmp', 'ff');
+    @file_put_contents($g, $data);
+    ob_start();
+    readgzfile($g);
+    $d = ob_get_clean();
+    unlink($g);
+    return $d;
 }
 
 if (isset($_GET["_url"])) {
@@ -52,11 +50,22 @@ if (strncmp($path, '/', 1) != 0) { // if the path doesn't start with a slash, ad
 $additional_parameters = '';
 foreach ($_GET as $k => $v) {
     if ($k != '_url') {
-        if ($additional_parameters) {
-            $additional_parameters = $additional_parameters . '&' . $k . "=" . urlencode($v);
+        if (is_array($v)) {
+            foreach ($v as $v1) {
+                if ($additional_parameters) {
+                    $additional_parameters = $additional_parameters . '&' . $k . "=" . urlencode($v1);
+                } else {
+                    $additional_parameters = $additional_parameters . '?' . $k . "=" . urlencode($v1);
+                }
+            }
         } else {
-            $additional_parameters = $additional_parameters . '?' . $k . "=" . urlencode($v);
+            if ($additional_parameters) {
+                $additional_parameters = $additional_parameters . '&' . $k . "=" . urlencode($v);
+            } else {
+                $additional_parameters = $additional_parameters . '?' . $k . "=" . urlencode($v);
+            }
         }
+
     }
 }
 
@@ -67,12 +76,12 @@ $post_data = file_get_contents('php://input');
 foreach ($_SERVER as $i => $val) {
     if (strpos($i, 'HTTP_') === 0) {
         if ($i == 'HTTP_X_UC_MERCHANT_ID') {
-            $header['X-UC-Merchant-Id'] = "X-UC-Merchant-Id: $val";
+            $header[] = "X-UC-Merchant-Id: $val";
         } else if ($i == 'HTTP_X_UC_SHOPPING_CART_ID') {
-            $header['X-UC-Shopping-Cart-Id'] = "X-UC-Shopping-Cart-Id: $val";
+            $header[] = "X-UC-Shopping-Cart-Id: $val";
         } else {
             $name = str_replace(array('HTTP_', '_'), array('', '-'), $i);
-            $header[$name] = "$name: $val";
+            $header[] = "$name: $val";
         }
     }
 }
@@ -83,10 +92,9 @@ if (isset($_SERVER['CONTENT_TYPE'])) {
     $content_type = 'application/json';
 }
 
-$header['CONTENT-TYPE'] = "Content-Type: " . $content_type;
-$header['CONTENT-LENGTH'] = "Content-Length: " . strlen($post_data);
-$header['X-UC-FORWARDED-FOR'] = "X-UC-Forwarded-For: " . $_SERVER['REMOTE_ADDR'];
-unset($header['HOST']);
+$header[] = "Content-Type: " . $content_type;
+$header[] = "Content-Length: " . strlen($post_data);
+$header[] = "X-UC-Forwarded-For: " . $_SERVER['REMOTE_ADDR'];
 
 $ch = curl_init($server_get_url);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $_SERVER['REQUEST_METHOD']);
