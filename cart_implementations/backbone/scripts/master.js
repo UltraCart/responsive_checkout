@@ -117,6 +117,38 @@ app.commonFunctions.endBlockUserInput = function () {
 };
 
 
+app.commonFunctions.storeCard = function () {
+
+  // Extract the card number from the field
+  var cardNumber = app.data.cart.get('creditCardNumber') || '';
+  var merchantId = app.data.cart.get('merchantId');
+  var cartId = app.data.cart.get('cartId');
+
+  // If they haven't specified 15 digits yet then don't store it.
+  if (cardNumber.replace(/[^0-9]/g, "").length < 15) {
+    return;
+  }
+
+  if (!merchantId || !cartId) {
+    return;
+  }
+
+
+  // Perform the JSONP request to store it (asynchronous by nature)
+  jQuery.getJSON('https://secure.ultracart.com/cgi-bin/UCCheckoutAPICardStore?callback=?',
+          {
+            merchantId: merchantId,
+            shoppingCartId: cartId,
+            cardNumber: cardNumber
+          }
+  ).done(function (data) {
+            if (data.success) {
+              app.data.cart.set({'creditCardNumber': data.maskedCardNumber});
+            }
+          });
+}
+
+
 app.commonFunctions.checkout = function (paymentMethod) {
 
   if (!app.data.bootstrap.get('processingOrder')) {
@@ -381,7 +413,7 @@ app.commonFunctions.pretendToBeUCEditor = function () {
   if (params.hasOwnProperty(('add'))) {
     itemsChanged = true;
     var qty = 1;
-    if(params.quantity){
+    if (params.quantity) {
       qty = parseInt(params['quantity'][0]);
     }
     if (isNaN(qty)) {
@@ -1022,11 +1054,16 @@ app.views.Payment = Backbone.View.extend({
   'onClose': function () {
     this.model.off('sync reset', this.render, this);
     this.model.off('change:customerProfileCreditCardId', this.toggleEntryFields, this);
+    this.model.off('change:creditCardNumber', this.updateCardNumber, this);
   },
 
   initialize: function () {
     this.model.on('sync reset', this.render, this);
     this.model.on('change:customerProfileCreditCardId', this.toggleEntryFields, this);
+
+    // if store card is being used, this will update the field with the mask without re-render
+    // if we re-render, the focus will be lost, causing a bad customer experience.
+    this.model.on('change:creditCardNumber', this.updateCardNumber, this);
     _.bindAll(this);
   },
 
@@ -1111,12 +1148,21 @@ app.views.Payment = Backbone.View.extend({
     jQuery(event.target).select();
   },
 
+  'updateCardNumber': function () {
+    jQuery('#creditCardNumber').val(app.data.cart.get('creditCardNumber') || '');
+  },
+
   'copyFieldToCart': function (event) {
     var fieldName = event.target.id;
     var value = jQuery.trim(jQuery(event.target).val());
     var changes = {};
     changes[fieldName] = value;
     this.model.set(changes);
+
+    if (fieldName == 'creditCardNumber') {
+      app.commonFunctions.storeCard();
+    }
+
   },
 
   'copyCheckboxToCart': function (event) {
