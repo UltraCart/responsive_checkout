@@ -635,7 +635,7 @@ app.commonFunctions.useBillingAddress = function (oid) {
       'billToAddress1': address.address1,
       'billToAddress2': address.address2,
       'billToCity': address.city,
-      'billToCompany': address.state,
+      'billToCompany': address.company,
       'billToCountry': address.country,
       'billToFirstName': address.firstName,
       'billToLastName': address.lastName,

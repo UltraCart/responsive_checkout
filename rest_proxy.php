@@ -1,9 +1,11 @@
 <?php
+// Version 0.8 11/27/2013
+// The cleaning of the _url variable within gzdecode was removing dashes, underscores and spaces, which are valid in urls.  Fixed.
 // Version 0.7.  08/15/2013
 // Some of the PUT/POST requests were returning back 100 Continues.  That was wrecking havoc with the parser below causing aborted calls.
 // Version 0.6.  06/22/2013
-//  Headers weren't being handled correctly.  Server http status wasn't being passed along.
-//  Headers with multiple values weren't iterated correctly and were being mangled (think multiple 'Set-Cookie')
+// Headers weren't being handled correctly.  Server http status wasn't being passed along.
+// Headers with multiple values weren't iterated correctly and were being mangled (think multiple 'Set-Cookie')
 // Version 0.5.  02/07/2013  Initial Version.
 
 function http_parse_headers($header)
@@ -41,11 +43,19 @@ if (isset($_GET["_url"])) {
 }
 
 
-$path = preg_replace('#[^a-z0-9/]#i', '', $path); // strip off any junk
+$path = preg_replace('#[^a-z0-9/ \-_]#i', '', $path); // strip off any junk
 $path = preg_replace('#/+#', '/', $path); // remove duplicate slashes if any
 if (strncmp($path, '/', 1) != 0) { // if the path doesn't start with a slash, add one.
     $path = '/' . $path;
 }
+
+// if there are any spaces in the path, replace them with %20
+// you might see spaces in the path for item searches if the item id has a space (bad idea all around, but the item editor does allow spaces ... sadly.)
+if (strncmp($path, ' ', 1) != 0){
+    $path = str_replace(' ', '%20', $path);
+}
+
+
 
 $additional_parameters = '';
 foreach ($_GET as $k => $v) {

@@ -91,7 +91,8 @@
 </script>
 
 <script type='text/javascript'>
-  var itemId = 'BONE'; // a dog bone.  lots of dog owners at UltraCart.
+  //var itemId = 'BONE'; // a dog bone.  lots of dog owners at UltraCart.
+  var itemId = 'Baseball Bat-Alum'; // changed to a strange item id with spaces and dashes for testing.
 
   // TODO
   // 1. change this to your ultracart merchant id.
@@ -190,7 +191,7 @@
   function loadItem() {
     // check for a cart id cookie.  If found, grab it and create a bare-bones cart to allow for wholesale pricing, if it's in play.
     var cartId = jQuery.cookie('UltraCartShoppingCartID');
-    var restUrl = i_am_using_a_proxy ? pathToProxy + '?_url=/rest/site/items/' + itemId : '/rest/site/items/' + itemId;  // you shouldn't change this.
+    var restUrl = i_am_using_a_proxy ? pathToProxy + '?_url=/rest/site/items/' + encodeURIComponent(itemId) : '/rest/site/items/' + encodeURIComponent(itemId);  // you shouldn't change this.
     if (cartId) {
       // do a post
       var bareBonesCart = {merchantId: merchantId, cartId: cartId};
