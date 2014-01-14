@@ -8,6 +8,8 @@
 // Headers with multiple values weren't iterated correctly and were being mangled (think multiple 'Set-Cookie')
 // Version 0.5.  02/07/2013  Initial Version.
 
+error_log("$_SERVER[REQUEST_URI]");
+
 function http_parse_headers($header)
 {
     $retVal = array();
@@ -56,31 +58,16 @@ if (strncmp($path, ' ', 1) != 0){
 }
 
 
-
-$additional_parameters = '';
-foreach ($_GET as $k => $v) {
-    if ($k != '_url') {
-        if (is_array($v)) {
-            foreach ($v as $v1) {
-                if ($additional_parameters) {
-                    $additional_parameters = $additional_parameters . '&' . $k . "=" . urlencode($v1);
-                } else {
-                    $additional_parameters = $additional_parameters . '?' . $k . "=" . urlencode($v1);
-                }
-            }
-        } else {
-            if ($additional_parameters) {
-                $additional_parameters = $additional_parameters . '&' . $k . "=" . urlencode($v);
-            } else {
-                $additional_parameters = $additional_parameters . '?' . $k . "=" . urlencode($v);
-            }
-        }
-
-    }
+// I'm leaving in the _url in the query string being passed to the server.  It won't hurt anything and keeps the code
+// more robust.
+$query_str = '';
+$query_str_start = strpos($_SERVER['REQUEST_URI'], '?', 0);
+if($query_str_start !== FALSE){
+    $query_str = substr($_SERVER['REQUEST_URI'], $query_str_start);
 }
 
 // the above filtering should remove any malicious attempts, but no worries, UltraCart has some insane firewalls to boot.
-$server_get_url = "https://secure.ultracart.com" . $path . $additional_parameters;
+$server_get_url = "https://secure.ultracart.com" . $path . $query_str;
 $post_data = file_get_contents('php://input');
 
 foreach ($_SERVER as $i => $val) {

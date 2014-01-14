@@ -1,10 +1,14 @@
 <?php
+// Version 0.8 11/27/2013
+// The cleaning of the _url variable within gzdecode was removing dashes, underscores and spaces, which are valid in urls.  Fixed.
 // Version 0.7.  08/15/2013
 // Some of the PUT/POST requests were returning back 100 Continues.  That was wrecking havoc with the parser below causing aborted calls.
 // Version 0.6.  06/22/2013
-//  Headers weren't being handled correctly.  Server http status wasn't being passed along.
-//  Headers with multiple values weren't iterated correctly and were being mangled (think multiple 'Set-Cookie')
+// Headers weren't being handled correctly.  Server http status wasn't being passed along.
+// Headers with multiple values weren't iterated correctly and were being mangled (think multiple 'Set-Cookie')
 // Version 0.5.  02/07/2013  Initial Version.
+
+error_log("$_SERVER[REQUEST_URI]");
 
 function http_parse_headers($header)
 {
@@ -41,36 +45,29 @@ if (isset($_GET["_url"])) {
 }
 
 
-$path = preg_replace('#[^a-z0-9/]#i', '', $path); // strip off any junk
+$path = preg_replace('#[^a-z0-9/ \-_]#i', '', $path); // strip off any junk
 $path = preg_replace('#/+#', '/', $path); // remove duplicate slashes if any
 if (strncmp($path, '/', 1) != 0) { // if the path doesn't start with a slash, add one.
     $path = '/' . $path;
 }
 
-$additional_parameters = '';
-foreach ($_GET as $k => $v) {
-    if ($k != '_url') {
-        if (is_array($v)) {
-            foreach ($v as $v1) {
-                if ($additional_parameters) {
-                    $additional_parameters = $additional_parameters . '&' . $k . "=" . urlencode($v1);
-                } else {
-                    $additional_parameters = $additional_parameters . '?' . $k . "=" . urlencode($v1);
-                }
-            }
-        } else {
-            if ($additional_parameters) {
-                $additional_parameters = $additional_parameters . '&' . $k . "=" . urlencode($v);
-            } else {
-                $additional_parameters = $additional_parameters . '?' . $k . "=" . urlencode($v);
-            }
-        }
+// if there are any spaces in the path, replace them with %20
+// you might see spaces in the path for item searches if the item id has a space (bad idea all around, but the item editor does allow spaces ... sadly.)
+if (strncmp($path, ' ', 1) != 0){
+    $path = str_replace(' ', '%20', $path);
+}
 
-    }
+
+// I'm leaving in the _url in the query string being passed to the server.  It won't hurt anything and keeps the code
+// more robust.
+$query_str = '';
+$query_str_start = strpos($_SERVER['REQUEST_URI'], '?', 0);
+if($query_str_start !== FALSE){
+    $query_str = substr($_SERVER['REQUEST_URI'], $query_str_start);
 }
 
 // the above filtering should remove any malicious attempts, but no worries, UltraCart has some insane firewalls to boot.
-$server_get_url = "https://secure.ultracart.com" . $path . $additional_parameters;
+$server_get_url = "https://secure.ultracart.com" . $path . $query_str;
 $post_data = file_get_contents('php://input');
 
 foreach ($_SERVER as $i => $val) {
