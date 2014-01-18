@@ -1,3 +1,9 @@
+// This line forces backbone to emulate DELETEs, which aren't working with android devices (shame on them).
+// Thankfully, our web server can also handle the emulation.
+// h/t to Ben at Steinway for finding this fix.   https://github.com/UltraCart/responsive_checkout/issues/28
+Backbone.emulateHTTP = true;
+
+
 // ---------------------------------------------------------------------
 // -- app ---
 // ---------------------------------------------------------------------
