@@ -151,7 +151,7 @@ if (curl_errno($ch)) {
     $header = substr($response, $beginning_of_real_http_status, $header_size - $beginning_of_real_http_status);
     $response_headers = http_parse_headers($header);
     foreach ($response_headers as $header_key => $header_value) {
-        if ($header_key != 'Content-Encoding' && $header_key != 'Vary' && $header_key != 'Connection' && $header_key != 'Transfer-Encoding') {
+        if ($header_key != 'Content-Encoding' && $header_key != 'Vary' && $header_key != 'Connection' && $header_key != 'Transfer-Encoding' && $header_key != 'User-Agent') {
             if ($header_key == 'Content-Length' && $header_value == "0") {
                 /* ignore this, it's from an HTTP 1.1 100 Continue and will destroy the result if passed along. */
             } else {
