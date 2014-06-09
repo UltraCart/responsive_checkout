@@ -141,7 +141,7 @@ app.commonFunctions.storeCard = function () {
 
 
   // Perform the JSONP request to store it (asynchronous by nature)
-  jQuery.getJSON('https://secure.ultracart.com/cgi-bin/UCCheckoutAPICardStore?callback=?',
+  jQuery.getJSON('https://token.ultracart.com/cgi-bin/UCCheckoutAPICardStore?callback=?',
           {
             merchantId: merchantId,
             shoppingCartId: cartId,
