@@ -1,15 +1,15 @@
 if (typeof String.prototype.trim === 'undefined') {
-  String.prototype.trim = function() {
+  String.prototype.trim = function () {
     return this.replace(/^\s+|\s+$/g, '');
   };
 }
 if (typeof String.prototype.startsWith === 'undefined') {
-  String.prototype.startsWith = function(str) {
+  String.prototype.startsWith = function (str) {
     return (this.indexOf(str) === 0);
   };
 }
 if (typeof String.prototype.endsWith === 'undefined') {
-  String.prototype.endsWith = function(str) {
+  String.prototype.endsWith = function (str) {
     return (this.length - str.length) == this.lastIndexOf(str);
   }
 }
@@ -28,10 +28,10 @@ var uc = {
 
 // this is a model which will reside within a nested collection.  it should not perform client/server operations.
 uc.models.NestedModel = Backbone.Model.extend({
-  'fetch': function() {
+  'fetch': function () {
     throw "This model is a nested Model.  fetch() should not be called.  The top level object will handle fetching.";
   },
-  'save': function() {
+  'save': function () {
     throw "This model is a nested Model.  save() should not be called.  the top level object will will handle persistence.";
   }
 });
@@ -41,12 +41,12 @@ uc.models.NestedModel = Backbone.Model.extend({
 uc.models.DeepAndNestedModel = Backbone.DeepModel.extend({
   'nested': [],
 
-  'initialize': function() {
+  'initialize': function () {
 
     // create a top level property that points to each nested collection.  This top level property will be the means
     // of tying views to the nested collection.
     var thisModel = this;
-    _.each(this.nested, function(nest) {
+    _.each(this.nested, function (nest) {
       thisModel[nest.attributeName] = nest.collection.link(thisModel, nest.attributeName);
     });
 
@@ -54,9 +54,9 @@ uc.models.DeepAndNestedModel = Backbone.DeepModel.extend({
 //    this.items = itemCollection.link(this, 'items');
   },
 
-  clear: function(options) {
+  clear: function (options) {
     var thisModel = this;
-    _.each(this.nested, function(nest) {
+    _.each(this.nested, function (nest) {
       thisModel[nest.attributeName].reset();
     });
 
@@ -65,7 +65,7 @@ uc.models.DeepAndNestedModel = Backbone.DeepModel.extend({
   },
 
 
-  set: function(attributes, options) {
+  set: function (attributes, options) {
     // 1. do not allow deep-model sets to nested attributes.  that will mess things up.
     // 2. after setting attributes, scan for nested ones and call reset on the nested collection so it will update.
 
@@ -74,8 +74,8 @@ uc.models.DeepAndNestedModel = Backbone.DeepModel.extend({
     // should be setting the entire attribute, not deep linking.  If a deep property needs to be changed, that should
     // be done through the nested collection.
     var that = this;
-    _.each(this.nested, function(nest) {
-      if (_.any(_.keys(attributes), function(attributeName) {
+    _.each(this.nested, function (nest) {
+      if (_.any(_.keys(attributes), function (attributeName) {
         return attributeName.startsWith(nest.attributeName + '.');
       })) {
         throw nest.attributeName + " must not be updated via deep-model sets().  access it through its collection interface.";
@@ -84,7 +84,7 @@ uc.models.DeepAndNestedModel = Backbone.DeepModel.extend({
 
     // should this be Backbone.Model.prototype or Backbone.DeepModel.prototype??
     var result = Backbone.DeepModel.prototype.set.call(this, attributes, options);
-    _.each(this.nested, function(nest) {
+    _.each(this.nested, function (nest) {
 
       // if a nested collection is part of the 'set' data, reset the nested collection
       if (attributes[nest.attributeName]) {
@@ -101,17 +101,17 @@ uc.models.DeepAndNestedModel = Backbone.DeepModel.extend({
 
 
 uc.collections.NestedCollection = Backbone.Collection.extend({
-  'fetch': function() {
+  'fetch': function () {
     throw "This collection is a NestedCollection.  fetch() should not be called.  The parent item will handle fetching.";
   },
-  'save': function() {
+  'save': function () {
     throw "This collection is a NestedCollection.  save() should not be called.  The parent item will handle persistence.";
   },
 
   // this is very similar to the reset function found in the backbone source, however, this function accepts
   // an array of *data*, not *models*.  The models are created here and passed to the add function.  This is done
   // so I could call reset and pass it my parent collection's property, which is an array of normal objects, not models.
-  'reset': function(parentModel, attributeName, options) {
+  'reset': function (parentModel, attributeName, options) {
 
     options || (options = {});
     if (parentModel) {
@@ -175,7 +175,7 @@ uc.collections.NestedCollection = Backbone.Collection.extend({
     this.on('remove', function (theDeletedModel) {
       var updateObj = {};
       var sourceArray = parentModel.get(attributeName);
-      updateObj[attributeName] = _.filter(sourceArray, function(sourceObject) {
+      updateObj[attributeName] = _.filter(sourceArray, function (sourceObject) {
         return sourceObject[theDeletedModel.idAttribute] != theDeletedModel.id;
       });
       parentModel.set(updateObj);
@@ -194,12 +194,12 @@ uc.collections.PagedCollection = Backbone.Collection.extend({
   totalPages: 0,
   totalRecords: 0,
   queryParameters: {},
-  paginationParameters: {'pageSize': 'pageSize', 'pageNumber':'pageNumber'},
-  paginationHeaders: {'pageSize': 'uc-pagination-page-size', 'pageNumber':'uc-pagination-page-number', 'totalPages':'uc-pagination-total-pages', 'totalRecords': 'uc-pagination-total-records'},
+  paginationParameters: {'pageSize': 'pageSize', 'pageNumber': 'pageNumber'},
+  paginationHeaders: {'pageSize': 'uc-pagination-page-size', 'pageNumber': 'uc-pagination-page-number', 'totalPages': 'uc-pagination-total-pages', 'totalRecords': 'uc-pagination-total-records'},
 
-  'initialize': function() {
+  'initialize': function () {
     var _url = this.url;
-    this.url = function() {
+    this.url = function () {
       var pagedUrl = _.isFunction(_url) ? _url() : _url;
       if (this.queryParameters) {
         pagedUrl += '?' + jQuery.param(this.queryParameters);
@@ -208,7 +208,7 @@ uc.collections.PagedCollection = Backbone.Collection.extend({
     }
   },
 
-  'parse': function(resp, xhr) {
+  'parse': function (resp, xhr) {
 
     // check for the 3 pagination headers.
     var pageSize = parseInt(xhr.getResponseHeader(this.paginationHeaders['pageSize']), 10);
@@ -239,25 +239,25 @@ uc.collections.PagedCollection = Backbone.Collection.extend({
     return resp; // this single line is the default behavior.  everything above is custom page code.
   },
 
-  'hasNext': function() {
+  'hasNext': function () {
     return this.totalPages && this.pageNumber && this.pageNumber < this.totalPages;
   },
 
-  'hasPrev': function() {
+  'hasPrev': function () {
     return this.pageNumber && this.pageNumber > 1;
   },
 
-  'nextPage': function() {
+  'nextPage': function () {
     this.queryParameters[this.paginationParameters['pageNumber']] = this.pageNumber + 1;
     this.fetch();
   },
 
-  'prevPage': function() {
+  'prevPage': function () {
     this.queryParameters[this.paginationParameters['pageNumber']] = this.pageNumber - 1;
     this.fetch();
   },
 
-  'gotoPage': function(pageNo) {
+  'gotoPage': function (pageNo) {
     this.queryParameters[this.paginationParameters['pageNumber']] = pageNo;
     this.fetch();
   }
@@ -277,9 +277,9 @@ uc.collections.PagedCollection = Backbone.Collection.extend({
 //TODO - this should not be a global function.
 function createAppView(pane) {
   // notice!  the return value is a new function that is hardwired to operate on whatever element id is passed in.
-  return new function() {
+  return new function () {
     var that = {};
-    that.showView = function(view, modal, title, width) {
+    that.showView = function (view, modal, title, width) {
       if (this.currentView) {
         this.currentView.close();
       }
@@ -289,18 +289,18 @@ function createAppView(pane) {
 
       if (modal) {
         ucLoadPopup2(
-            {container:'modalAppView',
-              title: title,
-              css: {'width': width},
-              content: this.currentView.el,
-              alwaysNew: true
-            });
+                {container: 'modalAppView',
+                  title: title,
+                  css: {'width': width},
+                  content: this.currentView.el,
+                  alwaysNew: true
+                });
       } else {
         jQuery("#" + pane).html(this.currentView.el);
       }
     };
 
-    that.clearView = function() {
+    that.clearView = function () {
       if (this.currentView) {
         this.currentView.close();
       }
@@ -315,7 +315,7 @@ function createAppView(pane) {
 
 // add a close method to the view that does remove AND unbind.  unbind only does dom.
 // this is required for the AppView methods above to work, since they call this close() method to clean up bound events
-Backbone.View.prototype.close = function() {
+Backbone.View.prototype.close = function () {
   this.remove();
   this.unbind();
   // we'll also need to unbind from the model or collection, but that must be done individually.
@@ -329,27 +329,27 @@ Backbone.View.prototype.close = function() {
 // ---------------------------------------------------------------------
 // --- common functions
 // ---------------------------------------------------------------------
-uc.commonFunctions.setTabIndexes = function() {
-  jQuery(':enabled:visible').each(function(i, e) {
+uc.commonFunctions.setTabIndexes = function () {
+  jQuery(':enabled:visible').each(function (i, e) {
     jQuery(e).attr('tabindex', i);
   });
 };
 
 
-uc.commonFunctions.startPleaseWait = function(msg) {
+uc.commonFunctions.startPleaseWait = function (msg) {
   var html = "<div class='spaced-div center'>Please be patient.  This operation takes a long time.<br/><span class='ucPleaseWaitMsg'>"
-      + (msg ? msg : "The page will refresh when finished.")
-      + "</span><br /><img src='/js/jquery.smallhbar.indicator.gif' class='ajaxBusy' alt='busy, please wait'/></div>";
+          + (msg ? msg : "The page will refresh when finished.")
+          + "</span><br /><img src='/js/jquery.smallhbar.indicator.gif' class='ajaxBusy' alt='busy, please wait'/></div>";
   var title = 'Please Wait';
   ucLoadPopup2(
-      {container:'pleaseWaitDiv',
-        title: title,
-        css: {'width': '400px'},
-        content: html,
-        alwaysNew: true
-      });
+          {container: 'pleaseWaitDiv',
+            title: title,
+            css: {'width': '400px'},
+            content: html,
+            alwaysNew: true
+          });
 };
-uc.commonFunctions.endPleaseWait = function() {
+uc.commonFunctions.endPleaseWait = function () {
   ucDisablePopup2('pleaseWaitDiv');
 };
 
@@ -361,7 +361,7 @@ uc.commonFunctions.endPleaseWait = function() {
  * @param id the full html element id
  * @param prefix the prefix of characters before the oid
  */
-uc.commonFunctions.parseOidFromId = function(id, prefix) {
+uc.commonFunctions.parseOidFromId = function (id, prefix) {
   return id.substring(prefix.length);
 };
 
@@ -371,7 +371,7 @@ uc.commonFunctions.parseOidFromId = function(id, prefix) {
  * @param ids
  * @return an array of itemVO
  */
-uc.commonFunctions.getItemsById = function(ids, getCompleteItem) {
+uc.commonFunctions.getItemsById = function (ids, getCompleteItem) {
   var itemStr = (typeof ids === 'string' ? ids : ids.join(','));
   var filter = getCompleteItem ? '' : '&_detail=description';
   var queryString = 'id=' + encodeURIComponent(itemStr) + filter;
@@ -382,9 +382,9 @@ uc.commonFunctions.getItemsById = function(ids, getCompleteItem) {
     type: 'GET',
     async: false,
     dataType: 'json'
-  }).done(function(data) {
-        response = data;
-      });
+  }).done(function (data) {
+            response = data;
+          });
   return response;
 };
 
@@ -393,7 +393,7 @@ uc.commonFunctions.getItemsById = function(ids, getCompleteItem) {
  * @param oids an array of merchant item oids
  * @return a hash of (itemId:itemVo)
  */
-uc.commonFunctions.getItemsByOid = function(oids) {
+uc.commonFunctions.getItemsByOid = function (oids) {
   var queryString = '_detail=description&oid=' + encodeURIComponent(oids.join(','));
   var response = {};
   jQuery.ajax({
@@ -402,11 +402,11 @@ uc.commonFunctions.getItemsByOid = function(oids) {
     type: 'GET',
     async: false,
     dataType: 'json'
-  }).done(function(data) {
-        _.each(data, function(item) {
-          response[item.merchantItemOid] = item;
-        });
-      });
+  }).done(function (data) {
+            _.each(data, function (item) {
+              response[item.merchantItemOid] = item;
+            });
+          });
   return response;
 };
 
@@ -417,7 +417,7 @@ uc.commonFunctions.getItemsByOid = function(oids) {
  * @param callback function that accepts the customer object
  * @return nothing
  */
-uc.commonFunctions.getCustomer = function(id, callback) {
+uc.commonFunctions.getCustomer = function (id, callback) {
   var response = null;
   jQuery.ajax({
     url: '/rest/merchant/customers/' + id,
@@ -425,17 +425,17 @@ uc.commonFunctions.getCustomer = function(id, callback) {
     async: (callback ? true : false),
     dataType: 'json'
   }).done(
-      function(data) {
-        if (callback) {
-          callback(data);
-        } else {
-          response = data;
-        }
-      }).fail(function() {
-        if (callback) {
-          callback(null);
-        }
-      });
+          function (data) {
+            if (callback) {
+              callback(data);
+            } else {
+              response = data;
+            }
+          }).fail(function () {
+            if (callback) {
+              callback(null);
+            }
+          });
   return response;
 };
 
@@ -448,28 +448,34 @@ uc.commonFunctions.getCustomer = function(id, callback) {
  * className: class for the top level div.
  */
 uc.views.GenericBoundView = Backbone.View.extend({
-  _modelBinder:undefined,
+  _modelBinder: undefined,
   events: {
     "focus input[type=text]": "selectText"
   },
 
-  'onClose': function() {
+  'onClose': function () {
     this._modelBinder.unbind();
   },
 
-  initialize: function() {
+  initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this._modelBinder = new Backbone.ModelBinder();
     _.bindAll(this);
-    if (this.options.functions) {
-      _.extend(this, this.options.functions);
+    if (this.options) {
+      if (this.options.functions) {
+        _.extend(this, this.options.functions);
+      }
+      if (this.options.events) {
+        this.delegateEvents(this.options.events);
+      }
     }
-    if (this.options.events) {
-      this.delegateEvents(this.options.events);
-    }
-
   },
 
-  render: function() {
+  render: function () {
     this.$el.html(this.options.template(this.options.context));
     this._modelBinder.bind(this.model, this.el);
     if (this.options.clazz) {
@@ -478,7 +484,7 @@ uc.views.GenericBoundView = Backbone.View.extend({
     return this;
   },
 
-  selectText: function(event) {
+  selectText: function (event) {
     jQuery(event.target).select();
   }
 

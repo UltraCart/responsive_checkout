@@ -1,0 +1,17 @@
+{{#if noItems}}
+{{#if stillLoading}}
+Loading shopping cart. Please wait...
+{{else}}
+Your cart is empty, good sir.
+{{/if}}
+{{else}}
+<header>
+  <div class="itemInfo offset-by-one nine columns alpha">Item</div>
+  <div class="itemQuantity two columns omega">Qty</div>
+</header>
+
+<!-- individual items will be inserted here by the view code -->
+<footer class="twelve columns alpha omega">
+  <!--<button type="button" class="btnCartUpdate">Update</button>-->
+</footer>
+{{/if}}

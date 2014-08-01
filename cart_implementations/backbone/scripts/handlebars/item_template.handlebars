@@ -1,0 +1,62 @@
+<!-- the surrounding div tag for this item is created within the backbone view code. -->
+<div class="itemRemove one column omega">
+  <button type="button" class="btnRemove">x</button>
+</div>
+<div class="itemInfo nine columns alpha">
+  {{#if imageUrl}}
+  <img src="{{imageUrl}}" class="thumb" alt="thumb"/>
+  {{/if}}
+  <span class="itemName">{{itemId}}</span><br>
+
+  <div class="itemAmount">{{unitCost}}</div>
+  <br>I
+  <div class="itemDescription">
+    <p>{{description}}</p>
+  </div>
+
+  {{#each options}}
+  <br class="clear">
+
+  <div class="itemOption">
+    <span>{{label}}</span>
+    {{#ucCompare type 'single' operator="=="}}
+    <input type='text' size='20' value="{{selectedValue}}" class='singleQualifier'
+           id='singleQualifier_{{optionOid}}'/>
+    {{/ucCompare}}
+    {{#ucCompare type 'fixed' operator="=="}}
+    <input type='text' size='20' value="{{selectedValue}}" class='fixedQualifier'
+           id='fixedQualifier_{{optionOid}}'/>
+    {{/ucCompare}}
+    {{#ucCompare type 'multiline' operator="=="}}
+    <textarea rows='3' cols='45' class='multiQualifier'
+              id='multiQualifier_{{optionOid}}'>{{selectedValue}}</textarea>
+    {{/ucCompare}}
+    {{#ucCompare type 'dropdown' operator="=="}}
+    <select class='selectQualifier' id='selectQualifier_{{optionOid}}'>
+      {{#each values}}
+      {{#ucSelectOption1 value selected}}{{value}}{{/ucSelectOption1}}
+      {{/each}}
+    </select>
+    {{/ucCompare}}
+    {{#ucCompare type 'radio' operator="=="}}
+      <span class='radioQualifierContainer' id='radioQualifier_{{optionOid}}'>
+      {{#each values}}
+        <input type='radio' class='radioQualifier'
+               name='radioQualifier_{{../optionOid}}'
+              {{#if selected}} checked='checked' {{/if}}
+              value='{{value}}'/> {{value}}<br/>
+      {{/each}}
+      </span>
+    {{/ucCompare}}
+    {{#ucCompare type 'hidden' operator="=="}}<em>unsupported option type</em>
+    <input type='hidden' value="{{selectedValue}}" class='hiddenQualifier' id='hiddenQualifier_{{optionOid}}'/>
+    {{/ucCompare}}
+    {{#ucCompare type 'file attachment' operator="=="}}<em>unsupported option type</em>{{/ucCompare}}
+  </div>
+  {{/each}}
+
+</div>
+<div class="itemQuantity two columns omega">
+  <input type="number" class="itemQty" name="items[{{position}}].quantity" value="{{quantity}}" maxlength="5"/>
+</div>
+<br class="clear">

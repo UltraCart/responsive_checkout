@@ -27,21 +27,24 @@ var app = {
 
 // ---------------------------------------------------------------------
 // -- templates ---
+// Steps for creating a new template:
+// 1. create the template in the scripts/handlebars directory
+// 2. add it to the pre-compilation routine (see scripts/handlebars/readme_precompilation.txt)
+// 3. reference it below like the other templates.
 // ---------------------------------------------------------------------
-app.templates.items = Handlebars.compile(jQuery('#items_template').html());
-app.templates.item = Handlebars.compile(jQuery('#item_template').html());
-app.templates.subtotal = Handlebars.compile(jQuery('#subtotal_template').html());
-app.templates.shipping = Handlebars.compile(jQuery('#shipping_template').html());
-app.templates.summary = Handlebars.compile(jQuery('#summary_template').html());
-app.templates.shipto = Handlebars.compile(jQuery('#shipto_adddress_template').html());
-app.templates.billto = Handlebars.compile(jQuery('#billto_address_template').html());
-app.templates.payment = Handlebars.compile(jQuery('#payment_template').html());
-app.templates.google = Handlebars.compile(jQuery('#google_template').html());
-app.templates.paypal = Handlebars.compile(jQuery('#paypal_template').html());
-app.templates.total = Handlebars.compile(jQuery('#total_template').html());
-app.templates.coupons = Handlebars.compile(jQuery('#coupons_template').html());
-app.templates.giftCertificate = Handlebars.compile(jQuery('#gift_certificate_template').html());
-app.templates.credentials = Handlebars.compile(jQuery('#credentials_template').html());
+app.templates.items = Handlebars.templates['items_template'];
+app.templates.item = Handlebars.templates['item_template'];
+app.templates.subtotal = Handlebars.templates['subtotal_template'];
+app.templates.shipping = Handlebars.templates['shipping_template'];
+app.templates.summary = Handlebars.templates['summary_template'];
+app.templates.shipto = Handlebars.templates['shipto_address_template'];
+app.templates.billto = Handlebars.templates['billto_address_template'];
+app.templates.payment = Handlebars.templates['payment_template'];
+app.templates.paypal = Handlebars.templates['paypal_template'];
+app.templates.total = Handlebars.templates['total_template'];
+app.templates.coupons = Handlebars.templates['coupons_template'];
+app.templates.giftCertificate = Handlebars.templates['gift_certificate_template'];
+app.templates.credentials = Handlebars.templates['credentials_template'];
 
 
 // ---------------------------------------------------------------------
@@ -152,7 +155,7 @@ app.commonFunctions.storeCard = function () {
               app.data.cart.set({'creditCardNumber': data.maskedCardNumber});
             }
           });
-}
+};
 
 
 app.commonFunctions.checkout = function (paymentMethod) {
@@ -677,6 +680,11 @@ app.models.Item = uc.models.NestedModel.extend({idAttribute: "position"});
 app.collections.Items = uc.collections.NestedCollection.extend({
   model: app.models.Item,
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.comparator = function (model) {
       return [model.get("position")]
     };
@@ -724,6 +732,10 @@ app.views.Credentials = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
     this.model.on("change:loggedIn sync reset", this.render, this);
     _.bindAll(this);
 
@@ -900,6 +912,11 @@ app.views.BillingAddress = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.model.on('sync reset addressCopy', this.render, this);
     _.bindAll(this);
   },
@@ -966,6 +983,11 @@ app.views.ShippingAddress = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.model.on('sync reset', this.render, this);
     _.bindAll(this);
   },
@@ -1064,6 +1086,11 @@ app.views.Payment = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.model.on('sync reset', this.render, this);
     this.model.on('change:customerProfileCreditCardId', this.toggleEntryFields, this);
 
@@ -1208,6 +1235,11 @@ app.views.Item = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     _.bindAll(this);
   },
 
@@ -1400,6 +1432,11 @@ app.views.Items = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.collection.on('add sync remove reset change', this.render, this);
     app.data.bootstrap.on('change:initialLoadDone', this.render, this);
     _.bindAll(this);
@@ -1466,6 +1503,11 @@ app.views.Subtotal = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.model.on('sync reset change:subtotal', this.render, this);
     _.bindAll(this);
   },
@@ -1504,6 +1546,11 @@ app.views.Shipping = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.collection.on("change reset", this.render, this);
     app.data.cart.on("change:shipToPostalCode change:shipToCity change:shipToState change:shipToCountry", this.recalculateForDemographics, this);
     app.data.cart.on("change:shippingMethod", this.render, this);
@@ -1608,6 +1655,11 @@ app.views.Coupons = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.model.on("change:coupons sync reset", this.render, this);
     _.bindAll(this);
 
@@ -1660,6 +1712,11 @@ app.views.GiftCertificate = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.model.on("change:giftCertificate change:giftCertificateAmount change:giftCertificateRemainingBalanceAfterOrder sync reset", this.render, this);
     _.bindAll(this);
 
@@ -1721,6 +1778,11 @@ app.views.Summary = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.model.on('sync reset change:subtotal change:buysafeBondCost change:buysafeBondAvailable change:tax change:shippingHandling change:total', this.render, this);
     _.bindAll(this);
   },
@@ -1776,42 +1838,6 @@ app.views.Summary = Backbone.View.extend({
 // ---------------------------------------------------------------------
 // --- Total Fields ---
 // ---------------------------------------------------------------------
-app.views.Google = Backbone.View.extend({
-  el: '#google',
-  events: {
-    'click #.google_link': 'placeOrder'
-  },
-
-  'onClose': function () {
-    this.model.off('add sync remove reset change', this.render, this);
-  },
-
-  initialize: function () {
-    this.model.on('add sync remove reset change', this.render, this);
-    _.bindAll(this);
-  },
-
-  render: function () {
-
-    var showGoogle = this.model.get('hasGoogleCheckout') && this.model.get('googleCheckoutCompatible');
-    var button = this.model.get('googleCheckoutButtonUrl') || 'images/google_checkout.gif';
-    var alt = this.model.get('googleCheckoutButtonAltText') || "Google Checkout";
-
-    this.$el.html(app.templates.google({'google': showGoogle, button: button, alt: alt}));
-    return this;
-
-  },
-
-  placeOrder: function () {
-    app.commonFunctions.checkout('Google Checkout');
-  }
-
-});
-
-
-// ---------------------------------------------------------------------
-// --- Total Fields ---
-// ---------------------------------------------------------------------
 app.views.Paypal = Backbone.View.extend({
   el: '#paypal',
   events: {
@@ -1823,6 +1849,11 @@ app.views.Paypal = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.model.on('add sync remove reset change', this.render, this);
     _.bindAll(this);
   },
@@ -1858,6 +1889,11 @@ app.views.Total = Backbone.View.extend({
   },
 
   initialize: function () {
+    // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
+    if(arguments && arguments.length){
+      this.options = arguments[0];
+    }
+
     this.model.on('add sync remove reset change', this.render, this);
     _.bindAll(this);
   },
@@ -1883,6 +1919,31 @@ app.views.Total = Backbone.View.extend({
 
 jQuery(document).ready(function () {
 
+// bootstrap look up data so I can trigger events, especially for the asynchronously downloaded data.  The only
+// downside to this is the backup copy backbone keeps.  Large data sets will now be 2x the size.
+// most of the data is in fact, 'boot strapped' during the page load.  However, this is also a state control, and
+// there are numerous fields not initialized below that are used throughout the program.  It's a great place to
+// track state variables and trigger off them.
+  app.data.bootstrap = new app.models.Bootstrap({
+    'merchantId': window.merchantId,
+    'countries': ['United States'],
+    'advertisingSources': [],
+    'advertisingSourcesFreeForm': true,
+    'taxCounties': [],
+    'defaultCountry': 'United States',
+    'initialLoadDone': false
+  });
+
+
+  app.data.shippingEstimates = new app.collections.ShippingEstimates(); // initially empty;
+
+  app.data.cart = new app.models.Cart({
+    'merchantId': window.merchantId,
+    'country': app.data.bootstrap.get('defaultCountry'),
+    'shipToCountry': app.data.bootstrap.get('defaultCountry')
+  });  // initially empty, except default countries.
+
+
   // app.commonFunctions.enablePleaseWaitMessage();
 
   (new app.views.Credentials({model: app.data.cart})).render();
@@ -1895,7 +1956,6 @@ jQuery(document).ready(function () {
   (new app.views.Coupons({model: app.data.cart})).render();
   (new app.views.GiftCertificate({model: app.data.cart})).render();
   (new app.views.Summary({model: app.data.cart})).render();
-  (new app.views.Google({model: app.data.cart})).render();
   (new app.views.Paypal({model: app.data.cart})).render();
   (new app.views.Total({model: app.data.cart})).render();
 
@@ -1930,27 +1990,3 @@ jQuery(document).ready(function () {
   app.commonFunctions.displayServerErrors();
 
 });
-
-// bootstrap look up data so I can trigger events, especially for the asynchronously downloaded data.  The only
-// downside to this is the backup copy backbone keeps.  Large data sets will now be 2x the size.
-// most of the data is in fact, 'boot strapped' during the page load.  However, this is also a state control, and
-// there are numerous fields not initialized below that are used throughout the program.  It's a great place to
-// track state variables and trigger off them.
-app.data.bootstrap = new app.models.Bootstrap({
-  'merchantId': window.merchantId,
-  'countries': ['United States'],
-  'advertisingSources': [],
-  'advertisingSourcesFreeForm': true,
-  'taxCounties': [],
-  'defaultCountry': 'United States',
-  'initialLoadDone': false
-});
-
-
-app.data.shippingEstimates = new app.collections.ShippingEstimates(); // initially empty;
-
-app.data.cart = new app.models.Cart({
-  'merchantId': window.merchantId,
-  'country': app.data.bootstrap.get('defaultCountry'),
-  'shipToCountry': app.data.bootstrap.get('defaultCountry')
-});  // initially empty, except default countries.

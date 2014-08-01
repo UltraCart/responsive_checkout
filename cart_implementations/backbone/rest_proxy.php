@@ -27,15 +27,17 @@ function http_parse_headers($header)
     return $retVal;
 }
 
-function gzdecode($data)
-{
-    $g = tempnam('/tmp', 'ff');
-    @file_put_contents($g, $data);
-    ob_start();
-    readgzfile($g);
-    $d = ob_get_clean();
-    unlink($g);
-    return $d;
+if (!function_exists('gzdecode')) {
+    function gzdecode($data)
+    {
+        $g = tempnam('/tmp', 'ff');
+        @file_put_contents($g, $data);
+        ob_start();
+        readgzfile($g);
+        $d = ob_get_clean();
+        unlink($g);
+        return $d;
+    }
 }
 
 if (isset($_GET["_url"])) {
@@ -53,7 +55,7 @@ if (strncmp($path, '/', 1) != 0) { // if the path doesn't start with a slash, ad
 
 // if there are any spaces in the path, replace them with %20
 // you might see spaces in the path for item searches if the item id has a space (bad idea all around, but the item editor does allow spaces ... sadly.)
-if (strncmp($path, ' ', 1) != 0){
+if (strncmp($path, ' ', 1) != 0) {
     $path = str_replace(' ', '%20', $path);
 }
 
@@ -62,7 +64,7 @@ if (strncmp($path, ' ', 1) != 0){
 // more robust.
 $query_str = '';
 $query_str_start = strpos($_SERVER['REQUEST_URI'], '?', 0);
-if($query_str_start !== FALSE){
+if ($query_str_start !== FALSE) {
     $query_str = substr($_SERVER['REQUEST_URI'], $query_str_start);
 }
 

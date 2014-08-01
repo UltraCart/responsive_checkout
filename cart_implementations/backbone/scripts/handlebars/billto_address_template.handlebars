@@ -1,0 +1,69 @@
+<legend>Billing Address</legend>
+
+{{#if cart.customerProfile.billingAddresses}}
+<label class="eight columns alpha omega">
+  <span>Addresses on File</span>
+  <select id="storedBillingAddress" name="storedBillingAddress[number]">
+    <option value="0"></option>
+    {{#each cart.customerProfile.billingAddresses}}
+      <option value="{{oid}}">{{address1}}, {{city}} {{state}}</option>
+    {{/each}}
+  </select>
+</label>
+{{/if}}
+
+<label class="name four columns alpha">
+  <span>*First Name</span>
+  <input type="text" id="billToFirstName" name="billing[firstName]" required class="required"
+         value="{{cart.billToFirstName}}"/>
+</label>
+
+<label class="name four columns alpha">
+  <span>*Last Name</span>
+  <input type="text" id="billToLastName" name="billing[lastName]" required class="required"
+         value="{{cart.billToLastName}}"/>
+</label>
+
+<label class="company eight columns alpha">
+  <span>Company</span>
+  <input type="text" id="billToCompany" name="billing[company]" class="eight columns alpha"
+         value="{{cart.billToCompany}}"/>
+</label>
+
+<label class="address four columns alpha">
+  <span>*Address 1</span>
+  <input type="text" id="billToAddress1" name="billing[address1]" required class="required"
+         value="{{cart.billToAddress1}}"/>
+</label>
+
+<label class="address four columns alpha">
+  <span>Address 2</span>
+  <input type="text" id="billToAddress2" name="billing[address2]" value="{{cart.billToAddress2}}"/>
+</label>
+
+<label class="four columns alpha">
+  <span>*City</span>
+  <input type="text" id="billToCity" name="billing[city]" required class="required" value="{{cart.billToCity}}"/>
+</label>
+
+<label class="four columns alpha">
+  <span>*State/Province/Region</span>
+  <input type="text" id="billToState" name="billing[state]" required class="required" value="{{cart.billToState}}"/>
+</label>
+
+<label class="four columns alpha">
+  <span>*Zip/Postal Code</span>
+  <input type="text" id="billToPostalCode" name="billing[postalCode]" required class="required"
+         value="{{cart.billToPostalCode}}"/>
+</label>
+
+<label class="four columns omega">
+  <span>*Country</span>
+  <select name="billing[country]" id="billToCountry">
+    <option value=''>&nbsp;</option>
+    {{#each countries}}
+    {{#ucSelectOption1 country selected}}{{country}}{{/ucSelectOption1}}
+    {{/each}}
+  </select>
+</label>
+</script>

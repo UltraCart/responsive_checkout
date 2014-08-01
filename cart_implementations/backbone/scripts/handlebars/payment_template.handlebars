@@ -1,0 +1,82 @@
+<legend>Payment Information</legend>
+
+{{#if storedCards}}
+<label class="sixteen columns alpha">
+  <span>Select a card on File</span>
+  <select id="customerProfileCreditCardId" name="creditCard[customerProfileCreditCardId]">
+    <option value="0"></option>
+    {{#each storedCards}}
+      {{#ucSelectOption1 id selected}}{{cardType}} {{cardNumber}} {{status}}{{/ucSelectOption1}}
+    {{/each}}
+  </select>
+</label>
+
+<label class="sixteen columns alpha">
+  <span>or enter a new card:</span>
+</label>
+{{/if}}
+
+
+<label class="three columns alpha">
+  <span>Credit Card Type</span>
+  <select id="creditCardType" name="creditCard[creditCardType]" required class="required" value="{{cart.creditCardType}}">
+    <option value="">-</option>
+    {{#each ccTypes}}
+    {{#ucSelectOption1 card selected}}{{card}}{{/ucSelectOption1}}
+    {{/each}}
+  </select>
+</label>
+
+<label class="four columns alpha">
+  <span>Credit Card #</span>
+  <input type="text" id="creditCardNumber" name="creditCard[number]" required class="required"
+         value="{{cart.creditCardNumber}}"/>
+</label>
+
+<label class="two columns alpha">
+  <span>Expiration Date</span>
+  <br class="clear">
+
+  <select id="creditCardExpirationMonth" name="creditCard[expMonth]" class="two columns alpha">
+    <option value="0">Month</option>
+    {{#each ccMonths}}
+    {{#ucSelectOption1 month selected}}{{name}}{{/ucSelectOption1}}
+    {{/each}}
+  </select>
+</label>
+
+<label class="two columns alpha">
+  <span>&nbsp;</span>
+  <br class="clear">
+
+  <select id="creditCardExpirationYear" name="creditCard[expYear]" class="two columns alpha">
+    <option value="0">Year</option>
+    {{#each ccYears}}
+    {{#ucSelectOption1 year selected}}{{year}}{{/ucSelectOption1}}
+    {{/each}}
+  </select>
+</label>
+
+<label class="five columns alpha">
+  <span>Card Verification #</span>
+  <br class="clear">
+  <input type="number" id="creditCardVerificationNumber" value="{{cart.creditCardVerificationNumber}}"
+         name="creditCard[verification]" required
+         class="required one column alpha"/>
+  <span class="ccv-help-link">help finding this number</span>
+  <br class="clear">
+
+  <div class="ccv_message"></div>
+
+</label>
+
+{{#if loggedIn}}
+<label class="sixteen columns alpha">
+  <span>
+    {{#ucCheckboxSelect2 cart.storeCreditCard true}}<input type="checkbox" id="storeCreditCard"
+                                                        name="creditCard[storeCreditCard]" value='true'/>{{/ucCheckboxSelect2}}
+    save this card for future use
+  </span>
+</label>
+
+{{/if}}

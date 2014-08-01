@@ -1,0 +1,22 @@
+<legend>Shipping Preference</legend>
+
+{{#if noShippingMethods}}
+No available shipping methods found.
+{{else}}
+{{#if showDropdown}}
+<select class='selectShippingPreference' name="shipping[preference]">
+  {{#each methods}}
+  {{#ucSelectOption2 name ../selectedMethod}}{{cost}} {{name}}{{/ucSelectOption2}}
+  {{/each}}
+</select>
+{{else}}
+{{#each methods}}
+<label>
+  {{#ucCheckboxSelect2 name ../selectedMethod}}<input type="radio" name="shipping[preference]"
+                                                      class="inputShippingPreference"
+                                                      value='{{name}}'/>{{/ucCheckboxSelect2}}
+  <span>{{displayName}} {{cost}}</span>
+</label>
+{{/each}}
+{{/if}}
+{{/if}}
