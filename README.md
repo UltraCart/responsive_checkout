@@ -5,7 +5,7 @@ https://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demo1.htm
 It gives examples of the REST API calls used in the responsive checkout.
 
 
-responsive_checkout (version 1.0)
+responsive_checkout (version 1.1)
 ======================================
 
 An UltraCart Javascript checkout designed to render well on all displays, especially mobile devices.
@@ -13,6 +13,22 @@ An UltraCart Javascript checkout designed to render well on all displays, especi
 This checkout using the UltraCart REST API.
 The documentation for the REST API is found on docs.ultracart.com.
 http://docs.ultracart.com/display/ucdoc/UltraCart+REST+Checkout+API
+
+
+Change Log:
+__________
+
+Version 1.1 (8/1/2014)
+backbone cart implementation:
+
+ * Updated all javascript libraries to their latest versions.
+ * Moved all handlebar templates into separate files and pre-compile them.  The makes development an extra step, but solves strange errors we were seeing with the latest browsers doing aggressive javascript optimization and causing strange random errors with the handlebar templates.
+ * replaced underscore.js with lodash.js
+  
+If you aren't using the precompiled handlebar templates, you should upgrade to avoid any issues with the latest round of browsers. See https://github.com/UltraCart/responsive_checkout/blob/master/cart_implementations/backbone/scripts/handlebars/readme_precompiling.txt for tips on setting up the precompiler using nodejs.
+
+
+
 
 Quick Start:
 ____________ 
