@@ -1724,12 +1724,12 @@ app.views.GiftCertificate = Backbone.View.extend({
 
   render: function () {
 
-    var amount = this.model.get('giftCertificateAmountLocalized') || '';
+    var amount = this.model.get('giftCertificateAmount') || '';
     if (amount) {
       amount = amount.toFixed(2);
     }
 
-    var remaining = this.model.get('giftCertificateRemainingBalanceAfterOrderLocalized') || '';
+    var remaining = this.model.get('giftCertificateRemainingBalanceAfterOrder') || '';
     if (remaining) {
       remaining = remaining.toFixed(2);
     }
