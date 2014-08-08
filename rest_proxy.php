@@ -8,7 +8,7 @@
 // Headers with multiple values weren't iterated correctly and were being mangled (think multiple 'Set-Cookie')
 // Version 0.5.  02/07/2013  Initial Version.
 
-error_log("$_SERVER[REQUEST_URI]");
+// error_log("$_SERVER[REQUEST_URI]");
 
 function http_parse_headers($header)
 {
