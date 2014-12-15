@@ -1,0 +1,14 @@
+{
+  "name": "Ultracart.Backbone",
+  "version": "1.0.0",
+  "description": "Ultracart Checkout | Reference Implementation | Backbone",
+  "main": "index.js",
+  "dependencies": {
+    "bower": "^1.3.12",
+    "grunt": "^0.4.5"
+  },
+  "devDependencies": {
+    "grunt-contrib-handlebars": "^0.9.1",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}

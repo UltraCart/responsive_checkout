@@ -1,0 +1,21 @@
+{
+  "name": "Ultracart.Backbone",
+  "version": "1.0.0",
+  "homepage": "https://github.com/jmbarlow/responsive_checkout",
+  "authors": [
+    "James Barlow <james@cloudshout.co.uk>"
+  ],
+  "description": "Ultracart Checkout | Reference Implementation | Backbone",
+  "main": "cart.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "handlebars": "~2.0.0"
+  }
+}

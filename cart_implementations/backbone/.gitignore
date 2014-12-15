@@ -1,0 +1,21 @@
+#Ultracart Exclusions
+
+
+#General Exclusions
+*~
+Changes
+.DS_Store
+.svn
+.cvs
+*.bak
+*.swp
+Thumbs.db
+.sass-cache
+npm-debug.log
+
+#IntelliJ/PHPStorm IDE Files
+.idea/
+
+#Do not check-in Node Modules or Bower Components on this project
+node_modules/
+bower_components/
