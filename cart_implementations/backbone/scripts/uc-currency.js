@@ -56,7 +56,7 @@ function formatMoney(currencyCode, amount) {
       fixedAmountStr = fixedAmountStr.substr(1);
     }
 
-    return (hasNegativeSign ? "-" : "") + format.prefix + numberWithSeparators(fixedAmountStr) + format.suffix;
+    return (hasNegativeSign ? "-" : "") + format.prefix + numberWithSeparators(fixedAmountStr, format.thousandth, format.decimalSeparator) + format.suffix;
   }
 
   return amount.toFixed(2); // nothing to do but fail gracefully.
