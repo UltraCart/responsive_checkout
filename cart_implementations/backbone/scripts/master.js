@@ -495,13 +495,21 @@ app.commonFunctions.estimateShipping = function () {
     app.data.bootstrap.set({'fetchingShipping': true});
 
     jQuery.ajax({
-      url: restUrl + '/estimateShipping', // restUrl is defined in the html page.
-      type: 'POST',
-      async: true,
-      'contentType': 'application/json; charset=UTF-8',
-      data: JSON.stringify(app.data.cart.toJSON()),
-      dataType: 'json'
-    }).done(
+        url: restUrl,
+        type: 'PUT', // Notice
+        headers : { "cache-control": "no-cache" },
+        contentType: 'application/json; charset=UTF-8',
+        data: JSON.stringify(app.data.cart.toJSON()),
+        dataType: 'json'
+    }).done(function (updatedCart) {
+        jQuery.ajax({
+          url: restUrl + '/estimateShipping', // restUrl is defined in the html page.
+          type: 'POST',
+          async: true,
+          'contentType': 'application/json; charset=UTF-8',
+          data: JSON.stringify(app.data.cart.toJSON()),
+          dataType: 'json'
+        }).done(
             function (shippingEstimates) {
               if (shippingEstimates) {
                 if (shippingEstimates.length) {
@@ -550,7 +558,7 @@ app.commonFunctions.estimateShipping = function () {
             }).always(function () {
               app.data.bootstrap.set({'fetchingShipping': false});
             });
-
+      });
   }
 };
 
@@ -1061,6 +1069,7 @@ app.views.ShippingAddress = Backbone.View.extend({
   'useStoredAddress': function (event) {
     var oid = event.target.value;
     app.commonFunctions.useShippingAddress(parseInt(oid));
+    app.commonFunctions.estimateShipping();
   }
 
 

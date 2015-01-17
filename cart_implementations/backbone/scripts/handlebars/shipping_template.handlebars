@@ -6,7 +6,7 @@ No available shipping methods found.
 {{#if showDropdown}}
 <select class='selectShippingPreference' name="shipping[preference]">
   {{#each methods}}
-  {{#ucSelectOption2 name ../selectedMethod}}{{cost}} {{name}}{{/ucSelectOption2}}
+  {{#ucSelectOption2 name ../selectedMethod}}{{cost}} {{displayName}}{{/ucSelectOption2}}
   {{/each}}
 </select>
 {{else}}
