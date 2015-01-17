@@ -1069,6 +1069,7 @@ app.views.ShippingAddress = Backbone.View.extend({
   'useStoredAddress': function (event) {
     var oid = event.target.value;
     app.commonFunctions.useShippingAddress(parseInt(oid));
+    app.commonFunctions.estimateShipping();
   }
 
 
