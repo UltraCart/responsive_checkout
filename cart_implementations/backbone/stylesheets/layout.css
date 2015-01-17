@@ -7,6 +7,16 @@
 * 6/20/2012
 */
 
+    .clearfix:before,
+    .clearfix:after {
+        display: table;
+        content: " ";
+    }
+
+    .clearfix:after {
+        clear: both;
+    }
+
 	body {
 		/*background: url(../images/bg.jpg) repeat-x 0 0;*/
     background: #eeeeee; /* Old browsers */
