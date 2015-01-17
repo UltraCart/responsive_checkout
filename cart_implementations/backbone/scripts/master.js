@@ -1298,7 +1298,7 @@ app.views.Item = Backbone.View.extend({
     };
 
     this.$el.html(app.templates.item(context));
-    this.$el.addClass('item');
+    this.$el.addClass('item clearfix');
     if (this.options.position == 1) {
       this.$el.addClass('item-first');
     }
