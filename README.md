@@ -34,7 +34,7 @@ Quick Start:
 ____________ 
  * Download the source code
  * The item.html is an item page.  It was designed to be stand-alone (except for a few graphics).  It's a very simple implementation since the item pages vary so.
- * There are going to be many reference implementations of shopping carts.  Currently, there is only one: cart_implementations/backbone.  It is built using backbone.js and handlebars.js.  To use it, you'll want to copy it forward a few directories (your choice).
+ * There are going to be many reference implementations of shopping carts.  Currently, there is only one: cart_implementations/backbone.  It is built using backbone.js and handlebars.js.  To use it, you'll want to copy it forward a few directories (your choice). Also see the [README.md](cart_implementations/backbone/README.md) file in that directory for instructions on compiling handlebars.
  * Install it in your web server.  There are several versions of rest_proxy.php to allow the different pages to run standalone.  You'll probably want to just use one, which may require you to search a modify a few references to it.
  * Test rest_proxy.php.   
    Test #1: If you call it directly from the web browser, you should receive back this response: "UltraCart rest proxy script called incorrectly.  _url query parameter is required.
