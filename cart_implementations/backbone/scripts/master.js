@@ -495,62 +495,69 @@ app.commonFunctions.estimateShipping = function () {
     app.data.bootstrap.set({'fetchingShipping': true});
 
     jQuery.ajax({
-      url: restUrl + '/estimateShipping', // restUrl is defined in the html page.
-      type: 'POST',
-      async: true,
-      'contentType': 'application/json; charset=UTF-8',
+      url: restUrl,
+      type: 'PUT', // Notice
+      headers: { "cache-control": "no-cache" },
+      contentType: 'application/json; charset=UTF-8',
       data: JSON.stringify(app.data.cart.toJSON()),
       dataType: 'json'
-    }).done(
-            function (shippingEstimates) {
-              if (shippingEstimates) {
-                if (shippingEstimates.length) {
+    }).done(function (updatedCart) {
+              jQuery.ajax({
+                url: restUrl + '/estimateShipping', // restUrl is defined in the html page.
+                type: 'POST',
+                async: true,
+                'contentType': 'application/json; charset=UTF-8',
+                data: JSON.stringify(updatedCart.toJSON()),
+                dataType: 'json'
+              }).done(function (shippingEstimates) {
+                        if (shippingEstimates) {
+                          if (shippingEstimates.length) {
 
-                  // if any shipping methods were received, then synchronize with the cart.
-                  // Rules:
-                  // 1. if the cart.shippingMethod matches one of the estimates, update the shippingHandling to keep costs in sync
-                  // 2. if the cart.shippingMethod doesn't match an estimate, wipe it out and select the first estimate. (and apply rule #3)
-                  // 3. if the cart.shippingMethod is not set, set it to the first estimate (always the cheapest).
-                  var selectedMethod = app.data.cart.get('shippingMethod') || '';
-                  if (selectedMethod) {
-                    // make sure the costs match.  If there is a change in item count, etc, the costs could change.
-                    var selectedEstimate = _.find(shippingEstimates, function (estimate) {
-                      return estimate.name == selectedMethod;
-                    });
-                    if (selectedEstimate) {
-                      app.data.cart.set({
-                        'shippingHandling': selectedEstimate.cost,
-                        'total': app.data.cart.get('total') + selectedEstimate.cost
+                            // if any shipping methods were received, then synchronize with the cart.
+                            // Rules:
+                            // 1. if the cart.shippingMethod matches one of the estimates, update the shippingHandling to keep costs in sync
+                            // 2. if the cart.shippingMethod doesn't match an estimate, wipe it out and select the first estimate. (and apply rule #3)
+                            // 3. if the cart.shippingMethod is not set, set it to the first estimate (always the cheapest).
+                            var selectedMethod = app.data.cart.get('shippingMethod') || '';
+                            if (selectedMethod) {
+                              // make sure the costs match.  If there is a change in item count, etc, the costs could change.
+                              var selectedEstimate = _.find(shippingEstimates, function (estimate) {
+                                return estimate.name == selectedMethod;
+                              });
+                              if (selectedEstimate) {
+                                app.data.cart.set({
+                                  'shippingHandling': selectedEstimate.cost,
+                                  'total': app.data.cart.get('total') + selectedEstimate.cost
+                                });
+                              } else {
+                                // the current shipping method wasn't found.  I need to remove the cart.shippingMethod
+                                app.data.cart.set({
+                                  'shippingMethod': null, 'shippingHandling': 0
+                                });
+                                selectedMethod = null;
+                              }
+                            }
+
+                            // this is not an if-else connected to the above logic because selectedMethod may change within the if statement,
+                            // so this is evaluated separately.
+                            if (!selectedMethod) {
+                              // also, update the total to increment with the shipping cost.
+                              app.data.cart.set({
+                                'shippingMethod': shippingEstimates[0].name,
+                                'shippingHandling': shippingEstimates[0].cost,
+                                'total': app.data.cart.get('total') + shippingEstimates[0].cost
+                              });
+
+                            }
+                          }
+
+                          app.data.shippingEstimates.reset(shippingEstimates);
+                          app.data.shippingEstimates.trigger('change');
+                        }
+                      }).always(function () {
+                        app.data.bootstrap.set({'fetchingShipping': false});
                       });
-                    } else {
-                      // the current shipping method wasn't found.  I need to remove the cart.shippingMethod
-                      app.data.cart.set({
-                        'shippingMethod': null, 'shippingHandling': 0
-                      });
-                      selectedMethod = null;
-                    }
-                  }
-
-                  // this is not an if-else connected to the above logic because selectedMethod may change within the if statement,
-                  // so this is evaluated separately.
-                  if (!selectedMethod) {
-                    // also, update the total to increment with the shipping cost.
-                    app.data.cart.set({
-                      'shippingMethod': shippingEstimates[0].name,
-                      'shippingHandling': shippingEstimates[0].cost,
-                      'total': app.data.cart.get('total') + shippingEstimates[0].cost
-                    });
-
-                  }
-                }
-
-                app.data.shippingEstimates.reset(shippingEstimates);
-                app.data.shippingEstimates.trigger('change');
-              }
-            }).always(function () {
-              app.data.bootstrap.set({'fetchingShipping': false});
             });
-
   }
 };
 
@@ -681,7 +688,7 @@ app.collections.Items = uc.collections.NestedCollection.extend({
   model: app.models.Item,
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -733,7 +740,7 @@ app.views.Credentials = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
     this.model.on("change:loggedIn sync reset", this.render, this);
@@ -913,7 +920,7 @@ app.views.BillingAddress = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -984,7 +991,7 @@ app.views.ShippingAddress = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1087,7 +1094,7 @@ app.views.Payment = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1236,7 +1243,7 @@ app.views.Item = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1435,7 +1442,7 @@ app.views.Items = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1506,7 +1513,7 @@ app.views.Subtotal = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1549,7 +1556,7 @@ app.views.Shipping = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1658,7 +1665,7 @@ app.views.Coupons = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1715,7 +1722,7 @@ app.views.GiftCertificate = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1781,7 +1788,7 @@ app.views.Summary = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1852,7 +1859,7 @@ app.views.Paypal = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
@@ -1892,7 +1899,7 @@ app.views.Total = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
