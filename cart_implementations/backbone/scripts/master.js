@@ -1300,7 +1300,7 @@ app.views.Item = Backbone.View.extend({
     };
 
     this.$el.html(app.templates.item(context));
-    this.$el.addClass('item');
+    this.$el.addClass('item clearfix');
     if (this.options.position == 1) {
       this.$el.addClass('item-first');
     }
@@ -1475,7 +1475,7 @@ app.views.Items = Backbone.View.extend({
     var footer = jQuery('footer', this.$el);
     _.each(this.childViews, function (view) {
       view.render();
-      footer.before(view.el).before("<br class='clear'>"); // I don't like this. not elegant.  don't know of a better way.
+      footer.before(view.el);
     });
 
     return this;
