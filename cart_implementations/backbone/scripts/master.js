@@ -1280,6 +1280,8 @@ app.views.Item = Backbone.View.extend({
               value.selected = true;
             } else if (value.value == selectedValue) {
               value.selected = true;
+            } else {
+              value.selected = false;
             }
           });
         }
