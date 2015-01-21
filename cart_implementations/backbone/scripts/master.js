@@ -32,19 +32,19 @@ var app = {
 // 2. add it to the pre-compilation routine (see scripts/handlebars/readme_precompilation.txt)
 // 3. reference it below like the other templates.
 // ---------------------------------------------------------------------
-app.templates.items = Handlebars.templates['items_template'];
-app.templates.item = Handlebars.templates['item_template'];
-app.templates.subtotal = Handlebars.templates['subtotal_template'];
-app.templates.shipping = Handlebars.templates['shipping_template'];
-app.templates.summary = Handlebars.templates['summary_template'];
-app.templates.shipto = Handlebars.templates['shipto_address_template'];
-app.templates.billto = Handlebars.templates['billto_address_template'];
-app.templates.payment = Handlebars.templates['payment_template'];
-app.templates.paypal = Handlebars.templates['paypal_template'];
-app.templates.total = Handlebars.templates['total_template'];
-app.templates.coupons = Handlebars.templates['coupons_template'];
-app.templates.giftCertificate = Handlebars.templates['gift_certificate_template'];
-app.templates.credentials = Handlebars.templates['credentials_template'];
+app.templates.items = Ultracart.templates['items_template'];
+app.templates.item = Ultracart.templates['item_template'];
+app.templates.subtotal = Ultracart.templates['subtotal_template'];
+app.templates.shipping = Ultracart.templates['shipping_template'];
+app.templates.summary = Ultracart.templates['summary_template'];
+app.templates.shipto = Ultracart.templates['shipto_address_template'];
+app.templates.billto = Ultracart.templates['billto_address_template'];
+app.templates.payment = Ultracart.templates['payment_template'];
+app.templates.paypal = Ultracart.templates['paypal_template'];
+app.templates.total = Ultracart.templates['total_template'];
+app.templates.coupons = Ultracart.templates['coupons_template'];
+app.templates.giftCertificate = Ultracart.templates['gift_certificate_template'];
+app.templates.credentials = Ultracart.templates['credentials_template'];
 
 
 // ---------------------------------------------------------------------
@@ -593,7 +593,7 @@ app.commonFunctions.useShippingAddress = function (oid) {
       'shipToPhone': address.dayPhone,
       'shipToPostalCode': address.postalCode,
       'shipToState': address.state
-      //    jQuery("#shipToTitle").val(address.title);              
+      //    jQuery("#shipToTitle").val(address.title);
     }, {silent: true});
 
 
