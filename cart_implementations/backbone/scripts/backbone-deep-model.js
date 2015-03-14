@@ -146,8 +146,8 @@
 
         // Return a copy of the model's `attributes` object.
         toJSON: function(options) {
-          // perry: changed this from deepClone to cloneDeep which is a lodash function
-          return _.cloneDeep(this.attributes);
+          // perry: when I finally figure out lodash, i'll need _.cloneDeep instead of _.clone (underscore)
+          return _.clone(this.attributes);
         },
 
         // Override get
@@ -183,8 +183,8 @@
             this._changing  = true;
 
             if (!changing) {
-              // perry: changed this from deepClone to cloneDeep which is a lodash function
-              this._previousAttributes = _.cloneDeep(this.attributes);
+              // perry: when I finally figure out lodash, i'll need _.cloneDeep instead of _.clone (underscore)
+              this._previousAttributes = _.clone(this.attributes);
               this.changed = {};
             }
             current = this.attributes, prev = this._previousAttributes;
@@ -317,8 +317,8 @@
         // Get all of the attributes of the model at the time of the previous
         // `"change"` event.
         previousAttributes: function() {
-          // perry: changed this from deepClone to cloneDeep which is a lodash function
-          return _.cloneDeep(this._previousAttributes);
+          // perry: when I finally figure out lodash, i'll need _.cloneDeep instead of _.clone (underscore)
+          return _.clone(this._previousAttributes);
           //</custom code>
         }
     });
