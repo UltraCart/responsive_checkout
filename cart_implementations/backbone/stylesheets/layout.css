@@ -222,8 +222,9 @@
 
 
 	.itemQuantity input{
-		width:20px;
+		width:30px;
 		padding:5px;
+    padding-right:10px;
 		text-align:center;
 		float: right;
 	}

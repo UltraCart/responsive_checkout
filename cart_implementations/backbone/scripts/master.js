@@ -507,7 +507,7 @@ app.commonFunctions.estimateShipping = function () {
                 type: 'POST',
                 async: true,
                 'contentType': 'application/json; charset=UTF-8',
-                data: JSON.stringify(updatedCart.toJSON()),
+                data: JSON.stringify(updatedCart),
                 dataType: 'json'
               }).done(function (shippingEstimates) {
                         if (shippingEstimates) {

@@ -175,10 +175,16 @@ uc.collections.NestedCollection = Backbone.Collection.extend({
     this.on('remove', function (theDeletedModel) {
       var updateObj = {};
       var sourceArray = parentModel.get(attributeName);
-      updateObj[attributeName] = _.filter(sourceArray, function (sourceObject) {
-        return sourceObject[theDeletedModel.idAttribute] != theDeletedModel.id;
-      });
-      parentModel.set(updateObj);
+      var idAttribute = theDeletedModel.idAttribute;
+
+      // the raw model doesn't have any notion of cid, since it's not an array of backbone models,
+      // so we must delete by id.
+      for (var j = 0; j < sourceArray.length; j++) {
+        if (sourceArray[j][idAttribute] == theDeletedModel.id) {
+          sourceArray.splice(j, 1); // remove the deleted model.
+          break;
+        }
+      }
     });
 
     return this;
@@ -459,7 +465,7 @@ uc.views.GenericBoundView = Backbone.View.extend({
 
   initialize: function () {
     // initialize is called using apply and passed the argument variable, of which the first argument should be the options.
-    if(arguments && arguments.length){
+    if (arguments && arguments.length) {
       this.options = arguments[0];
     }
 
