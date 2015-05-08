@@ -1970,12 +1970,36 @@ jQuery(document).ready(function () {
   (new app.views.Total({model: app.data.cart})).render();
 
 
+  // the fetch below is passing along the UltraCartShoppingCartID cookie silently.
+  // that's how it can reload a cart in progress.  You'll notice that once the cart
+  // is loaded, the cookie is set/re-set to keep the cart alive longer.
+  //
+  // There's also another way to load a cart, and that's using a returnCode that is
+  // generated from the UltraCart Auto Responder (Email Campaigns).
+  // See: http://docs.ultracart.com/display/ucdoc/UltraCart+Objects+available+to+Auto+Responder+Scripts
+  // before fetching the cart, a quick check is done for the returnCode parameter.  If it's found,
+  // then the http parameters are parsed and it is retrieved and sent to the fetch call.
+  // it's a little wasteful calling parseHttpParameters twice, but the routine is lightning fast since there usually
+  // aren't many http parameters.
+  var returnCode = null;
+  if (location.search.indexOf('returnCode') > -1) {
+    var params = app.commonFunctions.parseHttpParameters();
+    returnCode = params.returnCode;
+  }
+
+
+  var headers = {
+    'X-UC-Merchant-Id': window.merchantId,  // could also pass merchant id as query parameter named '_mid' or cookie named 'UltraCartMerchantID'
+    // the cart id is not passed here as a header. to keep things simple, we'll rely on the cookie to pass in the cart id.
+    "cache-control": "no-cache"
+
+  };
+  if (returnCode) {
+    headers['X-UC-Return-Code'] = returnCode;
+  }
+
   app.data.cart.fetch({
-    headers: {
-      'X-UC-Merchant-Id': window.merchantId,  // could also pass merchant id as query parameter named '_mid' or cookie named 'UltraCartMerchantID'
-      // the cart id is not passed here as a header. to keep things simple, we'll rely on the cookie to pass in the cart id.
-      "cache-control": "no-cache"
-    },
+    headers: headers,
     success: function (model) {
       app.data.bootstrap.set({'initialLoadDone': true});
       var cartId = model.get('cartId') || false;
