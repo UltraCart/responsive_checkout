@@ -1982,9 +1982,9 @@ jQuery(document).ready(function () {
   // it's a little wasteful calling parseHttpParameters twice, but the routine is lightning fast since there usually
   // aren't many http parameters.
   var returnCode = null;
-  if (location.search.indexOf('returnCode') > -1) {
+  if(location.search.toLowerCase().indexOf('returncode')>-1) {
     var params = app.commonFunctions.parseHttpParameters();
-    returnCode = params.returnCode;
+    returnCode = params.returncode[0]; // the 2nd instance should be all lowercase.  parseHttpParameters makes all names lowercase.
   }
 
 
