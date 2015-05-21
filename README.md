@@ -1,8 +1,35 @@
-Most people find this demo helpful:
+#### Demo
+A demo is [here](http://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demos/responsive_checkout/cart.html?ADD=BONE).  It contains instructions to add a dog bone to a dummy account 'DEMO'.  To complete the checkout, use a Visa card 4444333322221111 with any future expiration and any CVV (try 123).
 
-https://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demo1.html
+#### Introduction
+The UltraCart responsive checkout contains reference implementations (well, so far just one) of javascript based checkouts that are built on the [UltraCart REST API](http://docs.ultracart.com/display/ucdoc/UltraCart+REST+Checkout+API) and designed to be mobile friendly.  There is a [working demo](http://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demos/responsive_checkout/cart.html?ADD=BONE) hosted on the UltraCart servers.  Do not download that version.  It is modified slightly to run on our non-PHP servers.  See the Getting Started section for instructions on setting up your own site.
 
-It gives examples of the REST API calls used in the responsive checkout.
+#### Getting Started
+To Use:
+
+1. Download the latest release.
+2. See the [README.md](cart_implementations/backbone/README.md)  file within the [cart_implementations/backbone](cart_implementations/backbone) directory.  It has instructions for generating javascript files needed to create a working cart.
+3. Install the cart_implementations/backbone directory tree in your php web server.
+4. Test rest_proxy.php by typing the full path to it (wherever you put it) in your web browser address bar.  
+
+   |URL|Expected Result|
+   |---|---------------|
+   |```rest_proxy.php```|"UltraCart rest proxy script called incorrectly.  _url query parameter is required.|
+   |```rest_proxy.php?_url=/rest/cart```|"Missing Merchant Id."|
+   |```rest_proxy.php?_url=/rest/cart&_mid=DEMO```|you should receive back the json for an empty cart|
+
+5. Edit cart.html.  Scroll to the bottom and look for a script tag containing several variables.
+
+   |Variable Name|Comments|
+   |-------------|--------|
+   |merchantId|Change this to your own Merchant ID|
+   |continueShoppingUrl|Change this to whatever your main product catalog or intro page is|
+   
+6. See this page: http://docs.ultracart.com/display/ucdoc/UltraCart+REST+Checkout+API and read the section titled "Things you'll wish you read first".  It will help you out with common problems. 
+7. The main page is cart.html. The files you'll most likely edit are master.js and the templates in scripts/handlebars.
+
+
+Some people find these [small examples](https://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demo1.html) helpful.  They give examples of the REST API calls used in the responsive checkout.
 
 #### Applying Hosted Fields to an existing checkout based on this reference example
 
@@ -64,42 +91,11 @@ backbone cart implementation:
 If you aren't using the precompiled handlebar templates, you should upgrade to avoid any issues with the latest round of browsers. See https://github.com/UltraCart/responsive_checkout/blob/master/cart_implementations/backbone/scripts/handlebars/readme_precompiling.txt for tips on setting up the precompiler using nodejs.
 
 
-
-
-Quick Start:
-____________ 
- * Download the source code
- * The item.html is an item page.  It was designed to be stand-alone (except for a few graphics).  It's a very simple implementation since the item pages vary so.
- * There are going to be many reference implementations of shopping carts.  Currently, there is only one: cart_implementations/backbone.  It is built using backbone.js and handlebars.js.  To use it, you'll want to copy it forward a few directories (your choice). Also see the [README.md](cart_implementations/backbone/README.md) file in that directory for instructions on compiling handlebars.
- * Install it in your web server.  There are several versions of rest_proxy.php to allow the different pages to run standalone.  You'll probably want to just use one, which may require you to search a modify a few references to it.
- * Test rest_proxy.php.   
-   Test #1: If you call it directly from the web browser, you should receive back this response: "UltraCart rest proxy script called incorrectly.  _url query parameter is required.
-   Test #2:  adjust your url to call this:   
-```
-   rest_proxy.php?_url=/rest/cart
-```
-   you should receive back this response: "Missing Merchant Id."
-   Test #3:  call this: 
-```   
-   rest_proxy.php?_url=/rest/cart&_mid=DEMO 
-```
-   you should receive back the json for an empty cart.
-
- * Edit cart.html
-   Scroll to the bottom and look for a script tag.  Change the following:
-   
-   merchantId: change this to your Merchant ID.
-   
-   continueShoppingUrl: change this to whatever your main product catalog or intro page is.
-   
-   accounting.settings: If you are not using USD currency, adjust this appropriately.
-
 Architecture
 ____________
  * The checkout uses the following technology.
  * jQuery: http://jquery.com/
- * json2.js: https://github.com/douglascrockford/JSON-js
- * accounting.js: http://josscrowcroft.github.com/accounting.js/
+ * json3.js: https://bestiejs.github.io/json3/
  * moment.js: http://momentjs.com/
  * underscore.js: http://underscorejs.org/
  * backbone.js: http://backbonejs.org/
