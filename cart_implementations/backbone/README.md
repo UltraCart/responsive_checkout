@@ -9,7 +9,7 @@
 From the backbone directory...
 
 ```bash
-npm install && bower install && grunt build
+npm install && bower install && grunt
 ```
 To pre-compile the handlebars template, run:
 

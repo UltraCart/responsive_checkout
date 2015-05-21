@@ -110,11 +110,12 @@
 </section>
 <!-- container -->
 
-<script type="text/javascript" src="scripts/accounting-0.4.1.min.js"></script>
 <script type="text/javascript" src="scripts/moment-2.7.0.min.js"></script>
-<script type="text/javascript" src="scripts/json2.js"></script>
-<script type="text/javascript" src="scripts/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="scripts/json3.min.js"></script>
+<script type="text/javascript" src="scripts/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.cookie.js"></script>
+
+<script type="text/javascript" src="//secure.ultracart.com/checkout/checkout-hosted-fields-1.0.js"></script>
 
 <script type="text/javascript" src="scripts/underscore-1.4.3.min.js"></script>
 <script type="text/javascript" src="scripts/backbone-1.1.2.js"></script>
@@ -141,23 +142,70 @@ installed on your machine and update the path below appropriately.
   var continueShoppingUrl = document.referrer || '/index.html';  // fallback.
   var serverName = "secure.ultracart.com";
 
-  //See http://josscrowcroft.github.com/accounting.js/ for documentation
-  accounting.settings = {
-    currency: {
-      symbol: "$",   // default currency symbol is '$'
-      format: "%s%v", // controls output: %s = symbol, %v = value/number (can be object: see below)
-      decimal: ".",  // decimal point separator
-      thousand: ",",  // thousands separator
-      precision: 2   // decimal places
-    },
-    number: {
-      precision: 0,  // default precision on numbers is 0
-      thousand: ",",
-      decimal: "."
+</script>
+
+
+<!-- ===============================================================================    -->
+<!-- BEGIN PCI 3.0 compliance code                                                      -->
+<!-- What you might need to change:                                                     -->
+<!--    the selector properties point to the two credit card fields.  If you change the -->
+<!--    ids of the fields, you need to re-point those selectors at the fields properly. -->
+<!-- See also:                                                                          -->
+<!-- http://docs.ultracart.com/display/ucdoc/UltraCart+PCI+Compliance                   -->
+<!-- ===============================================================================    -->
+<style type="text/css">
+  /* it is important to set the border of the credit card fields explicitly (especially for google chrome) so
+     the PCI fields can mimic them correctly when overlaying them. */
+  select, input{
+    border: 1px solid rgb(169, 169, 169);
+  }
+</style>
+
+<script type="text/javascript">
+
+  var hostedFields = null;
+
+  // setup should be called each time the UI updates.
+  function setupSecureCreditCardFields() {
+    window.ultraCartHostedFieldsDebugMode = false; // set this to true to see verbose debugging.  usually only UltraCart support will use this.
+    hostedFields = UltraCartHostedFields.setup(jQuery, JSON3, {
+      'sessionCredentials': {
+        'merchantId': merchantId, 'shoppingCartId': app.data.cart.get('cartId')
+      },
+//          'cssUrls':[
+//              'https://www.mysite.com/styles.css'
+//          ],
+//          'form': '#myForm',
+      'hostedFields': {
+        'creditCardNumber': {
+          'selector': '#creditCardNumber'
+          /* ,'tokenSelector': '#cardNumberToken' */
+        },
+        'creditCardCvv2': {
+          'selector': '#creditCardVerificationNumber'
+          /* ,'tokenSelector': '#cvv2Token' */
+        }
+      }
+    });
+  }
+
+
+  // teardown should be called each time a UI needs destroying.
+  function teardownSecureCreditCardFields() {
+    if (hostedFields != null) {
+      hostedFields.destroy();
+      hostedFields = null;
     }
-  };
+  }
 
 </script>
+<!-- =============================================================================== -->
+<!--   // END PCI 3.0 compliance code                                                -->
+<!--   // ========================================================================== -->
+
+
+
+
 <!-- master_template.js is a compiled javascript file built by nodejs using the template found in scripts/handlebars directory.  see the readme in that directory for details. -->
 <script type="text/javascript" src="scripts/master_template.js"></script>
 <script type="text/javascript" src="scripts/master.js"></script>

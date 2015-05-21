@@ -11,7 +11,7 @@ if (typeof String.prototype.startsWith === 'undefined') {
 if (typeof String.prototype.endsWith === 'undefined') {
   String.prototype.endsWith = function (str) {
     return (this.length - str.length) == this.lastIndexOf(str);
-  }
+  };
 }
 
 
@@ -113,7 +113,9 @@ uc.collections.NestedCollection = Backbone.Collection.extend({
   // so I could call reset and pass it my parent collection's property, which is an array of normal objects, not models.
   'reset': function (parentModel, attributeName, options) {
 
-    options || (options = {});
+    if (!options) {
+      options = {};
+    }
     if (parentModel) {
       // init the attribute if it doesn't exist yet.  if it doesn't, why is reset being called??
       if (!parentModel.get(attributeName)) {
@@ -211,31 +213,31 @@ uc.collections.PagedCollection = Backbone.Collection.extend({
         pagedUrl += '?' + jQuery.param(this.queryParameters);
       }
       return pagedUrl;
-    }
+    };
   },
 
   'parse': function (resp, xhr) {
 
     // check for the 3 pagination headers.
-    var pageSize = parseInt(xhr.getResponseHeader(this.paginationHeaders['pageSize']), 10);
+    var pageSize = parseInt(xhr.getResponseHeader(this.paginationHeaders.pageSize), 10);
     if (isNaN(pageSize)) {
       pageSize = 0;
     }
     this.pageSize = pageSize;
 
-    var pageNumber = parseInt(xhr.getResponseHeader(this.paginationHeaders['pageNumber']), 10);
+    var pageNumber = parseInt(xhr.getResponseHeader(this.paginationHeaders.pageNumber), 10);
     if (isNaN(pageNumber)) {
       pageNumber = 0;
     }
     this.pageNumber = pageNumber;
 
-    var totalPages = parseInt(xhr.getResponseHeader(this.paginationHeaders['totalPages']), 10);
+    var totalPages = parseInt(xhr.getResponseHeader(this.paginationHeaders.totalPages), 10);
     if (isNaN(totalPages)) {
       totalPages = 0;
     }
     this.totalPages = totalPages;
 
-    var totalRecords = parseInt(xhr.getResponseHeader(this.paginationHeaders['totalRecords']), 10);
+    var totalRecords = parseInt(xhr.getResponseHeader(this.paginationHeaders.totalRecords), 10);
     if (isNaN(totalRecords)) {
       totalRecords = 0;
     }
@@ -254,17 +256,17 @@ uc.collections.PagedCollection = Backbone.Collection.extend({
   },
 
   'nextPage': function () {
-    this.queryParameters[this.paginationParameters['pageNumber']] = this.pageNumber + 1;
+    this.queryParameters[this.paginationParameters.pageNumber] = this.pageNumber + 1;
     this.fetch();
   },
 
   'prevPage': function () {
-    this.queryParameters[this.paginationParameters['pageNumber']] = this.pageNumber - 1;
+    this.queryParameters[this.paginationParameters.pageNumber] = this.pageNumber - 1;
     this.fetch();
   },
 
   'gotoPage': function (pageNo) {
-    this.queryParameters[this.paginationParameters['pageNumber']] = pageNo;
+    this.queryParameters[this.paginationParameters.pageNumber] = pageNo;
     this.fetch();
   }
 
@@ -283,6 +285,7 @@ uc.collections.PagedCollection = Backbone.Collection.extend({
 //TODO - this should not be a global function.
 function createAppView(pane) {
   // notice!  the return value is a new function that is hardwired to operate on whatever element id is passed in.
+  /* jshint ignore:start */
   return new function () {
     var that = {};
     that.showView = function (view, modal, title, width) {
@@ -316,6 +319,7 @@ function createAppView(pane) {
 
     return that;
   };
+  /* jshint ignore:end */
 }
 
 
@@ -343,9 +347,9 @@ uc.commonFunctions.setTabIndexes = function () {
 
 
 uc.commonFunctions.startPleaseWait = function (msg) {
-  var html = "<div class='spaced-div center'>Please be patient.  This operation takes a long time.<br/><span class='ucPleaseWaitMsg'>"
-          + (msg ? msg : "The page will refresh when finished.")
-          + "</span><br /><img src='/js/jquery.smallhbar.indicator.gif' class='ajaxBusy' alt='busy, please wait'/></div>";
+  var html = "<div class='spaced-div center'>Please be patient.  This operation takes a long time.<br/><span class='ucPleaseWaitMsg'>";
+  html += (msg ? msg : "The page will refresh when finished.");
+  html += "</span><br /><img src='/js/jquery.smallhbar.indicator.gif' class='ajaxBusy' alt='busy, please wait'/></div>";
   var title = 'Please Wait';
   ucLoadPopup2(
           {container: 'pleaseWaitDiv',

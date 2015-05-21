@@ -32,19 +32,19 @@ var app = {
 // 2. add it to the pre-compilation routine (see scripts/handlebars/readme_precompilation.txt)
 // 3. reference it below like the other templates.
 // ---------------------------------------------------------------------
-app.templates.items = Ultracart.templates['items_template'];
-app.templates.item = Ultracart.templates['item_template'];
-app.templates.subtotal = Ultracart.templates['subtotal_template'];
-app.templates.shipping = Ultracart.templates['shipping_template'];
-app.templates.summary = Ultracart.templates['summary_template'];
-app.templates.shipto = Ultracart.templates['shipto_address_template'];
-app.templates.billto = Ultracart.templates['billto_address_template'];
-app.templates.payment = Ultracart.templates['payment_template'];
-app.templates.paypal = Ultracart.templates['paypal_template'];
-app.templates.total = Ultracart.templates['total_template'];
-app.templates.coupons = Ultracart.templates['coupons_template'];
-app.templates.giftCertificate = Ultracart.templates['gift_certificate_template'];
-app.templates.credentials = Ultracart.templates['credentials_template'];
+app.templates.items = Ultracart.templates.items_template;
+app.templates.item = Ultracart.templates.item_template;
+app.templates.subtotal = Ultracart.templates.subtotal_template;
+app.templates.shipping = Ultracart.templates.shipping_template;
+app.templates.summary = Ultracart.templates.summary_template;
+app.templates.shipto = Ultracart.templates.shipto_address_template;
+app.templates.billto = Ultracart.templates.billto_address_template;
+app.templates.payment = Ultracart.templates.payment_template;
+app.templates.paypal = Ultracart.templates.paypal_template;
+app.templates.total = Ultracart.templates.total_template;
+app.templates.coupons = Ultracart.templates.coupons_template;
+app.templates.giftCertificate = Ultracart.templates.gift_certificate_template;
+app.templates.credentials = Ultracart.templates.credentials_template;
 
 
 // ---------------------------------------------------------------------
@@ -110,7 +110,7 @@ app.commonFunctions.clearCheckoutErrors = function () {
 
 app.commonFunctions.blockUserInput = function () {
   // quick check for a background.
-  if (document.getElementById('MB_overlay') == null) {
+  if (document.getElementById('MB_overlay') === null) {
     var bgDiv = document.createElement('div');
     bgDiv.id = 'MB_overlay';
     document.body.appendChild(bgDiv);
@@ -126,36 +126,76 @@ app.commonFunctions.endBlockUserInput = function () {
 };
 
 
-app.commonFunctions.storeCard = function () {
 
-  // Extract the card number from the field
-  var cardNumber = app.data.cart.get('creditCardNumber') || '';
-  var merchantId = app.data.cart.get('merchantId');
-  var cartId = app.data.cart.get('cartId');
+/**
+   * helper method designed to allow for money calculations on the client side.
+   * Only those currencies supported by UltraCart are implemented here.
+   * @param amount amount to be formatted
+   * @param currencyCode the desired currency code
+   * @return {*} A string formatted in the desired currency.
+   */
+app.commonFunctions.formatMoney = function(amount, currencyCode) {
+    if (isNaN(amount)) {
+      return "";
+    }
 
-  // If they haven't specified 15 digits yet then don't store it.
-  if (cardNumber.replace(/[^0-9]/g, "").length < 15) {
-    return;
-  }
+    // if we don't have a currency code, there's nothing to do here.
+    if (!currencyCode) {
+      return amount.toFixed(2);
+    }
 
-  if (!merchantId || !cartId) {
-    return;
-  }
+    /**
+     * takes a number and adds thousandths separators
+     * @param n
+     * @param thouSep thousandth separator, usually a comma
+     * @param decSep decimal separator, usually a period
+     * @return {string}
+     */
+    function numberWithSeparators(n, thouSep, decSep) {
+      var parts = n.toString().split(decSep);
+      return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thouSep) + (parts[1] ? decSep + parts[1] : "");
+    }
+
+    var formats = {
+      "AUD": {'prefix': '$', 'thousandth': ',', 'decimalSeparator': '.', suffix: ' AUD', 'fractionDigits': 2},
+      "BRL": {'prefix': 'R$', 'thousandth': ',', 'decimalSeparator': '.', suffix: '', 'fractionDigits': 2},
+      "CAD": {'prefix': '$', 'thousandth': ',', 'decimalSeparator': '.', suffix: ' CAD', 'fractionDigits': 2},
+      "CHF": {'prefix': '', 'thousandth': ',', 'decimalSeparator': '.', suffix: ' Sfr', 'fractionDigits': 2},
+      "EUR": {'prefix': '', 'thousandth': '.', 'decimalSeparator': ',', suffix: ' ' + '\u20AC', 'fractionDigits': 2},
+      "GBP": {'prefix': '\u00A3', 'thousandth': ',', 'decimalSeparator': '.', suffix: '', 'fractionDigits': 2},
+      "JPY": {'prefix': '\u00A5', 'thousandth': ',', 'decimalSeparator': '.', suffix: '', 'fractionDigits': 0},
+      "MXN": {'prefix': '$', 'thousandth': ',', 'decimalSeparator': '.', suffix: ' MXN', 'fractionDigits': 2},
+      "NOK": {'prefix': 'kr', 'thousandth': ',', 'decimalSeparator': '.', suffix: '', 'fractionDigits': 2},
+      "NZD": {'prefix': '$', 'thousandth': ',', 'decimalSeparator': '.', suffix: ' NZD', 'fractionDigits': 2},
+      "RUB": {'prefix': '', 'thousandth': ',', 'decimalSeparator': '.', suffix: ' \u0440\u0443\u0431', 'fractionDigits': 2},
+      "SEK": {'prefix': '', 'thousandth': ',', 'decimalSeparator': '.', suffix: ' Kr', 'fractionDigits': 2},
+      "SGD": {'prefix': '$', 'thousandth': ',', 'decimalSeparator': '.', suffix: ' SGD', 'fractionDigits': 2},
+      "TRY": {'prefix': '', 'thousandth': ',', 'decimalSeparator': '.', suffix: ' YTL', 'fractionDigits': 2},
+      "USD": {'prefix': '$', 'thousandth': ',', 'decimalSeparator': '.', suffix: '', 'fractionDigits': 2}
+    };
+
+    var format = null;
+    if (formats.hasOwnProperty(currencyCode)) {
+      format = formats[currencyCode];
+    }
 
 
-  // Perform the JSONP request to store it (asynchronous by nature)
-  jQuery.getJSON('https://token.ultracart.com/cgi-bin/UCCheckoutAPICardStore?callback=?',
-          {
-            merchantId: merchantId,
-            shoppingCartId: cartId,
-            cardNumber: cardNumber
-          }
-  ).done(function (data) {
-            if (data.success) {
-              app.data.cart.set({'creditCardNumber': data.maskedCardNumber});
-            }
-          });
-};
+    if (format) {
+      var fixedAmount = amount.toFixed(format.fractionDigits);
+      var fixedAmountStr = fixedAmount.toString();
+      var hasNegativeSign = false;
+
+      if (fixedAmountStr.indexOf('-') === 0) {
+        hasNegativeSign = true;
+        fixedAmountStr = fixedAmountStr.substr(1);
+      }
+
+      return (hasNegativeSign ? "-" : "") + format.prefix + numberWithSeparators(fixedAmountStr, format.thousandth, format.decimalSeparator) + format.suffix;
+    }
+
+    return amount.toFixed(2); // nothing to do but fail gracefully.
+
+  };
 
 
 app.commonFunctions.checkout = function (paymentMethod) {
@@ -367,15 +407,15 @@ app.commonFunctions.pretendToBeUCEditor = function () {
   var copyS_to_B = false;
   var copyB_to_S = false;
 
-  if (params.hasOwnProperty('billingsameasshipping') && app.commonFunctions.isYesValue(params['billingsameasshipping'])) {
+  if (params.hasOwnProperty('billingsameasshipping') && app.commonFunctions.isYesValue(params.billingsameasshipping)) {
     copyS_to_B = true;
   }
 
-  if (params.hasOwnProperty('defaultbillingsameasshipping') && app.commonFunctions.isYesValue(params['billingdifferent'])) {
+  if (params.hasOwnProperty('defaultbillingsameasshipping') && app.commonFunctions.isYesValue(params.billingdifferent)) {
     copyS_to_B = true;
   }
 
-  if (params.hasOwnProperty('defaultshippingsameasbilling') && app.commonFunctions.isYesValue(params['shippingdifferent'])) {
+  if (params.hasOwnProperty('defaultshippingsameasbilling') && app.commonFunctions.isYesValue(params.shippingdifferent)) {
     copyB_to_S = true;
   }
 
@@ -403,12 +443,12 @@ app.commonFunctions.pretendToBeUCEditor = function () {
 
   // need to populate both email and confirm, so can't treat email as simple property.
   if (params.hasOwnProperty("email")) {
-    attr['email'] = params['email'][0];
-    attr['emailConfirm'] = params['email'][0];
+    attr.email = params.email[0];
+    attr.emailConfirm = params.email[0];
   }
 
   if (params.hasOwnProperty("shippingresidentialaddress")) {
-    attr['shipToResidential'] = app.commonFunctions.isYesValue(params['shippingresidentialaddress'][0]);
+    attr.shipToResidential = app.commonFunctions.isYesValue(params.shippingresidentialaddress[0]);
   }
 
 
@@ -423,18 +463,18 @@ app.commonFunctions.pretendToBeUCEditor = function () {
     itemsChanged = true;
     var qty = 1;
     if (params.quantity) {
-      qty = parseInt(params['quantity'][0]);
+      qty = parseInt(params.quantity[0]);
     }
     if (isNaN(qty)) {
       qty = 1;
     }
-    var item = {itemId: params['add'][0], quantity: qty};
+    var item = {itemId: params.add[0], quantity: qty};
     // check for options
     for (var i = 1; i <= 10; i++) {
       if (params.hasOwnProperty('optionname' + i) && params.hasOwnProperty('optionvalue' + i)) {
         // we have items, make sure options property is initialized.
         if (!item.hasOwnProperty('options')) {
-          item['options'] = [];
+          item.options = [];
         }
         item.options.push({name: params['optionname' + i][0], selectedValue: params['optionvalue' + i][0]});
       }
@@ -445,7 +485,7 @@ app.commonFunctions.pretendToBeUCEditor = function () {
 
   // check for multiple items.  Look for "add_" parameters.
   for (var parameterName in params) {
-    if (params.hasOwnProperty(parameterName) && parameterName.indexOf('add_') == 0) {
+    if (params.hasOwnProperty(parameterName) && parameterName.indexOf('add_') === 0) {
       var quantity = parseInt(params[parameterName][0]);
       var itemId = parameterName.substring('add_'.length);
       itemsChanged = true;
@@ -454,13 +494,13 @@ app.commonFunctions.pretendToBeUCEditor = function () {
   }
 
   if (itemsChanged) {
-    attr['items'] = items;
+    attr.items = items;
   }
 
   var couponsChanged = false;
   var coupons = app.data.cart.attributes.coupons || [];
   if (params.hasOwnProperty('coupon')) {
-    var couponCodes = params['coupon'];
+    var couponCodes = params.coupon;
     _.each(couponCodes, function (code) {
       if (!_.contains(_.pluck(coupons, 'couponCode'), code)) {
         coupons.push({'couponCode': code});
@@ -470,7 +510,7 @@ app.commonFunctions.pretendToBeUCEditor = function () {
   }
 
   if (couponsChanged) {
-    attr['coupons'] = coupons;
+    attr.coupons = coupons;
   }
 
 
@@ -480,10 +520,10 @@ app.commonFunctions.pretendToBeUCEditor = function () {
 
 
   if (params.hasOwnProperty('overridecatalogurl')) {
-    window.continueShoppingUrl = params['overridecatalogurl'];
+    window.continueShoppingUrl = params.overridecatalogurl;
   }
   if (params.hasOwnProperty('overridecontinueshoppingurl')) {
-    window.continueShoppingUrl = params['overridecontinueshoppingurl'];
+    window.continueShoppingUrl = params.overridecontinueshoppingurl;
   }
 
 };
@@ -527,7 +567,7 @@ app.commonFunctions.estimateShipping = function () {
                               if (selectedEstimate) {
                                 app.data.cart.set({
                                   'shippingHandling': selectedEstimate.cost,
-                                  'total': app.data.cart.get('total') + selectedEstimate.cost
+                                  'total': app.data.cart.get('totalLocalized') + selectedEstimate.costLocalized
                                 });
                               } else {
                                 // the current shipping method wasn't found.  I need to remove the cart.shippingMethod
@@ -544,8 +584,8 @@ app.commonFunctions.estimateShipping = function () {
                               // also, update the total to increment with the shipping cost.
                               app.data.cart.set({
                                 'shippingMethod': shippingEstimates[0].name,
-                                'shippingHandling': shippingEstimates[0].cost,
-                                'total': app.data.cart.get('total') + shippingEstimates[0].cost
+                                'shippingHandling': shippingEstimates[0].costLocalized,
+                                'total': app.data.cart.get('totalLocalized') + shippingEstimates[0].costLocalized
                               });
 
                             }
@@ -588,7 +628,7 @@ app.commonFunctions.useShippingAddress = function (oid) {
     }
   }
 
-  if (address != null) {
+  if (address !== null) {
     app.data.cart.set({
       'shipToAddress1': address.address1,
       'shipToAddress2': address.address2,
@@ -646,7 +686,7 @@ app.commonFunctions.useBillingAddress = function (oid) {
     }
   }
 
-  if (address != null) {
+  if (address !== null) {
     app.data.cart.set({
       'billToAddress1': address.address1,
       'billToAddress2': address.address2,
@@ -693,7 +733,7 @@ app.collections.Items = uc.collections.NestedCollection.extend({
     }
 
     this.comparator = function (model) {
-      return [model.get("position")]
+      return [model.get("position")];
     };
   }
 });
@@ -760,14 +800,14 @@ app.views.Credentials = Backbone.View.extend({
     };
 
     if (this.model.get('loggedIn')) {
-      context['showButtons'] = false;
-      context['showRegister'] = false;
-      context['showLogin'] = false;
-      context['showLogout'] = true;
+      context.showButtons = false;
+      context.showRegister = false;
+      context.showLogin = false;
+      context.showLogout = true;
     } else {
-      context['showLogin'] = this.inLogin;
-      context['showRegister'] = this.inRegister;
-      context['showButtons'] = !(this.inLogin || this.inRegister);
+      context.showLogin = this.inLogin;
+      context.showRegister = this.inRegister;
+      context.showButtons = !(this.inLogin || this.inRegister);
     }
 
     this.$el.html(app.templates.credentials(context));
@@ -935,7 +975,7 @@ app.views.BillingAddress = Backbone.View.extend({
     var masterList = app.data.bootstrap.get('countries');
     if (masterList) {
       _.each(masterList, function (country) {
-        countries.push({country: country, selected: country == cartCountry })
+        countries.push({country: country, selected: country == cartCountry });
       });
     }
 
@@ -1006,7 +1046,7 @@ app.views.ShippingAddress = Backbone.View.extend({
     var masterList = app.data.bootstrap.get('countries');
     if (masterList) {
       _.each(masterList, function (country) {
-        countries.push({country: country, selected: country == cartCountry })
+        countries.push({country: country, selected: country == cartCountry });
       });
     }
 
@@ -1110,6 +1150,8 @@ app.views.Payment = Backbone.View.extend({
 
   render: function () {
 
+    teardownSecureCreditCardFields();
+
     var ccType = this.model.get('creditCardType') || '';
     var ccExpMonth = this.model.get('creditCardExpirationMonth') || 0;
     var ccExpYear = this.model.get('creditCardExpirationYear') || 0;
@@ -1150,12 +1192,12 @@ app.views.Payment = Backbone.View.extend({
     if (this.model.attributes.customerProfile && this.model.attributes.customerProfile.creditCards) {
       _.each(this.model.attributes.customerProfile.creditCards, function (card) {
         var clonedCard = _.clone(card);
-        clonedCard['selected'] = (clonedCard.id == selectedCard);
+        clonedCard.selected = (clonedCard.id == selectedCard);
 
         if (clonedCard.cardExpYear < currentYear || ( clonedCard.cardExpYear == currentYear && clonedCard.cardExpMonth < currentMonth )) {
-          clonedCard['status'] = '[expired]';
+          clonedCard.status = '[expired]';
         } else {
-          clonedCard['status'] = '';
+          clonedCard.status = '';
         }
 
         storedCards.push(clonedCard);
@@ -1173,6 +1215,8 @@ app.views.Payment = Backbone.View.extend({
     };
 
     this.$el.html(app.templates.payment(context));
+
+    setupSecureCreditCardFields();
     return this;
 
   },
@@ -1180,7 +1224,7 @@ app.views.Payment = Backbone.View.extend({
 
   'toggleEntryFields': function () {
     var id = this.model.get('customerProfileCreditCardId') || 0;
-    var disabled = id != 0 && id != "0";
+    var disabled = id !== 0 && id != "0";
 
     jQuery("#creditCardType, #creditCardNumber, #creditCardExpirationMonth, #creditCardExpirationYear, #creditCardVerificationNumber, #storeCreditCard").attr('disabled', disabled);
   },
@@ -1199,11 +1243,6 @@ app.views.Payment = Backbone.View.extend({
     var changes = {};
     changes[fieldName] = value;
     this.model.set(changes);
-
-    if (fieldName == 'creditCardNumber') {
-      app.commonFunctions.storeCard();
-    }
-
   },
 
   'copyCheckboxToCart': function (event) {
@@ -1256,6 +1295,7 @@ app.views.Item = Backbone.View.extend({
     // this is going to seem like double-killing, but it's necessary.  I need to loop through the qualifiers
     // and set the selected value for drop downs to either the default or first value if it's empty.  then, i'll
     // clone the qualifiers and set a property to make a drop down box work.
+    var itemOptions = [];
     if (this.model.get('options')) {
       _.each(this.model.get('options'), function (optionValue) {
 
@@ -1275,7 +1315,6 @@ app.views.Item = Backbone.View.extend({
         }
       });
 
-      var itemOptions = [];
       jQuery.extend(itemOptions, this.model.get('options') || []); // clone the qualifiers into a separate object
 
       // loop through and set a flag on a qualifier if it's currently selected.  makes the handlebars code workable.
@@ -1315,7 +1354,7 @@ app.views.Item = Backbone.View.extend({
     if (this.options.position == this.options.totalItems) {
       this.$el.addClass('item-last');
     }
-    this.$el.addClass(this.options.position % 2 == 0 ? "item-even" : "item-odd");
+    this.$el.addClass(this.options.position % 2 === 0 ? "item-even" : "item-odd");
 
     return this;
   },
@@ -1344,7 +1383,7 @@ app.views.Item = Backbone.View.extend({
     } else {
       result = 0;
     }
-    return result == 0 ? "Free" : accounting.formatMoney(result);
+    return result === 0 ? "Free" : this.model.get('unitCostLocalizedFormatted');
   },
   'changeQuantity': function (event) {
     var val = jQuery.trim(jQuery(event.target).val());
@@ -1524,7 +1563,7 @@ app.views.Subtotal = Backbone.View.extend({
 
   render: function () {
 
-    var context = {'subtotal': accounting.formatMoney(this.model.get('subtotal'))};
+    var context = {'subtotal': this.model.get('subtotalLocalizedFormatted')};
     this.$el.html(app.templates.subtotal(context));
     return this;
   },
@@ -1577,9 +1616,9 @@ app.views.Shipping = Backbone.View.extend({
     // create a copy of each model's attributes, and format the cost appropriately.
     var methods = [];
     _.each(app.data.shippingEstimates.models, function (model) {
-      var cost = model.get('cost') == 0 ? "Free" : (accounting.formatMoney(model.get('cost') || 0));
+      var cost = model.get('cost') === 0 ? "Free" : model.get('costLocalizedFormatted');
       var method = _.clone(model.attributes);
-      method['cost'] = cost; // overwrite the number with a formatted string.
+      method.cost = cost; // overwrite the number with a formatted string.
       methods.push(method);
     });
 
@@ -1589,7 +1628,7 @@ app.views.Shipping = Backbone.View.extend({
 
     var context = {
       'methods': methods,
-      'noShippingMethods': this.collection.length == 0,
+      'noShippingMethods': this.collection.length === 0,
       'showDropdown': this.showDropdown,
       'selectedMethod': cart.shippingMethod
     };
@@ -1804,26 +1843,26 @@ app.views.Summary = Backbone.View.extend({
     // cart bond cost is different from the actual bond cost, since it will be zero if the bond is not wanted.
     // this variable makes the assumption that a bond is available.  If it's not, the template will hide it from displaying any way.
     var cartBondCost = null;
-    if (buysafeBondCost == 0) {
+    if (buysafeBondCost === 0) {
       cartBondCost = "Free!";
     } else if (this.model.get('buysafeBondWanted')) {
-      cartBondCost = accounting.formatMoney(this.model.get('buysafeBondCost'))
+      cartBondCost = this.model.get('buysafeBondCostLocalizedFormatted');
     } else {
-      cartBondCost = accounting.formatMoney(0);
+      cartBondCost = app.commonFunctions.formatMoney(0, this.model.get('currencyCode'));
     }
 
     var context = {
       'beginScript': "<script type='text/javascript'>",
       'endScript': "</script>",
-      'buysafeBondCost': accounting.formatMoney(buysafeBondCost),
+      'buysafeBondCost': app.commonFunctions.formatMoney(buysafeBondCost, this.model.get('currencyCode')),
       'cartBondCost': cartBondCost,
       'buysafeBondAvailable': this.model.get('buysafeBondAvailable') || false,
       'buysafeBondWanted': this.model.get('buysafeBondWanted') || false,
-      'buysafeBondFree': buysafeBondCost == 0,
-      'subtotal': accounting.formatMoney(this.model.get('subtotal')),
-      'tax': accounting.formatMoney(this.model.get('tax')),
-      'shippingHandling': accounting.formatMoney(this.model.get('shippingHandling')),
-      'total': accounting.formatMoney(this.model.get('total'))
+      'buysafeBondFree': buysafeBondCost === 0,
+      'subtotal': this.model.get('subtotalLocalizedFormatted'),
+      'tax': this.model.get('taxLocalizedFormatted'),
+      'shippingHandling': this.model.get('shippingHandlingLocalizedFormatted'),
+      'total': this.model.get('totalLocalizedFormatted')
     };
 
     this.$el.html(app.templates.summary(context));

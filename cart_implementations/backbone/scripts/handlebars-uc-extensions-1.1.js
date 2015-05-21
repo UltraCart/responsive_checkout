@@ -4,7 +4,7 @@
 
 
 Handlebars.registerHelper("formatPrice", function(value) {
-  if (typeof value === 'undefined' || value == null) {
+  if (typeof value === 'undefined' || value === null) {
     return '';
   }
   var price;

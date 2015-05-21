@@ -1,8 +1,9 @@
 {
   "name": "Ultracart.Backbone",
-  "version": "1.0.0",
-  "homepage": "https://github.com/jmbarlow/responsive_checkout",
+  "version": "1.1.0",
+  "homepage": "https://github.com/UltraCart/responsive_checkout",
   "authors": [
+    "UltraCart <support@ultracart.com>",
     "James Barlow <james@cloudshout.co.uk>"
   ],
   "description": "Ultracart Checkout | Reference Implementation | Backbone",
@@ -16,6 +17,6 @@
     "tests"
   ],
   "dependencies": {
-    "handlebars": "~2.0.0"
+    "handlebars": "~3.0.3"
   }
 }

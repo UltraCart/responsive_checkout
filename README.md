@@ -4,6 +4,24 @@ https://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demo1.htm
 
 It gives examples of the REST API calls used in the responsive checkout.
 
+responsive_checkout (version 1.3)
+======================================
+This release is also a mandatory upgrade.  (Sorry guys)  To achieve PCI 3.0 Compliance, all credit card numbers and cvv
+numbers must go through Hosted Fields.  This checkout was updated to do that.  Prior to this, the storeCard method was
+used to send sensitive credit card information to the vault (token.ultracart.com).  That solution was acceptable for PCI 2.0,
+but the Hosted Fields must be used for 3.0.
+
+Full list of Changes (all deal with the cart_implementation/backbone):
+* Hosted Fields support added see http://docs.ultracart.com/display/ucdoc/UltraCart+PCI+Compliance
+* Added localization support for all supported currencies (you'll see references to LocalizedFormatted fields everywhere,
+such as subtotal -> subtotalLocalizedFormatted
+* Upgrade jQuery and JSON libraries
+* Removed accounting.js library.  This is no longer needed with the localized formatted variables being used.
+The only gap caused by this removal was filled by the app.commonFunctions.formatMoney function, which is used to format dynamic javascript values.
+* Updated handlebars to 3.0.3
+* Updated grunt and bower to latest versions
+* Added jshint to the Gruntfile to perform additional syntax checking.  numerous fixes recommended by jshint were performed.
+
 
 responsive_checkout (version 1.2)
 ======================================
