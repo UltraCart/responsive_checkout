@@ -4,8 +4,16 @@ https://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demo1.htm
 
 It gives examples of the REST API calls used in the responsive checkout.
 
-responsive_checkout (version 1.3)
-======================================
+#### Applying Hosted Fields to an existing checkout based on this reference example
+
+1. Update jQuery (1.11.3) and JSON (json3) libraries (cart.html)
+2. Add the PCI3.0 block of css and javascript (cart.html) https://gist.github.com/perrytew/623fc471004bc961f7cf
+3. Within payment_template.handlebars, change the input type of creditCardVerificationNumber from type="number" to type="text"
+
+That's it.  The hosted fields themselves are gory, but installing them into an existing site is trivial.  Open an issue if you encounter any problems.
+
+
+#### Version 1.3
 This release is also a mandatory upgrade.  (Sorry guys)  To achieve PCI 3.0 Compliance, all credit card numbers and cvv
 numbers must go through Hosted Fields.  This checkout was updated to do that.  Prior to this, the storeCard method was
 used to send sensitive credit card information to the vault (token.ultracart.com).  That solution was acceptable for PCI 2.0,
@@ -23,8 +31,7 @@ The only gap caused by this removal was filled by the app.commonFunctions.format
 * Added jshint to the Gruntfile to perform additional syntax checking.  numerous fixes recommended by jshint were performed.
 
 
-responsive_checkout (version 1.2)
-======================================
+#### Version 1.2
 This release is considered a mandatory upgrade.  Of this release, the changes in the rest_proxy.php script are most important.
 Please upgrade your rest_proxy.php scripts as soon as possible.  Doing so will prevent issues with your site.  Additionally,
 we've added a proxy version header that will allow us to track which merchants might have out of date proxy scripts in the
@@ -41,8 +48,7 @@ rest_proxy.php changes:
 * Add a proxy version number to the header so we can tell from the server side if people are running out of date proxies
 
 
-responsive_checkout (version 1.1)
-======================================
+#### Version 1.1
 
 An UltraCart Javascript checkout designed to render well on all displays, especially mobile devices.
 
@@ -50,13 +56,7 @@ This checkout using the UltraCart REST API.
 The documentation for the REST API is found on docs.ultracart.com.
 http://docs.ultracart.com/display/ucdoc/UltraCart+REST+Checkout+API
 
-
-Change Log:
-__________
-
-Version 1.1 (8/1/2014)
 backbone cart implementation:
-
  * Updated all javascript libraries to their latest versions.
  * Moved all handlebar templates into separate files and pre-compile them.  The makes development an extra step, but solves strange errors we were seeing with the latest browsers doing aggressive javascript optimization and causing strange random errors with the handlebar templates.
  * replaced underscore.js with lodash.js
