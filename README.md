@@ -47,7 +47,7 @@ used to send sensitive credit card information to the vault (token.ultracart.com
 but the Hosted Fields must be used for 3.0.
 
 Full list of Changes (all deal with the cart_implementation/backbone):
-* Hosted Fields support added see http://docs.ultracart.com/display/ucdoc/UltraCart+PCI+Compliance
+* Hosted Fields support added see http://docs.ultracart.com/display/ucdoc/UltraCart+Hosted+Credit+Card+Fields
 * Added localization support for all supported currencies (you'll see references to LocalizedFormatted fields everywhere,
 such as subtotal -> subtotalLocalizedFormatted
 * Upgrade jQuery and JSON libraries
