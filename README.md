@@ -36,6 +36,35 @@ Some people find these [small examples](https://secure.ultracart.com/merchant/in
 1. Update jQuery (1.11.3) and JSON (json3) libraries (cart.html)
 2. Add the PCI3.0 block of css and javascript (cart.html) https://gist.github.com/perrytew/623fc471004bc961f7cf
 3. Within payment_template.handlebars, change the input type of creditCardVerificationNumber from type="number" to type="text"
+4. At the start of the app.views.Payment.render() method, add this line:
+``` teardownSecureCreditCardFields(); ```
+5. At the end of the app.views.Payment.render method, before the return statement, add this line:
+``` setupSecureCreditCardFields(); ```
+
+So the render() function will look like this:
+```
+  render: function () {
+
+    teardownSecureCreditCardFields();
+
+    // A WHOLE LOT OF CODE WAS CUT OUT RIGHT HERE ...
+
+    var context = {
+      'ccTypes': ccTypes,
+      'ccMonths': ccMonths,
+      'ccYears': ccYears,
+      'cart': this.model.attributes,
+      'storedCards': storedCards,
+      'loggedIn': this.model.get('loggedIn')
+    };
+
+    this.$el.html(app.templates.payment(context));
+
+    setupSecureCreditCardFields();
+    return this;
+  },
+
+```
 
 That's it.  The hosted fields themselves are gory, but installing them into an existing site is trivial.  Open an issue if you encounter any problems.
 
