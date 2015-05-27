@@ -33,6 +33,8 @@ Some people find these [small examples](https://secure.ultracart.com/merchant/in
 
 #### Applying Hosted Fields to an existing checkout based on this reference example
 
+FYI: After implementing, the credit card will no longer be masked immediately after entering it. This is by design.
+
 1. Update jQuery (1.11.3) and JSON (json3) libraries (cart.html)
 2. Add a reference to the hosted fields javascript file.
 ```<script type="text/javascript" src="//secure.ultracart.com/checkout/checkout-hosted-fields-1.0.js"></script>```
