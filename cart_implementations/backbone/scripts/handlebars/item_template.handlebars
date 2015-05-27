@@ -54,6 +54,18 @@
     {{#ucCompare type 'file attachment' operator="=="}}<em>unsupported option type</em>{{/ucCompare}}
   </div>
   {{/each}}
+  {{#if schedules}}
+  <br class="clear">
+
+  <div class="itemOption">
+    <span>Schedule</span>
+    <select class='selectSchedule' id='selectSchedule'>
+      {{#each schedules}}
+      {{#ucSelectOption2 this ../schedule}}{{this}}{{/ucSelectOption2}}
+      {{/each}}
+    </select>
+    </div>
+  {{/if}}
 
 </div>
 <div class="itemQuantity two columns omega">

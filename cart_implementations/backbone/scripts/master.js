@@ -1275,7 +1275,8 @@ app.views.Item = Backbone.View.extend({
     "change .multiQualifier": "changeMultiQualifier",
     "change .selectQualifier": "changeSelectQualifier",
     "click .radioQualifier": "changeRadioQualifier",
-    "focus input[type=text]": "selectText"
+    "focus input[type=text]": "selectText",
+    "change .selectSchedule": "changeSchedule"
   },
 
   'onClose': function () {
@@ -1343,6 +1344,8 @@ app.views.Item = Backbone.View.extend({
       'quantity': this.model.get('quantity'),
       'unitCost': this.formatUnitCost(),
       'options': itemOptions,
+      'schedule': this.model.get('autoOrderSchedule'),
+      'schedules': this.model.get('schedules'),
       'imageUrl': this.model.get('defaultThumbnailUrl')
     };
 
@@ -1407,7 +1410,10 @@ app.views.Item = Backbone.View.extend({
   'changeSelectQualifier': function (event) {
     this.changeQualifier(event, 'select');
   },
-
+  'changeSchedule': function(event){
+    var val = jQuery(event.target).val();
+    this.model.set({'autoOrderSchedule': val}, {'silent': true});
+  },
   'changeQualifier': function (event, type) {
     // get the id, get the value
     // find the qualGroup, update it's selectedQualifier property

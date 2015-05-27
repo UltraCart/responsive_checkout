@@ -211,6 +211,20 @@ this["Ultracart"]["templates"]["item_template"] = Handlebars.template({"1":funct
     + "'/>\r\n";
 },"20":function(depth0,helpers,partials,data) {
     return "<em>unsupported option type</em>";
+},"22":function(depth0,helpers,partials,data,blockParams,depths) {
+    var stack1;
+
+  return "  <br class=\"clear\">\r\n\r\n  <div class=\"itemOption\">\r\n    <span>Schedule</span>\r\n    <select class='selectSchedule' id='selectSchedule'>\r\n"
+    + ((stack1 = helpers.each.call(depth0,(depth0 != null ? depth0.schedules : depth0),{"name":"each","hash":{},"fn":this.program(23, data, 0, blockParams, depths),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + "    </select>\r\n    </div>\r\n";
+},"23":function(depth0,helpers,partials,data,blockParams,depths) {
+    var stack1;
+
+  return "      "
+    + ((stack1 = (helpers.ucSelectOption2 || (depth0 && depth0.ucSelectOption2) || helpers.helperMissing).call(depth0,depth0,(depths[1] != null ? depths[1].schedule : depths[1]),{"name":"ucSelectOption2","hash":{},"fn":this.program(24, data, 0, blockParams, depths),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + "\r\n";
+},"24":function(depth0,helpers,partials,data) {
+    return this.escapeExpression(this.lambda(depth0, depth0));
 },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data,blockParams,depths) {
     var stack1, helper, alias1=helpers.helperMissing, alias2="function", alias3=this.escapeExpression;
 
@@ -224,6 +238,7 @@ this["Ultracart"]["templates"]["item_template"] = Handlebars.template({"1":funct
     + alias3(((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"description","hash":{},"data":data}) : helper)))
     + "</p>\r\n  </div>\r\n\r\n"
     + ((stack1 = helpers.each.call(depth0,(depth0 != null ? depth0.options : depth0),{"name":"each","hash":{},"fn":this.program(3, data, 0, blockParams, depths),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.schedules : depth0),{"name":"if","hash":{},"fn":this.program(22, data, 0, blockParams, depths),"inverse":this.noop,"data":data})) != null ? stack1 : "")
     + "\r\n</div>\r\n<div class=\"itemQuantity two columns omega\">\r\n  <input type=\"number\" class=\"itemQty\" name=\"items["
     + alias3(((helper = (helper = helpers.position || (depth0 != null ? depth0.position : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"position","hash":{},"data":data}) : helper)))
     + "].quantity\" value=\""
