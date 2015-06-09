@@ -1,4 +1,7 @@
 <?php
+// Version 1.0 06/09/2015
+// Undid a fix that just plain broke the rest_proxy.php.  
+//
 // Version 0.9 03/21/2015
 // Fixes for content-length being sent down when original response was gziped.  Would cause the client problem if the server running the proxy wasn't gziping it as well
 // We have disabled gzip upstream until 4/15/2015 at which point everyone should have their proxy scripts upgraded.
@@ -21,7 +24,7 @@
 
 // Version 0.5.  02/07/2013  Initial Version.
 
-$rest_proxy_version = "0.9";
+$rest_proxy_version = "1.0";
 
 // Set this variable to true if you want to troubleshoot output in the PHP error_log location
 // The location of this log file is dependant on your php.ini file.  Check the location with the phpinfo function.
@@ -35,7 +38,7 @@ function http_parse_headers($header)
     $fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
     foreach ($fields as $field) {
         if (preg_match('/([^:]+): (.+)/m', $field, $match)) {
-            $match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./', 'strtoupper("\0")', strtolower(trim($match[1])));
+            $match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./e', 'strtoupper("\0")', strtolower(trim($match[1])));
             if (isset($retVal[$match[1]])) {
                 $retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
             } else {
@@ -194,7 +197,7 @@ if (curl_errno($ch)) {
                     if ($proxyDebug) error_log("Skip sending client header - $header_key: $header_value");
         }
     }
-    if ($proxyDebug) error_log("Outputing body");
+    if ($proxyDebug) error_log("Outputting body");
     if ($proxyDebug) error_log(strlen($body));
     // Send the body
     echo $body;
