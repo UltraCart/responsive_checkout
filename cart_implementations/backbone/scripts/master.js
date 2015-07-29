@@ -1150,17 +1150,12 @@ app.views.Payment = Backbone.View.extend({
 
   render: function () {
 
+    var that = this;
     teardownSecureCreditCardFields();
 
-    var ccType = this.model.get('creditCardType') || '';
     var ccExpMonth = this.model.get('creditCardExpirationMonth') || 0;
     var ccExpYear = this.model.get('creditCardExpirationYear') || 0;
-    var sourceTypes = this.model.get('creditCardTypes') || ['AMEX', 'Discover', 'MasterCard', 'Visa' ];
 
-    var ccTypes = [];
-    _.each(sourceTypes, function (card) {
-      ccTypes.push({card: card, selected: card == ccType });
-    });
     var ccMonths = [
       {month: 1, name: 'January', selected: 1 == ccExpMonth},
       {month: 2, name: 'February', selected: 2 == ccExpMonth},
@@ -1177,7 +1172,7 @@ app.views.Payment = Backbone.View.extend({
     ];
 
     var ccYears = [];
-    for (var year = 2013; year < 2031; year++) {
+    for (var year = 2015; year < 2035; year++) {
       ccYears.push({year: year, selected: year == ccExpYear});
     }
 
@@ -1206,7 +1201,6 @@ app.views.Payment = Backbone.View.extend({
 
 
     var context = {
-      'ccTypes': ccTypes,
       'ccMonths': ccMonths,
       'ccYears': ccYears,
       'cart': this.model.attributes,
@@ -1216,7 +1210,14 @@ app.views.Payment = Backbone.View.extend({
 
     this.$el.html(app.templates.payment(context));
 
-    setupSecureCreditCardFields();
+    setupSecureCreditCardFields({
+      selectorContext: that.$el,
+      callback: function(card){
+        if(card && card.cardType){
+          that.model.set({'creditCardType': card.cardType}, {silent:true});
+        }
+      }
+    });
     return this;
 
   },
@@ -1326,10 +1327,12 @@ app.views.Item = Backbone.View.extend({
             // first, see if there are any defaults that need to be set.  If there is a default, and no selected, set the selected to the default.
             if (!selectedValue && value.defaultValue) {
               value.selected = true;
-            } else if (value.value == selectedValue) {
-              value.selected = true;
-            } else {
-              value.selected = false;
+            } else { //noinspection RedundantIfStatementJS
+              if (value.value == selectedValue) {
+                            value.selected = true;
+                          } else {
+                            value.selected = false;
+                          }
             }
           });
         }

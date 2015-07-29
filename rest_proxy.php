@@ -130,6 +130,12 @@ curl_setopt($ch, CURLOPT_VERBOSE, 1);
 curl_setopt($ch, CURLOPT_HEADER, 1);
 curl_setopt($ch, CURLOPT_ENCODING, 1);
 
+//curl_setopt($ch, CURLOPT_FRESH_CONNECT, true );
+//curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'RC4-SHA' );
+//curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1' );
+//curl_setopt ($ch, CURLOPT_CAINFO, 'C:\PHP\cacerts\cacert.pem');
+
+
 if (strlen($post_data) > 0) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 }

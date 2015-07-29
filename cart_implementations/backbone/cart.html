@@ -166,24 +166,22 @@ installed on your machine and update the path below appropriately.
   var hostedFields = null;
 
   // setup should be called each time the UI updates.
-  function setupSecureCreditCardFields() {
+  function setupSecureCreditCardFields(options) {
     window.ultraCartHostedFieldsDebugMode = false; // set this to true to see verbose debugging.  usually only UltraCart support will use this.
     hostedFields = UltraCartHostedFields.setup(jQuery, JSON3, {
       'sessionCredentials': {
         'merchantId': merchantId, 'shoppingCartId': app.data.cart.get('cartId')
       },
-//          'cssUrls':[
-//              'https://www.mysite.com/styles.css'
-//          ],
-//          'form': '#myForm',
+//    'cssUrls':['https://www.mysite.com/styles.css'],
       'hostedFields': {
         'creditCardNumber': {
           'selector': '#creditCardNumber'
-          /* ,'tokenSelector': '#cardNumberToken' */
+          ,'callback': (options && options.callback ? options.callback : null)
+          ,'selectorContext': (options && options.selectorContext ? options.selectorContext : null)
         },
         'creditCardCvv2': {
           'selector': '#creditCardVerificationNumber'
-          /* ,'tokenSelector': '#cvv2Token' */
+          ,'selectorContext': (options && options.selectorContext ? options.selectorContext : null)
         }
       }
     });

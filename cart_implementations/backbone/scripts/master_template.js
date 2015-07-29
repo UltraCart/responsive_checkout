@@ -286,59 +286,45 @@ this["Ultracart"]["templates"]["payment_template"] = Handlebars.template({"1":fu
     var stack1;
 
   return "    "
-    + ((stack1 = (helpers.ucSelectOption1 || (depth0 && depth0.ucSelectOption1) || helpers.helperMissing).call(depth0,(depth0 != null ? depth0.card : depth0),(depth0 != null ? depth0.selected : depth0),{"name":"ucSelectOption1","hash":{},"fn":this.program(6, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = (helpers.ucSelectOption1 || (depth0 && depth0.ucSelectOption1) || helpers.helperMissing).call(depth0,(depth0 != null ? depth0.month : depth0),(depth0 != null ? depth0.selected : depth0),{"name":"ucSelectOption1","hash":{},"fn":this.program(6, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
     + "\r\n";
 },"6":function(depth0,helpers,partials,data) {
     var helper;
 
-  return this.escapeExpression(((helper = (helper = helpers.card || (depth0 != null ? depth0.card : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"card","hash":{},"data":data}) : helper)));
+  return this.escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"name","hash":{},"data":data}) : helper)));
 },"8":function(depth0,helpers,partials,data) {
     var stack1;
 
   return "    "
-    + ((stack1 = (helpers.ucSelectOption1 || (depth0 && depth0.ucSelectOption1) || helpers.helperMissing).call(depth0,(depth0 != null ? depth0.month : depth0),(depth0 != null ? depth0.selected : depth0),{"name":"ucSelectOption1","hash":{},"fn":this.program(9, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = (helpers.ucSelectOption1 || (depth0 && depth0.ucSelectOption1) || helpers.helperMissing).call(depth0,(depth0 != null ? depth0.year : depth0),(depth0 != null ? depth0.selected : depth0),{"name":"ucSelectOption1","hash":{},"fn":this.program(9, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
     + "\r\n";
 },"9":function(depth0,helpers,partials,data) {
     var helper;
 
-  return this.escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"name","hash":{},"data":data}) : helper)));
+  return this.escapeExpression(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"year","hash":{},"data":data}) : helper)));
 },"11":function(depth0,helpers,partials,data) {
     var stack1;
 
-  return "    "
-    + ((stack1 = (helpers.ucSelectOption1 || (depth0 && depth0.ucSelectOption1) || helpers.helperMissing).call(depth0,(depth0 != null ? depth0.year : depth0),(depth0 != null ? depth0.selected : depth0),{"name":"ucSelectOption1","hash":{},"fn":this.program(12, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "\r\n";
-},"12":function(depth0,helpers,partials,data) {
-    var helper;
-
-  return this.escapeExpression(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"year","hash":{},"data":data}) : helper)));
-},"14":function(depth0,helpers,partials,data) {
-    var stack1;
-
   return "<label class=\"sixteen columns alpha\">\r\n  <span>\r\n    "
-    + ((stack1 = (helpers.ucCheckboxSelect2 || (depth0 && depth0.ucCheckboxSelect2) || helpers.helperMissing).call(depth0,((stack1 = (depth0 != null ? depth0.cart : depth0)) != null ? stack1.storeCreditCard : stack1),true,{"name":"ucCheckboxSelect2","hash":{},"fn":this.program(15, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = (helpers.ucCheckboxSelect2 || (depth0 && depth0.ucCheckboxSelect2) || helpers.helperMissing).call(depth0,((stack1 = (depth0 != null ? depth0.cart : depth0)) != null ? stack1.storeCreditCard : stack1),true,{"name":"ucCheckboxSelect2","hash":{},"fn":this.program(12, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
     + "\r\n    save this card for future use\r\n  </span>\r\n</label>\r\n\r\n";
-},"15":function(depth0,helpers,partials,data) {
+},"12":function(depth0,helpers,partials,data) {
     return "<input type=\"checkbox\" id=\"storeCreditCard\"\r\n                                                        name=\"creditCard[storeCreditCard]\" value='true'/>";
 },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
     var stack1, alias1=this.lambda, alias2=this.escapeExpression;
 
   return "<legend>Payment Information</legend>\r\n\r\n"
     + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.storedCards : depth0),{"name":"if","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "\r\n\r\n<label class=\"three columns alpha\">\r\n  <span>Credit Card Type</span>\r\n  <select id=\"creditCardType\" name=\"creditCard[creditCardType]\" required class=\"required\" value=\""
-    + alias2(alias1(((stack1 = (depth0 != null ? depth0.cart : depth0)) != null ? stack1.creditCardType : stack1), depth0))
-    + "\">\r\n    <option value=\"\">-</option>\r\n"
-    + ((stack1 = helpers.each.call(depth0,(depth0 != null ? depth0.ccTypes : depth0),{"name":"each","hash":{},"fn":this.program(5, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "  </select>\r\n</label>\r\n\r\n<label class=\"four columns alpha\">\r\n  <span>Credit Card #</span>\r\n  <input type=\"text\" id=\"creditCardNumber\" name=\"creditCard[number]\" required class=\"required\"\r\n         value=\""
+    + "\r\n<label class=\"four columns alpha\">\r\n  <span>Credit Card #</span>\r\n  <input type=\"text\" id=\"creditCardNumber\" name=\"creditCard[number]\" required class=\"required\"\r\n         value=\""
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.cart : depth0)) != null ? stack1.creditCardNumber : stack1), depth0))
     + "\"/>\r\n</label>\r\n\r\n<label class=\"two columns alpha\">\r\n  <span>Expiration Date</span>\r\n  <br class=\"clear\">\r\n\r\n  <select id=\"creditCardExpirationMonth\" name=\"creditCard[expMonth]\" class=\"two columns alpha\">\r\n    <option value=\"0\">Month</option>\r\n"
-    + ((stack1 = helpers.each.call(depth0,(depth0 != null ? depth0.ccMonths : depth0),{"name":"each","hash":{},"fn":this.program(8, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = helpers.each.call(depth0,(depth0 != null ? depth0.ccMonths : depth0),{"name":"each","hash":{},"fn":this.program(5, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
     + "  </select>\r\n</label>\r\n\r\n<label class=\"two columns alpha\">\r\n  <span>&nbsp;</span>\r\n  <br class=\"clear\">\r\n\r\n  <select id=\"creditCardExpirationYear\" name=\"creditCard[expYear]\" class=\"two columns alpha\">\r\n    <option value=\"0\">Year</option>\r\n"
-    + ((stack1 = helpers.each.call(depth0,(depth0 != null ? depth0.ccYears : depth0),{"name":"each","hash":{},"fn":this.program(11, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = helpers.each.call(depth0,(depth0 != null ? depth0.ccYears : depth0),{"name":"each","hash":{},"fn":this.program(8, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
     + "  </select>\r\n</label>\r\n\r\n<label class=\"five columns alpha\">\r\n  <span>Card Verification #</span>\r\n  <br class=\"clear\">\r\n  <input type=\"text\" id=\"creditCardVerificationNumber\" value=\""
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.cart : depth0)) != null ? stack1.creditCardVerificationNumber : stack1), depth0))
     + "\"\r\n         name=\"creditCard[verification]\" required\r\n         class=\"required one column alpha\"/>\r\n  <span class=\"ccv-help-link\">help finding this number</span>\r\n  <br class=\"clear\">\r\n\r\n  <div class=\"ccv_message\"></div>\r\n\r\n</label>\r\n\r\n"
-    + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.loggedIn : depth0),{"name":"if","hash":{},"fn":this.program(14, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "");
+    + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.loggedIn : depth0),{"name":"if","hash":{},"fn":this.program(11, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "");
 },"useData":true});
 
 this["Ultracart"]["templates"]["paypal_template"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {

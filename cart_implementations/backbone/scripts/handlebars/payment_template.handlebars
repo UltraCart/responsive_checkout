@@ -16,17 +16,6 @@
 </label>
 {{/if}}
 
-
-<label class="three columns alpha">
-  <span>Credit Card Type</span>
-  <select id="creditCardType" name="creditCard[creditCardType]" required class="required" value="{{cart.creditCardType}}">
-    <option value="">-</option>
-    {{#each ccTypes}}
-    {{#ucSelectOption1 card selected}}{{card}}{{/ucSelectOption1}}
-    {{/each}}
-  </select>
-</label>
-
 <label class="four columns alpha">
   <span>Credit Card #</span>
   <input type="text" id="creditCardNumber" name="creditCard[number]" required class="required"

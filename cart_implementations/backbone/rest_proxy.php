@@ -49,18 +49,6 @@ function http_parse_headers($header)
     return $retVal;
 }
 
-if (!function_exists('gzdecode')) {
-    function gzdecode($data)
-    {
-        $g = tempnam('/tmp', 'ff');
-        @file_put_contents($g, $data);
-        ob_start();
-        readgzfile($g);
-        $d = ob_get_clean();
-        unlink($g);
-        return $d;
-    }
-}
 
 if (isset($_GET["_url"])) {
     $path = $_GET["_url"]; // get the url parameter
@@ -129,6 +117,8 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
 curl_setopt($ch, CURLOPT_VERBOSE, 1);
 curl_setopt($ch, CURLOPT_HEADER, 1);
 curl_setopt($ch, CURLOPT_ENCODING, 1);
+
+
 
 if (strlen($post_data) > 0) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
