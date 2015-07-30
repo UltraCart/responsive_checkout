@@ -64,7 +64,15 @@ So the render() function will look like this:
 
     this.$el.html(app.templates.payment(context));
 
-    setupSecureCreditCardFields();
+    // it's very important that you pass in a reference to this.$el, or the field attachment might fail.
+    // if a backbone view has a 'tagName' instead of an 'el', then the html for this view will not be 
+    // attached to the domtree explicity.  The calling code must do this.  The PaymentView uses tagName.
+    // So, we need to pass in a reference to this.$el, because without it, the hosted fields setup
+    // will try to execute jQuery('#someCCFieldId'), and it will return empty because the field is not
+    // yet attached to the dom tree.  Passing in this.$el as the selectorContext will change the scope
+    // of the jQuery to this: jQuery('#someCCFieldId', options.selectorContext), and the field will be found
+    // and operated upon.
+    setupSecureCreditCardFields({'selectorContext': this.$el});
     return this;
   },
 
