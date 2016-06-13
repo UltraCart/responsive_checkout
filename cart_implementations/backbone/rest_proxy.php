@@ -3,7 +3,7 @@
 // Undid a fix that just plain broke the rest_proxy.php.  
 //
 // Version 0.9 03/21/2015
-// Fixes for content-length being sent down when original response was gziped.  Would cause the client problem if the server running the proxy wasn't gziping it as well
+// Fixes for content-length being sent down when original response was gzipped.  Would cause the client problem if the server running the proxy wasn't zipping it as well
 // We have disabled gzip upstream until 4/15/2015 at which point everyone should have their proxy scripts upgraded.
 // Added a flag that can be set to enable debugging to the error_log instead of having to uncomment all the statements.
 // Change SSL certificate verify flag.
@@ -11,9 +11,15 @@
 // Simplify the HTTP 100 Continue header trimming and allow for multiple of them
 // Close out the curl handle sooner.
 // Add a proxy version number to the header so we can tell from the server side if people are running out of date proxies
+// Version 2.0 06/13/2016
+// Replaced http_parse_headers to remove the deprecated /e on the regex within the old function.
+// Added conditional check for headers before adding Content-Length and Content-Type manually.
+// Added warning if secure.ultracart.com is used.  StoreFront urls should be used now.
+// The advantage of using your storefront url is the merchant id may be inferred from the url, so it no longer needs to be
+// passed directly.
 
 // Version 0.8 11/27/2013
-// The cleaning of the _url variable within gzdecode was removing dashes, underscores and spaces, which are valid in urls.  Fixed.
+// The cleaning of the _url variable was removing dashes, underscores and spaces, which are valid in urls.  Fixed.
 
 // Version 0.7.  08/15/2013
 // Some of the PUT/POST requests were returning back 100 Continues.  That was wrecking havoc with the parser below causing aborted calls.
@@ -24,29 +30,64 @@
 
 // Version 0.5.  02/07/2013  Initial Version.
 
-$rest_proxy_version = "1.0";
+$rest_proxy_version = "2.0";
+
+// TODO: Change this to your storefront url.  For example: demo.ultracartstore.com, or your custom SSL server name.
+$storefront_url = 'secure.ultracart.com';
+if ($storefront_url === 'secure.ultracart.com') {
+    error_log('Error. You are making calls directly against secure.ultracart.com.  This is a deprecated feature and may discontinue at any time.  All calls should be made to your storefront url.');
+    die('do not make calls directly to secure.ultracart.com.  change your storefront_url variable within your rest_proxy.php script.');
+}
+
 
 // Set this variable to true if you want to troubleshoot output in the PHP error_log location
 // The location of this log file is dependant on your php.ini file.  Check the location with the phpinfo function.
 $proxyDebug = false;
 
-if ($proxyDebug) error_log("$_SERVER[REQUEST_URI]");
+if ($proxyDebug) {
+    error_log("$_SERVER[REQUEST_URI]");
+}
 
-function http_parse_headers($header)
-{
-    $retVal = array();
-    $fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
-    foreach ($fields as $field) {
-        if (preg_match('/([^:]+): (.+)/m', $field, $match)) {
-            $match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./e', 'strtoupper("\0")', strtolower(trim($match[1])));
-            if (isset($retVal[$match[1]])) {
-                $retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
+if (!function_exists('http_parse_headers')) {
+    function http_parse_headers($raw_headers)
+    {
+        $headers = array();
+        $key = '';
+
+        foreach (explode("\n", $raw_headers) as $i => $h) {
+            $h = explode(':', $h, 2);
+
+            if (isset($h[1])) {
+                if (!isset($headers[$h[0]]))
+                    $headers[$h[0]] = trim($h[1]);
+                elseif (is_array($headers[$h[0]])) {
+                    $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1])));
+                } else {
+                    $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1])));
+                }
+
+                $key = $h[0];
             } else {
-                $retVal[$match[1]] = trim($match[2]);
+                if (substr($h[0], 0, 1) == "\t")
+                    $headers[$key] .= "\r\n\t" . trim($h[0]);
+                elseif (!$key)
+                    $headers[0] = trim($h[0]);
             }
         }
+
+        return $headers;
     }
-    return $retVal;
+}
+
+function header_present($header, $header_name)
+{
+    $header_name = strtoupper($header_name);
+    foreach ($header as $incoming_header) {
+        if (0 === strpos(strtoupper($incoming_header), $header_name)) {
+            return TRUE;
+        }
+    }
+    return FALSE;
 }
 
 
@@ -79,7 +120,7 @@ if ($query_str_start !== FALSE) {
 }
 
 // the above filtering should remove any malicious attempts, but no worries, UltraCart has some insane firewalls to boot.
-$server_get_url = "https://secure.ultracart.com" . $path . $query_str;
+$server_get_url = "https://" . $storefront_url . $path . $query_str;
 $post_data = file_get_contents('php://input');
 
 foreach ($_SERVER as $i => $val) {
@@ -101,12 +142,17 @@ if (isset($_SERVER['CONTENT_TYPE'])) {
     $content_type = 'application/json';
 }
 
-$header[] = "Content-Type: " . $content_type;
-$header[] = "Content-Length: " . strlen($post_data);
 $header[] = "X-UC-Forwarded-For: " . $_SERVER['REMOTE_ADDR'];
 $header[] = "X-UC-Proxy-Version: " . $rest_proxy_version;
 // Force curl to send an empty Expect header on the request to prevent it form sending an Expect 100 (StackOverflow FTW)
 $header[] = "Expect: ";
+if (!header_present($header, 'Content-Type')) {
+    $header[] = "Content-Type: " . $content_type;
+}
+if (!header_present($header, 'Content-Length')) {
+    $header[] = "Content-Length: " . strlen($post_data);
+}
+
 
 $ch = curl_init($server_get_url);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $_SERVER['REQUEST_METHOD']);
@@ -118,8 +164,6 @@ curl_setopt($ch, CURLOPT_VERBOSE, 1);
 curl_setopt($ch, CURLOPT_HEADER, 1);
 curl_setopt($ch, CURLOPT_ENCODING, 1);
 
-
-
 if (strlen($post_data) > 0) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 }
@@ -127,20 +171,19 @@ if (strlen($post_data) > 0) {
 $response = curl_exec($ch);
 
 if ($proxyDebug) error_log("start response ===========================================");
-if ($proxyDebug) error_log("start raw response ===============");
+if ($proxyDebug) error_log("start raw response =======================================");
 if ($proxyDebug) error_log($response);
-if ($proxyDebug) error_log("end raw response ===============");
-
+if ($proxyDebug) error_log("end raw response =========================================");
 
 // Trim off HTTP 100 response headers if they exist
 $delimiter = "\r\n\r\n"; // HTTP header delimiter
-while ( preg_match('#^HTTP/[0-9\\.]+\s+100\s+Continue#i',$response) ) {
-    $tmp = explode($delimiter,$response,2); // grab the 100 Continue header
+while (preg_match('#^HTTP/[0-9\\.]+\s+100\s+Continue#i', $response)) {
+    $tmp = explode($delimiter, $response, 2); // grab the 100 Continue header
     $response = $tmp[1]; // update the response, purging the most recent 100 Continue header
 } // repeat
 
 // now we just have the normal header and the body
-$parts = explode($delimiter,$response,2);
+$parts = explode($delimiter, $response, 2);
 $header = $parts[0];
 $body = $parts[1];
 
@@ -150,7 +193,9 @@ if (strlen($response) > 0) {
     $first_line = substr($response, 0, strpos($response, "\n") - 1);
     $first_line = trim($first_line);
 
-    if ($proxyDebug) error_log('$first_line:[' . $first_line . ']');
+    if ($proxyDebug) {
+        error_log('$first_line:[' . $first_line . ']');
+    }
     header($first_line);
 }
 
@@ -169,28 +214,40 @@ if (curl_errno($ch)) {
             if ($header_key == 'Content-Length' && $header_value == "0") {
                 /* ignore this, it's from an HTTP 1.1 100 Continue and will destroy the result if passed along. */
             } else if ($header_key == 'Content-Length') {
-              // Skip sending the content length header because the upstream response could have been gziped
-              if ($proxyDebug) error_log("Skip sending client header - $header_key: $header_value");
+                // Skip sending the content length header because the upstream response could have been gzipped
+                if ($proxyDebug) {
+                    error_log("Skip sending client header - $header_key: $header_value");
+                }
             } else {
                 if (is_array($header_value)) {
                     foreach ($header_value as $val) {
-                        if ($proxyDebug) error_log("$header_key: $val");
+                        if ($proxyDebug) {
+                            error_log("$header_key: $val");
+                        }
                         header("$header_key: $val", false);
                     }
                 } else {
-                    if ($proxyDebug) error_log("$header_key: $header_value");
+                    if ($proxyDebug) {
+                        error_log("$header_key: $header_value");
+                    }
                     header("$header_key: $header_value", false);
                 }
 
             }
         } else {
-                    if ($proxyDebug) error_log("Skip sending client header - $header_key: $header_value");
+            if ($proxyDebug) {
+                error_log("Skip sending client header - $header_key: $header_value");
+            }
         }
     }
-    if ($proxyDebug) error_log("Outputting body");
-    if ($proxyDebug) error_log(strlen($body));
+    if ($proxyDebug) {
+        error_log("Outputting body");
+        error_log(strlen($body));
+    }
+
     // Send the body
     echo $body;
 }
-if ($proxyDebug) error_log("end response ===========================================");
-?>
+if ($proxyDebug) {
+    error_log("end response =============================================");
+}
