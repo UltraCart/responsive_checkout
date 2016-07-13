@@ -129,6 +129,8 @@ foreach ($_SERVER as $i => $val) {
             $header[] = "X-UC-Merchant-Id: $val";
         } else if ($i == 'HTTP_X_UC_SHOPPING_CART_ID') {
             $header[] = "X-UC-Shopping-Cart-Id: $val";
+        } else if($i == 'HTTP_HOST'){
+            $header[] = "HOST: $storefront_url";
         } else {
             $name = str_replace(array('HTTP_', '_'), array('', '-'), $i);
             $header[] = "$name: $val";
