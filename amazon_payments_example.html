@@ -6,9 +6,6 @@
 <link rel="stylesheet" href="amazon_payments_example.css">
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<!--[if IE]>
-<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
 
 <!--
 Source: https://github.com/krux/postscribe/
@@ -177,7 +174,7 @@ function showFinalizeButton() {
 // fields.
 function estimateShipping() {
   jQuery.ajax({
-    url: 'rest_proxy.php?_url=/rest/cart/estimateShipping',
+    url: 'https://api.ultracart.com/rest/cart/estimateShipping',
     type: 'POST', // Notice
     headers: {
       "cache-control": "no-cache"
@@ -201,7 +198,7 @@ function updateCartWithAmazonInformation() {
   my_cart.shippingHandling = shippingHandlingCost;
 
   jQuery.ajax({
-    url: 'rest_proxy.php?_url=/rest/cart',
+    url: 'https://api.ultracart.com/rest/cart',
     type: 'PUT', // Notice
     headers: {
       "cache-control": "no-cache"
@@ -230,7 +227,7 @@ function createCart() {
   ]      };
 
   jQuery.ajax({
-    url: 'rest_proxy.php?_url=/rest/cart',
+    url: 'https://api.ultracart.com/rest/cart',
     type: 'PUT', // Notice
     headers: {
       "cache-control": "no-cache"
@@ -250,7 +247,7 @@ function finalizeOrder() {
 
   jQuery('#redirectUrl').html('');
 
-  if (my_cart.shippingMethod != shippingMethod) {
+  if (my_cart.shippingMethod !== shippingMethod) {
     my_cart.shippingMethod = shippingMethod;
     my_cart.shippingHandling = shippingHandlingCost;
   }
@@ -264,7 +261,7 @@ function finalizeOrder() {
   };
 
   jQuery.ajax({
-    url: 'rest_proxy.php?_url=/rest/cart/checkout',
+    url: 'https://api.ultracart.com/rest/cart/checkout',
     type: 'POST', // Notice
     headers: {
       "cache-control": "no-cache"
@@ -306,15 +303,15 @@ function finalizeOrder() {
   <table>
     <tr>
       <td><label for="ultracart_merchant_id">Merchant ID:</label></td>
-      <td><input type="text" id="ultracart_merchant_id" size="20" maxlength="5" value="DEMO"/></td>
+      <td><input id="ultracart_merchant_id" size="20" maxlength="5" value="DEMO"/></td>
     </tr>
     <tr>
       <td><label for="amazon_merchant_id">Amazon Seller ID:</label></td>
-      <td><input type="text" id="amazon_merchant_id" size="20" maxlength="20" value="A2A17BDCREO3LJ"/></td>
+      <td><input id="amazon_merchant_id" size="20" maxlength="20" value="A2A17BDCREO3LJ"/></td>
     </tr>
     <tr>
       <td><label for="ultracart_item_id">UltraCart Item ID:</label></td>
-      <td><input type="text" id="ultracart_item_id" size="20" maxlength="20" value="Baseball"/></td>
+      <td><input id="ultracart_item_id" size="20" maxlength="20" value="Baseball"/></td>
     </tr>
     <tr>
       <td colspan='2'><input type="button" value="BEGIN DEMO" id="begin_demo_button" onclick="beginDemo()"/></td>
@@ -351,7 +348,7 @@ function finalizeOrder() {
 
   <div id="amazonResults" style="max-height: 300px; overflow: auto; border:1px solid #C0C0C0;margin:20px 0;"></div>
 
-  <input type="button" id="finalizeButton" value="Finalize Order" onclick="finalizeOrder()" disabled="disabled"/>
+  <input type="button" id="finalizeButton" value="Finalize Order" onclick="finalizeOrder()"/>
 
   <div id="redirectUrl"></div>
 </section>

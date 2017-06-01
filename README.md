@@ -1,22 +1,16 @@
-#### Demo
-A demo is [here](http://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demos/responsive_checkout/cart.html?ADD=BONE).  It contains instructions to add a dog bone to a dummy account 'DEMO'.  To complete the checkout, use a Visa card 4444333322221111 with any future expiration and any CVV (try 123).
+##### Demo
+A demo is [here](http://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demos/responsive_checkout/cart.html?ADD=Baseball).  It contains instructions to add a baseball to a dummy account 'DEMO'.  To complete the checkout, use a Visa card 4444333322221111 with any future expiration and any CVV (try 123).
 
-#### Introduction
+##### Introduction
 The UltraCart responsive checkout contains reference implementations (well, so far just one) of javascript based checkouts that are built on the [UltraCart REST API](http://docs.ultracart.com/display/ucdoc/UltraCart+REST+Checkout+API) and designed to be mobile friendly.  There is a [working demo](http://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demos/responsive_checkout/cart.html?ADD=BONE) hosted on the UltraCart servers.  Do not download that version.  It is modified slightly to run on our non-PHP servers.  See the Getting Started section for instructions on setting up your own site.
 
-#### Getting Started
+##### Getting Started
 To Use:
 
 1. Download the latest release.
 2. See the [README.md](cart_implementations/backbone/README.md)  file within the [cart_implementations/backbone](cart_implementations/backbone) directory.  It has instructions for generating javascript files needed to create a working cart.
-3. Install the cart_implementations/backbone directory tree in your php web server.
-4. Test rest_proxy.php by typing the full path to it (wherever you put it) in your web browser address bar.  
-
-   |URL|Expected Result|
-   |---|---------------|
-   |```rest_proxy.php```|"UltraCart rest proxy script called incorrectly.  _url query parameter is required.|
-   |```rest_proxy.php?_url=/rest/cart```|"Missing Merchant Id."|
-   |```rest_proxy.php?_url=/rest/cart&_mid=DEMO```|you should receive back the json for an empty cart|
+3. Install the cart_implementations/backbone directory tree in your web server.
+4. ~~rest_proxy.php~~ is no longer used.  skip this step.
 
 5. Edit cart.html.  Scroll to the bottom and look for a script tag containing several variables.
 
@@ -29,9 +23,10 @@ To Use:
 7. The main page is cart.html. The files you'll most likely edit are master.js and the templates in scripts/handlebars.
 
 
+
 Some people find these [small examples](https://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demo1.html) helpful.  They give examples of the REST API calls used in the responsive checkout.
 
-#### Applying Hosted Fields to an existing checkout based on this reference example
+##### Applying Hosted Fields to an existing checkout based on this reference example
 
 FYI: After implementing, the credit card will no longer be masked immediately after entering it. This is by design.
 
@@ -81,7 +76,12 @@ So the render() function will look like this:
 That's it.  The hosted fields themselves are gory, but installing them into an existing site is trivial.  Open an issue if you encounter any problems.
 
 
-#### Version 1.3
+###### Version 1.4
+* Removed rest_proxy.php
+* Added CORS support
+* This version will run on any web server.
+
+###### Version 1.3
 This release is also a mandatory upgrade.  (Sorry guys)  To achieve PCI 3.0 Compliance, all credit card numbers and cvv
 numbers must go through Hosted Fields.  This checkout was updated to do that.  Prior to this, the storeCard method was
 used to send sensitive credit card information to the vault (token.ultracart.com).  That solution was acceptable for PCI 2.0,
@@ -99,7 +99,7 @@ The only gap caused by this removal was filled by the app.commonFunctions.format
 * Added jshint to the Gruntfile to perform additional syntax checking.  numerous fixes recommended by jshint were performed.
 
 
-#### Version 1.2
+###### Version 1.2
 This release is considered a mandatory upgrade.  Of this release, the changes in the rest_proxy.php script are most important.
 Please upgrade your rest_proxy.php scripts as soon as possible.  Doing so will prevent issues with your site.  Additionally,
 we've added a proxy version header that will allow us to track which merchants might have out of date proxy scripts in the
@@ -116,7 +116,7 @@ rest_proxy.php changes:
 * Add a proxy version number to the header so we can tell from the server side if people are running out of date proxies
 
 
-#### Version 1.1
+###### Version 1.1
 
 An UltraCart Javascript checkout designed to render well on all displays, especially mobile devices.
 

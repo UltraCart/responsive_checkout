@@ -387,7 +387,7 @@ uc.commonFunctions.getItemsById = function (ids, getCompleteItem) {
   var queryString = 'id=' + encodeURIComponent(itemStr) + filter;
   var response = [];
   jQuery.ajax({
-    url: '/rest/merchant/items',
+    url: 'https://api.ultracart.com/rest/merchant/items',
     data: queryString,
     type: 'GET',
     async: false,
@@ -407,7 +407,7 @@ uc.commonFunctions.getItemsByOid = function (oids) {
   var queryString = '_detail=description&oid=' + encodeURIComponent(oids.join(','));
   var response = {};
   jQuery.ajax({
-    url: '/rest/merchant/items',
+    url: 'https://api.ultracart.com/rest/merchant/items',
     data: queryString,
     type: 'GET',
     async: false,
@@ -430,7 +430,7 @@ uc.commonFunctions.getItemsByOid = function (oids) {
 uc.commonFunctions.getCustomer = function (id, callback) {
   var response = null;
   jQuery.ajax({
-    url: '/rest/merchant/customers/' + id,
+    url: 'https://api.ultracart.com/rest/merchant/customers/' + id,
     type: 'GET',
     async: (callback ? true : false),
     dataType: 'json'
