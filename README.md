@@ -1,80 +1,33 @@
-##### Demo
-A demo is [here](http://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demos/responsive_checkout/cart.html?ADD=Baseball).  It contains instructions to add a baseball to a dummy account 'DEMO'.  To complete the checkout, use a Visa card 4444333322221111 with any future expiration and any CVV (try 123).
+### Introduction
+This shopping cart is a vanilla javascript shopping cart using the latest UltraCart API.
 
-##### Introduction
-The UltraCart responsive checkout contains reference implementations (well, so far just one) of javascript based checkouts that are built on the [UltraCart REST API](http://docs.ultracart.com/display/ucdoc/UltraCart+REST+Checkout+API) and designed to be mobile friendly.  There is a [working demo](http://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demos/responsive_checkout/cart.html?ADD=BONE) hosted on the UltraCart servers.  Do not download that version.  It is modified slightly to run on our non-PHP servers.  See the Getting Started section for instructions on setting up your own site.
+### Requirements
+For development, you will need:
+* Node.js installed on your computer
+* Gulp.js installed
 
-##### Getting Started
+### Getting Started
 To Use:
 
-1. Download the latest release.
-2. See the [README.md](cart_implementations/backbone/README.md)  file within the [cart_implementations/backbone](cart_implementations/backbone) directory.  It has instructions for generating javascript files needed to create a working cart.
-3. Install the cart_implementations/backbone directory tree in your web server.
-4. ~~rest_proxy.php~~ is no longer used.  skip this step.
+1. Download or clone this project.
+2. From the base directory, run 'npm install'.
+3. Edit index.html and provide your own browser key.  The one provided will not work.  You'll find the key around line 536 of index.html.
+```uc.browserKey = "d7f38666b17e60016306f071d41e3700";```
+4. Right below the browser key, set your storefront server name.  This is needed to provide proper branding for receipts.
+`uc.storeFront = "demo.ultracartstore.com"`
+5. From the base directory, run 'gulp'.  The default action will build the .js and .css file.
+5. Deploy or test your checkout!
+6. An easy way to add an item to your checkout is by adding `?ADD=YourItemId` to the end of the checkout url. 
 
-5. Edit cart.html.  Scroll to the bottom and look for a script tag containing several variables.
+### Changes
 
-   |Variable Name|Comments|
-   |-------------|--------|
-   |merchantId|Change this to your own Merchant ID|
-   |continueShoppingUrl|Change this to whatever your main product catalog or intro page is|
-   
-6. See this page: http://docs.ultracart.com/display/ucdoc/UltraCart+REST+Checkout+API and read the section titled "Things you'll wish you read first".  It will help you out with common problems. 
-7. The main page is cart.html. The files you'll most likely edit are master.js and the templates in scripts/handlebars.
-
-
-
-Some people find these [small examples](https://secure.ultracart.com/merchant/integrationcenter/checkoutapi_v3/demo1.html) helpful.  They give examples of the REST API calls used in the responsive checkout.
-
-##### Applying Hosted Fields to an existing checkout based on this reference example
-
-FYI: After implementing, the credit card will no longer be masked immediately after entering it. This is by design.
-
-1. Update jQuery (1.11.3) and JSON (json3) libraries (cart.html)
-2. Add a reference to the hosted fields javascript file.
-```<script type="text/javascript" src="//secure.ultracart.com/checkout/checkout-hosted-fields-1.0.js"></script>```
-2. Add the PCI3.0 block of css and javascript (cart.html) https://gist.github.com/perrytew/623fc471004bc961f7cf
-3. Within payment_template.handlebars, change the input type of creditCardVerificationNumber from type="number" to type="text"
-4. At the start of the app.views.Payment.render() method, add this line:
-``` teardownSecureCreditCardFields(); ```
-5. At the end of the app.views.Payment.render method, before the return statement, add this line:
-``` setupSecureCreditCardFields(); ```
-
-So the render() function will look like this:
-```
-  render: function () {
-
-    teardownSecureCreditCardFields();
-
-    // A WHOLE LOT OF CODE WAS CUT OUT RIGHT HERE ...
-
-    var context = {
-      'ccTypes': ccTypes,
-      'ccMonths': ccMonths,
-      'ccYears': ccYears,
-      'cart': this.model.attributes,
-      'storedCards': storedCards,
-      'loggedIn': this.model.get('loggedIn')
-    };
-
-    this.$el.html(app.templates.payment(context));
-
-    // it's very important that you pass in a reference to this.$el, or the field attachment might fail.
-    // if a backbone view has a 'tagName' instead of an 'el', then the html for this view will not be 
-    // attached to the domtree explicity.  The calling code must do this.  The PaymentView uses tagName.
-    // So, we need to pass in a reference to this.$el, because without it, the hosted fields setup
-    // will try to execute jQuery('#someCCFieldId'), and it will return empty because the field is not
-    // yet attached to the dom tree.  Passing in this.$el as the selectorContext will change the scope
-    // of the jQuery to this: jQuery('#someCCFieldId', options.selectorContext), and the field will be found
-    // and operated upon.
-    setupSecureCreditCardFields({'selectorContext': this.$el});
-    return this;
-  },
-
-```
-
-That's it.  The hosted fields themselves are gory, but installing them into an existing site is trivial.  Open an issue if you encounter any problems.
-
+###### Version 2.0
+**Complete overhaul.** 
+* Switched to latest API (www.ultracart.com/api/)
+* Removed all external libraries.  The hosted fields still uses jQuery, but the entire shopping cart is now vanilla javascript.
+This makes it much easier to trace action and extend as needed.  If you wish to use a library such as backbone.js, angular, or reactjs,
+it should be easy to incorporate.
+* Removed the backbone/handlebars implementation.  The learning curve was too high, so we chose not to upgrade that to the new API.
 
 ###### Version 1.4
 * Removed rest_proxy.php

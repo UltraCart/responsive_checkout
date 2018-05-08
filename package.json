@@ -1,0 +1,18 @@
+{
+  "name": "Ultracart.Pure",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ultracart Checkout | Reference Implementation | Pure",
+  "main": "main.js",
+  "dependencies": {
+    "ultra_cart_rest_api_v2": "^2.2.1"
+  },
+  "devDependencies": {
+    "browserify": "^16.2.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-browserify": "^0.5.1",
+    "gulp-clean-css": "^3.9.3",
+    "vinyl-source-stream": "^2.0.0"
+  }
+}

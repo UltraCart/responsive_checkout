@@ -1,2 +1,12 @@
 responsive_checkout.iml
 .idea
+#Do not check-in Node Modules or Bower Components on this project
+node_modules/
+npm-debug.log
+.DS_Store
+.svn
+.cvs
+*.bak
+*.swp
+Thumbs.db
+.sass-cache

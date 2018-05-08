@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]>
+<html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>
+<html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>
+<html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en"> <!--<![endif]-->
+<head>
+
+    <!-- ========================================================= -->
+    <!--                         README                            -->
+    <!-- The variables you need to edit are at the end of the body -->
+    <!-- ========================================================= -->
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <title>ULTRACART RESPONSIVE CHECKOUT</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+    ================================================== -->
+    <link rel="stylesheet" href="build/style.min.css">
+    <!--[if gte IE 9]>
+    <style type="text/css">
+        .gradient {
+            filter: none;
+        }
+    </style>
+    <![endif]-->
+
+    <!-- Favicons
+    ================================================== -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    <!-- uncomment the following for GA support. -->
+    <!--
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      // ga('create', 'UA-XXXXXXX-X', 'auto');   //   <== Add your id here.
+      ga('send', 'pageview');
+
+    </script>
+    -->
+
+    <!-- ===============================================================================    -->
+    <!-- BEGIN PCI 3.0 compliance code                                                      -->
+    <!-- What you might need to change:                                                     -->
+    <!--    the selector properties point to the two credit card fields.  If you change the -->
+    <!--    ids of the fields, you need to re-point those selectors at the fields properly. -->
+    <!-- See also:                                                                          -->
+    <!-- http://docs.ultracart.com/display/ucdoc/UltraCart+PCI+Compliance                   -->
+    <!-- ===============================================================================    -->
+    <style type="text/css">
+        /* it is important to set the border of the credit card fields explicitly (especially for google chrome) so
+           the PCI fields can mimic them correctly when overlaying them. */
+        select, input {
+            border: 1px solid rgb(169, 169, 169);
+        }
+    </style>
+
+</head>
+<body class="gradient">
+
+<!-- Primary Page Layout
+================================================== -->
+<!-- Delete everything in this .container and get started on your own site! -->
+<section class="container main-header">
+
+    <!-- ============================================================= -->
+    <header class="sixteen columns alpha omega">
+
+        <div class="logo-left five columns">
+            <a href="index.html"><img src="images/ultracart-logo.png"></a>
+        </div>
+        <div id="credentials" class="ten columns">
+
+            <span id="credential-buttons" class="credentials-main-buttons four columns alpha hidden">
+                <button type="button" class="btnLogin" id="btnLoginShow">Login</button>
+                <button type="button" class="btnRegister" id="btnRegisterShow">Register</button>
+            </span>
+            <span id="logout-container" class="credentials-main-buttons four columns alpha hidden">
+                <button type="button" class="btnLogout" id="btnLogoutSubmit">Logout</button>
+            </span>
+            <label class="login-email login-field three columns alpha hidden">
+                <span>Email Address:</span>
+                <input type="text" class='credentialField' id="loginEmail" name="login[email]" value=""/>
+            </label>
+            <label class="login-password login-field three columns alpha hidden">
+                <span>Password:</span>
+                <input type="password" class='credentialField' id="loginPassword" name="login[password]" value=""/>
+            </label>
+            <span class="login-field four columns alpha hidden">
+                <button type="button" class="btnLogin" id="btnLoginSubmit">Login</button>
+                <button type="button" class="btnCancel" id="btnLoginCancel">Cancel</button>
+            </span>
+
+            <label class="register-email register-field three columns alpha hidden">
+                <span>Email Address:</span>
+                <input type="text" class='credentialField' id="registerEmail" name="register[email]" value=""/>
+            </label>
+            <label class="register-password register-field three columns alpha hidden">
+                <span>Password:</span>
+                <input type="password" class='credentialField' id="registerPassword" name="register[password]"
+                       value=""/>
+            </label>
+            <span class="register-field four columns alpha hidden">
+                <button type="button" class="btnRegister" id="btnRegisterSubmit">Register</button>
+                <button type="button" class="btnCancel" id="btnRegisterCancel">Cancel</button>
+            </span>
+
+        </div>
+
+        <div class="clear"></div>
+
+    </header>
+</section>
+
+<section class="container cart-info">
+    <div id="loginError" class="errorContainer hidden">
+        <p>Checkout Errors</p>
+        <div class="errorContent"></div>
+    </div>
+
+    <div class="sixteen columns title alpha omega">Your Cart:</div>
+
+    <!-- ============================================================= -->
+    <section id="cart" class="cart twelve columns">
+
+        <span id="loading-cart">Loading shopping cart. Please wait...</span>
+        <span id="empty-cart" class="hidden">Your cart is empty, good sir.</span>
+
+        <header class="hidden" id="items-header">
+            <div class="itemInfo offset-by-one nine columns alpha">Item</div>
+            <div class="itemQuantity two columns omega">Qty</div>
+        </header>
+
+        <!-- individual items will be inserted here by the view code -->
+        <div id="cart-items"></div>
+
+        <footer id="items-footer" class="twelve columns alpha omega hidden">
+            <!--<button type="button" class="btnCartUpdate">Update</button>-->
+        </footer>
+
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="subtotal" class="subtotal four columns hidden">
+        <header>Subtotal</header>
+        <div class="cartSubtotal" id="cartSubtotal"></div>
+        <button type="button" class="btnContinueShopping">Continue Shopping</button>
+    </section>
+</section>
+
+<section class="container customerInfo">
+    <form id="frmCheckout" method="post" name="checkout" action="#">
+        <div id="checkoutFields" class='hidden'>
+
+            <!-- ============================================================= -->
+            <fieldset id="shipToAddress" class="shippingInfo eight columns">
+                <legend>Shipping Address</legend>
+
+                <label class="eight columns alpha omega hidden" id="customer-profile-shipping-addresses">
+                    <span>Addresses on File</span>
+                    <select id="storedShippingAddress" name="storedShippingAddress[number]">
+                        <option value="0"></option>
+                    </select>
+                </label>
+
+                <label class="name four columns alpha">
+                    <span>*First Name</span>
+                    <input type="text" id="shipToFirstName" name="shipping[firstName]" required class="required"
+                           value=""/>
+                </label>
+
+                <label class="name four columns alpha">
+                    <span>*Last Name</span>
+                    <input type="text" id="shipToLastName" name="shipping[lastName]" required class="required"
+                           value=""/>
+                </label>
+
+                <label class="company seven columns alpha">
+                    <span>Company</span>
+                    <input type="text" id="shipToCompany" name="shipping[company]" value=""/>
+                </label>
+
+                <label class="address four columns alpha">
+                    <span>*Address 1</span>
+                    <input type="text" id="shipToAddress1" name="shipping[address1]" required class="required"
+                           value=""/>
+                </label>
+
+                <label class="address four columns alpha">
+                    <span>Address 2</span>
+                    <input type="text" id="shipToAddress2" name="shipping[address2]" value=""/>
+                </label>
+
+                <label class="four columns alpha">
+                    <span>*City</span>
+                    <input type="text" id="shipToCity" name="shipping[city]" required class="required" value=""/>
+                </label>
+
+                <label class="four columns alpha">
+                    <span>*State/Province/Region</span>
+                    <select id="shipToState" name="shipping[state]" required class="required" >
+                        <option value="">&nbsp;</option>
+                    </select>
+                </label>
+
+                <label class="four columns alpha">
+                    <span>*Zip/Postal Code</span>
+                    <input type="text" id="shipToPostalCode" name="shipping[postalCode]" required class="required"
+                           value=""/>
+                </label>
+
+                <label class="four columns alpha">
+                    <span>*Country</span>
+                    <select name="shipping[country]" id="shipToCountry">
+                        <option value=''>&nbsp;</option>
+                    </select>
+                </label>
+
+                <br class="clear">
+
+                <label class="four columns alpha">
+                    <span>*Email Address</span>
+                    <input type="email" id="email" name="shipping[email]" required class="required" value=""/>
+                </label>
+
+                <label class="four columns alpha">
+                    <span>*Phone</span>
+                    <input type="text" id="shipToPhone" name="shipping[phone]" required class="required"
+                           value=""/>
+                </label>
+
+                <label>
+                    <input type="checkbox" id="shipToResidential" name="shipping[isBusiness]" value='true'/>
+                    <span class="bold">This address is a business</span>
+                </label>
+
+                <label>
+                    <input type="checkbox" id="shippingIsBilling" name="shipping[isBilling]" value="true"/>
+                    <span class="bold">Same as Billing Address</span>
+                </label>
+            </fieldset>
+
+            <!-- ============================================================= -->
+            <fieldset id="billToAddress" class="billingInfo eight columns alpha">
+                <legend>Billing Address</legend>
+
+                <label class="eight columns alpha omega hidden" id="customer-profile-billing-addresses">
+                    <span>Addresses on File</span>
+                    <select id="storedBillingAddress" name="storedBillingAddress[number]"></select>
+                </label>
+
+                <label class="name four columns alpha">
+                    <span>*First Name</span>
+                    <input type="text" id="billToFirstName" name="billing[firstName]" required class="required"
+                           value=""/>
+                </label>
+
+                <label class="name four columns alpha">
+                    <span>*Last Name</span>
+                    <input type="text" id="billToLastName" name="billing[lastName]" required class="required" value=""/>
+                </label>
+
+                <label class="company seven columns alpha">
+                    <span>Company</span>
+                    <input type="text" id="billToCompany" name="billing[company]" value=""/>
+                </label>
+
+                <label class="address four columns alpha">
+                    <span>*Address 1</span>
+                    <input type="text" id="billToAddress1" name="billing[address1]" required class="required" value=""/>
+                </label>
+
+                <label class="address four columns alpha">
+                    <span>Address 2</span>
+                    <input type="text" id="billToAddress2" name="billing[address2]" value=""/>
+                </label>
+
+                <label class="four columns alpha">
+                    <span>*City</span>
+                    <input type="text" id="billToCity" name="billing[city]" required class="required" value=""/>
+                </label>
+
+                <label class="four columns alpha">
+                    <span>*State/Province/Region</span>
+                    <select id="billToState" name="billing[state]" required class="required" >
+                        <option value="">&nbsp;</option>
+                    </select>
+                </label>
+
+                <label class="four columns alpha">
+                    <span>*Zip/Postal Code</span>
+                    <input type="text" id="billToPostalCode" name="billing[postalCode]" required class="required"
+                           value=""/>
+                </label>
+
+                <label class="four columns omega">
+                    <span>*Country</span>
+                    <select name="billing[country]" id="billToCountry">
+                        <option value="">&nbsp;</option>
+                    </select>
+                </label>
+            </fieldset>
+
+            <!-- ============================================================= -->
+            <fieldset id="shipping" class="shippingPreference eight columns">
+
+                <legend><label for="shipping-preference">Shipping Preference</label></legend>
+
+                <div id="no-shipping-methods" class="hidden">
+                    Please enter your shipping address to see shipping costs.
+                </div>
+                <div id="shipping-methods-container" class="hidden">
+                    <select class='selectShippingPreference' name="shipping[preference]" id="shipping-preference">
+                    </select>
+                </div>
+
+
+            </fieldset>
+
+            <!-- ============================================================= -->
+            <fieldset id="coupons" class="seven columns">
+
+                <legend>Coupons</legend>
+
+                <label class="name four columns alpha">
+                    <span>Enter Coupon Code</span>
+                    <input type="text" id="couponField"/>
+                    <button type="button" id="addCouponButton">Apply</button>
+                </label>
+                <br class="clear">
+
+            </fieldset>
+
+
+            <!-- ============================================================= -->
+            <fieldset id="giftCertificates" class="seven columns">
+                <legend>Gift Certificate</legend>
+
+                <label class="name four columns alpha">
+                    <span>Enter Gift Certificate</span>
+                    <input type="text" id="giftCertificateField"/>
+                    <button type="button" id="updateGiftCertificateButton">Apply</button>
+                </label>
+                <br class="clear">
+
+                <span id="has-gc" class="hidden">
+                    <span class='giftCertificateSpan'>Amount Applied:</span>
+                    <span class='giftCertificateButtonSpan'>
+                        <span id="gc-amount" class='giftCertificateSummary'></span>
+                    </span>
+                    <br class="clear">
+                </span>
+
+                <span id="has-gc-balance" class="hidden">
+                    <span class='giftCertificateSpan'>Remaining Balance:</span>
+                    <span class='giftCertificateButtonSpan'>
+                        <span id="gc-remaining" class='giftCertificateSummary'></span>
+                    </span>
+                <br class="clear">
+                </span>
+            </fieldset>
+
+            <!-- ============================================================= -->
+            <fieldset id="summary" class="eight columns">
+                <span class="fieldTitle">Summary</span>
+
+                <div class="summary">
+                    <span class="title">Subtotal:</span><span id="summary-subtotal" class="value"></span>
+                    <br class="clear">
+                    <span class="title">Tax:</span><span id="summary-tax" class="value"></span>
+                    <br class="clear">
+                    <span class="title">Shipping:</span><span id="summary-shipping" class="value"></span>
+                    <br class="clear">
+                    <span class="title">Total:</span><span id="summary-total" class="value"></span>
+                    <br class="clear">
+                </div>
+
+            </fieldset>
+            <br class="clear">
+
+            <!-- ============================================================= -->
+            <fieldset id="paypal" class="payment sixteen columns">
+                <span id="paypal_link" class='paypal_link fake_hyper'>
+                    <img id="paypal-button" src="" alt=''/>
+                </span>
+            </fieldset>
+
+            <!-- ============================================================= -->
+            <fieldset id="payment" class="payment sixteen columns">
+
+
+                <legend>Payment Information</legend>
+
+                <label id="stored-cards-container" class="sixteen columns alpha">
+                    <span>Select a card on File</span>
+                    <select id="customerProfileCreditCardId" name="creditCard[customerProfileCreditCardId]">
+                        <option value="0"></option>
+                    </select>
+                </label>
+
+                <label id="stored-cards-trailer" class="sixteen columns alpha">
+                    <span>or enter a new card:</span>
+                </label>
+
+                <label class="four columns alpha">
+                    <span>Credit Card #</span>
+                    <input type="text" id="creditCardNumber" name="creditCard[number]" required class="required"
+                           value=""/>
+                </label>
+
+                <label class="two columns alpha">
+                    <span>Expiration Date</span>
+                    <br class="clear">
+
+                    <select id="creditCardExpirationMonth" name="creditCard[expMonth]" class="two columns alpha">
+                        <option value="0">Month</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </label>
+
+                <label class="two columns alpha">
+                    <span>&nbsp;</span>
+                    <br class="clear">
+
+                    <select id="creditCardExpirationYear" name="creditCard[expYear]" class="two columns alpha">
+                        <option value="0">Year</option>
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>
+                        <option value="2032">2032</option>
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>
+                        <option value="2035">2035</option>
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>
+                        <option value="2038">2038</option>
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>
+                    </select>
+                </label>
+
+                <label class="five columns alpha">
+                    <span>Card Verification #</span>
+                    <br class="clear">
+                    <input type="text" id="creditCardVerificationNumber" value=""
+                           name="creditCard[verification]" required
+                           class="required one column alpha"/>
+                    <span id="cvv-help-link">help finding this number</span>
+                    <br class="clear">
+
+                    <div id="cvv_message" class="hidden"></div>
+
+                </label>
+
+                <label id="store-credit-card-container" class="sixteen columns alpha">
+                    <span>
+                        <input type="checkbox" id="storeCreditCard" name="creditCard[storeCreditCard]" value='true'/>
+                        save this card for future use
+                    </span>
+                </label>
+
+            </fieldset>
+
+            <div id="checkoutError" class="errorContainer hidden">
+                <p>Checkout Errors</p>
+
+                <div class="errorContent"></div>
+            </div>
+
+            <!-- ============================================================= -->
+            <fieldset id="total" class="total sixteen columns hidden">
+                <button type="submit" id="btnFinalize">Finalize Order</button>
+            </fieldset>
+
+
+        </div>
+    </form>
+</section>
+<!-- container -->
+
+<div class='PW_outer'>
+    <div class='PW_inner' style="display:none">
+        Communicating with Server...<br/>
+        <img src='images/loader.gif' alt='please wait'/>
+    </div>
+</div>
+
+
+<!--suppress JSUnusedLocalSymbols -->
+<script type="text/javascript">
+    // these variables are used by main.js
+    if (!window.uc) {
+        window.uc = {};
+    }
+
+    // See https://ultracart.atlassian.net/wiki/spaces/ucdoc/pages/419364865/Creating+a+Browser+Key+for+a+JavaScript+checkout
+    uc.browserKey = "d7f38666b17e60016306f071d41e3700";
+    uc.cookieName = 'UltraCartShoppingCartID'; // if you don't have a good reason to change this, leave it alone.
+    uc.continueShoppingUrl = document.referrer || '/index.html';  // fallback.
+    uc.storeFront = "demo.ultracartstore.com"; // this should be your StoreFront.  It's needed to show the proper look and feel on the receipt.
+</script>
+
+
+<!-- =============================================================================== -->
+<!-- START PCI 3.0 compliance code                                                   -->
+<!-- See: https://ultracart.atlassian.net/wiki/spaces/ucdoc/pages/1377775/UltraCart+Hosted+Credit+Card+Fields -->
+<!-- =============================================================================== -->
+<script type="text/javascript" src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="//secure.ultracart.com/checkout/checkout-hosted-fields-1.0.js"></script>
+<script type="text/javascript">
+
+    var hostedFields = null;
+
+    // setup should be called each time the UI updates.
+    // noinspection JSUnusedLocalSymbols
+    function setupSecureCreditCardFields(options) {
+        window.ultraCartHostedFieldsDebugMode = false; // set this to true to see verbose debugging.  usually only UltraCart support will use this.
+        hostedFields = UltraCartHostedFields.setup(jQuery, JSON, {
+            'sessionCredentials': {
+                'merchantId': uc.cart.merchant_id, 'shoppingCartId': uc.cart.cart_id
+            },
+//    'cssUrls':['https://www.mysite.com/styles.css'],
+            'hostedFields': {
+                'creditCardNumber': {
+                    'selector': '#creditCardNumber'
+                    , 'callback': (options && options.callback ? options.callback : null)
+                    , 'selectorContext': (options && options.selectorContext ? options.selectorContext : null)
+                },
+                'creditCardCvv2': {
+                    'selector': '#creditCardVerificationNumber'
+                    , 'selectorContext': (options && options.selectorContext ? options.selectorContext : null)
+                }
+            }
+        });
+    }
+
+
+    // teardown should be called each time a UI needs destroying.
+    // noinspection JSUnusedLocalSymbols
+    function teardownSecureCreditCardFields() {
+        if (hostedFields !== null) {
+            hostedFields.destroy();
+            hostedFields = null;
+        }
+    }
+
+</script>
+<!-- =============================================================================== -->
+<!-- END PCI 3.0 compliance code                                                -->
+<!-- =============================================================================== -->
+
+
+<!-- To view source unbundled, start with scripts/main.js -->
+<!-- The very end of main.js contains code that loads the cart when the page is ready.  -->
+<!-- To make things simple, everything you need is stored under window.uc -->
+<script src="build/bundle.js"></script>
+
+
+<!-- End Document
+================================================== -->
+</body>
+</html>
