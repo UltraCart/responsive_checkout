@@ -5,6 +5,7 @@ This shopping cart is a vanilla javascript shopping cart using the latest UltraC
 For development, you will need:
 * Node.js installed on your computer
 * Gulp.js installed
+* UltraCart SDK - see https://github.com/UltraCart/rest_api_v2_sdk_javascript
 
 ### Getting Started
 To Use:
