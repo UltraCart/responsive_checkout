@@ -12,18 +12,18 @@ To Use:
 
 1. Download or clone this project.
 2. From the base directory, run 'npm install'.
-3. Edit index.html and provide your own browser key.  The one provided will not work.  You'll find the key around line 536 of index.html.
+3. Edit index.html and provide your own browser key (for more on this, read [the docs](https://ultracart.atlassian.net/wiki/spaces/ucdoc/pages/419364865/Creating+a+Browser+Key+for+a+JavaScript+checkout)).  The one provided will not work.  You'll find the key around line 536 of index.html.
 ```uc.browserKey = "d7f38666b17e60016306f071d41e3700";```
 4. Right below the browser key, set your storefront server name.  This is needed to provide proper branding for receipts.
 `uc.storeFront = "demo.ultracartstore.com"`
 5. From the base directory, run 'gulp'.  The default action will build the .js and .css file.
 5. Deploy or test your checkout!
-6. An easy way to add an item to your checkout is by adding `?ADD=YourItemId` to the end of the checkout url. 
+6. An easy way to add an item to your checkout is by adding `?ADD=YourItemId` to the end of the checkout url.
 
 ### Changes
 
 ###### Version 2.0
-**Complete overhaul.** 
+**Complete overhaul.**
 * Switched to latest API (www.ultracart.com/api/)
 * Removed all external libraries.  The hosted fields still uses jQuery, but the entire shopping cart is now vanilla javascript.
 This makes it much easier to trace action and extend as needed.  If you wish to use a library such as backbone.js, angular, or reactjs,
@@ -82,7 +82,7 @@ backbone cart implementation:
  * Updated all javascript libraries to their latest versions.
  * Moved all handlebar templates into separate files and pre-compile them.  The makes development an extra step, but solves strange errors we were seeing with the latest browsers doing aggressive javascript optimization and causing strange random errors with the handlebar templates.
  * replaced underscore.js with lodash.js
-  
+
 If you aren't using the precompiled handlebar templates, you should upgrade to avoid any issues with the latest round of browsers. See https://github.com/UltraCart/responsive_checkout/blob/master/cart_implementations/backbone/scripts/handlebars/readme_precompiling.txt for tips on setting up the precompiler using nodejs.
 
 
@@ -110,14 +110,13 @@ follow this convention, but we also map the items as a direct property of the ca
 
 So, you'll see within the code app.data.cart.get('shipToFirstName') as well as app.data.cart.items where
 it lives as a backbone collection of CartItems instead of a normal array of CartItems.  This allows
-for event binding, etc. 
+for event binding, etc.
 
 Just a head's up.
 
 
 Release Notes:
 ______________
-11/01/2013 
+11/01/2013
 We're releasing this software as version 1.0.  We've added the login/logout/register functionality, along with fields to display all customer information.
 Numerous bugs were fixed with the latest commit.
-

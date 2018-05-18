@@ -2045,11 +2045,13 @@ function createCartItemOptionHtml(itemPosition, optionPosition, option) {
     if (option.type === 'radio') {
         html += '<span class="radioQualifierContainer">';
         if (option.values) {
+          for (var i = 0; i < option.values.length; i++) {
             var val_2 = esc(option.values[i].value);
             html += '<input type="radio" class="radioQualifier js-option" data-pos="' + itemPosition
                 + '" data-option-pos="' + optionPosition + '"  value="' + val_2
                 + '" name="radioQualifier_' + option.option_oid + '"'
                 + (option.values[i].value === option.selected_value ? ' checked="checked"' : '') + '/>' + val_2 + '<br/>';
+          }
         }
         html += '</span>';
     }
