@@ -2326,11 +2326,19 @@ window.uc.renderCart = function () {
 
 function hostedFieldsCallback(card) {
     console.log("hostedFieldsCallback", card);
+    var payment = null;
     var credit_card = null;
-    if (uc.cart && uc.cart.payment && uc.cart.payment.credit_card) {
-        credit_card = uc.cart.payment.credit_card;
+
+    if (uc.cart && uc.cart.payment) {
+        payment = uc.cart.payment;
     } else {
-        credit_card = uc.cart.payment.credit_card = new uc.sdk.CartPaymentCreditCard();
+        payment = uc.cart.payment = new uc.sdk.CartPayment();
+    }
+
+    if (payment.credit_card) {
+        credit_card = payment.credit_card;
+    } else {
+        credit_card = payment.credit_card = new uc.sdk.CartPaymentCreditCard();
     }
 
     if (card && card.cardType) {
