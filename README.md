@@ -1,3 +1,17 @@
+### Wait!  Don't use this library yet!
+
+This entire checkout can be created within a StoreFront using our Visual Builder.  Why not try that?  
+* Rapid development - 10x faster than coding a javascript checkout
+* Zero coding
+* Hardened code base
+* Fast to create, fast to change
+
+This video shows an entire checkout created in little over an hour.  
+Imagine how fast you could create UltraCart checkouts after using the Visual Builder a few times?
+
+https://ultracart.atlassian.net/wiki/spaces/ucdoc/pages/514064431/Live+Visual+Building+Tru+Energy+Single+Page+Checkout
+
+
 ### Introduction
 This shopping cart is a vanilla javascript shopping cart using the latest UltraCart API.
 
