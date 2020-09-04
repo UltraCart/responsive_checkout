@@ -629,3 +629,40 @@ select {
     padding-bottom: 5px;
 }
 
+/******* AUTO FILL ANIMATION HOOKS ***********/
+@keyframes onAutoFillStart {
+    from { /**/
+        opacity: 1;
+    }
+    to { /**/
+        opacity: 0.99;
+    }
+}
+
+@keyframes onAutoFillCancel {
+    from { /**/
+    }
+    to { /**/
+    }
+}
+
+input.autofill-test {
+    /* Expose a hook for JavaScript when autofill is shown
+      JavaScript can capture 'animationstart' events */
+    animation-name: onAutoFillStart !important;
+    animation-duration: 0.1s;
+    transition: opacity 1s ease-in-out 0s !important;
+}
+input:-webkit-autofill {
+    /* Expose a hook for JavaScript when autofill is shown
+      JavaScript can capture 'animationstart' events */
+    animation-name: onAutoFillStart;
+    transition: background-color 1s ease-in-out 0s;
+}
+
+input:not(:-webkit-autofill) {
+    /* Expose a hook for JS onAutoFillCancel
+      JavaScript can capture 'animationstart' events */
+    animation-name: onAutoFillCancel;
+}
+

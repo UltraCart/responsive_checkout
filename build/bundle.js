@@ -51517,6 +51517,17 @@ function ready(fn) {
     }
 }
 
+function fireChangeEventsForAutofill() {
+    document.addEventListener('animationstart', function (event) {
+        // If the clicked element doesn't have the right selector, bail
+        if (!event.target.matches('input') && !event.target.matches('select')) return;
+
+        // Fire a change event
+        console.log("Fire change event on", event.target, " due to auto fill.");
+        event.target.dispatchEvent(new Event('change'));
+    });
+}
+
 
 /**
  * Get the closest matching element up the DOM tree.
@@ -53710,11 +53721,19 @@ window.uc.renderCart = function () {
 
 function hostedFieldsCallback(card) {
     console.log("hostedFieldsCallback", card);
+    var payment = null;
     var credit_card = null;
-    if (uc.cart && uc.cart.payment && uc.cart.payment.credit_card) {
-        credit_card = uc.cart.payment.credit_card;
+
+    if (uc.cart && uc.cart.payment) {
+        payment = uc.cart.payment;
     } else {
-        credit_card = uc.cart.payment.credit_card = new uc.sdk.CartPaymentCreditCard();
+        payment = uc.cart.payment = new uc.sdk.CartPayment();
+    }
+
+    if (payment.credit_card) {
+        credit_card = payment.credit_card;
+    } else {
+        credit_card = payment.credit_card = new uc.sdk.CartPaymentCreditCard();
     }
 
     if (card && card.cardType) {
@@ -53935,13 +53954,26 @@ addEvent('storedShippingAddress', 'change', function () {
 addEvent('shipToFirstName', 'blur', function () {
     saveField('shipping', 'first_name', this);
 });
+addEvent('shipToFirstName', 'change', function () {
+    saveField('shipping', 'first_name', this);
+});
 addEvent('shipToLastName', 'blur', function () {
+    saveField('shipping', 'last_name', this);
+});
+addEvent('shipToLastName', 'change', function () {
     saveField('shipping', 'last_name', this);
 });
 addEvent('shipToCompany', 'blur', function () {
     saveField('shipping', 'company', this);
 });
+addEvent('shipToCompany', 'change', function () {
+    saveField('shipping', 'company', this);
+});
 addEvent('shipToAddress1', 'blur', function () {
+    saveField('shipping', 'address1', this);
+    getShippingEstimatesIfNeeded();
+});
+addEvent('shipToAddress1', 'change', function () {
     saveField('shipping', 'address1', this);
     getShippingEstimatesIfNeeded();
 });
@@ -53949,7 +53981,15 @@ addEvent('shipToAddress2', 'blur', function () {
     saveField('shipping', 'address2', this);
     getShippingEstimatesIfNeeded();
 });
+addEvent('shipToAddress2', 'change', function () {
+    saveField('shipping', 'address2', this);
+    getShippingEstimatesIfNeeded();
+});
 addEvent('shipToCity', 'blur', function () {
+    saveField('shipping', 'city', this);
+    getShippingEstimatesIfNeeded();
+});
+addEvent('shipToCity', 'change', function () {
     saveField('shipping', 'city', this);
     getShippingEstimatesIfNeeded();
 });
@@ -53957,7 +53997,15 @@ addEvent('shipToState', 'blur', function () {
     saveField('shipping', 'state_region', this);
     getShippingEstimatesIfNeeded();
 });
+addEvent('shipToState', 'change', function () {
+    saveField('shipping', 'state_region', this);
+    getShippingEstimatesIfNeeded();
+});
 addEvent('shipToPostalCode', 'blur', function () {
+    saveField('shipping', 'postal_code', this);
+    getShippingEstimatesIfNeeded();
+});
+addEvent('shipToPostalCode', 'change', function () {
     saveField('shipping', 'postal_code', this);
     getShippingEstimatesIfNeeded();
 });
@@ -54002,28 +54050,64 @@ addEvent('storedBillingAddress', 'change', function () {
 addEvent('billToFirstName', 'blur', function () {
     saveField('billing', 'first_name', this)
 });
+addEvent('billToFirstName', 'change', function () {
+    saveField('billing', 'first_name', this)
+});
 addEvent('billToLastName', 'blur', function () {
+    saveField('billing', 'last_name', this)
+});
+addEvent('billToLastName', 'change', function () {
     saveField('billing', 'last_name', this)
 });
 addEvent('billToCompany', 'blur', function () {
     saveField('billing', 'company', this)
 });
+addEvent('billToCompany', 'change', function () {
+    saveField('billing', 'company', this)
+});
 addEvent('billToAddress1', 'blur', function () {
+    saveField('billing', 'address1', this)
+});
+addEvent('billToAddress1', 'change', function () {
     saveField('billing', 'address1', this)
 });
 addEvent('billToAddress2', 'blur', function () {
     saveField('billing', 'address2', this)
 });
+addEvent('billToAddress2', 'change', function () {
+    saveField('billing', 'address2', this)
+});
 addEvent('billToCity', 'blur', function () {
+    saveField('billing', 'city', this)
+});
+addEvent('billToCity', 'change', function () {
     saveField('billing', 'city', this)
 });
 addEvent('billToState', 'blur', function () {
     saveField('billing', 'state_region', this)
 });
+addEvent('billToState', 'change', function () {
+    saveField('billing', 'state_region', this)
+});
 addEvent('billToPostalCode', 'blur', function () {
     saveField('billing', 'postal_code', this)
 });
+addEvent('billToPostalCode', 'change', function () {
+    saveField('billing', 'postal_code', this)
+});
 addEvent('billToCountry', 'blur', function () {
+    var oldCountryCode = '';
+    if (uc.cart && uc.cart.billing && uc.cart.billing.country_code) {
+        oldCountryCode = '';
+    }
+
+    saveField('billing', 'country_code', this);
+    var newCountryCode = uc.cart.billing.country_code;
+    if (oldCountryCode !== newCountryCode) {
+        populateShippingStates('billing', uc.cart.billing.country_code);
+    }
+});
+addEvent('billToCountry', 'change', function () {
     var oldCountryCode = '';
     if (uc.cart && uc.cart.billing && uc.cart.billing.country_code) {
         oldCountryCode = '';
@@ -54215,6 +54299,7 @@ addEvent('btnFinalize', 'click', function (event) {
 // ===================================================================================
 ready(function () {
     displayHandoffErrors();
+    fireChangeEventsForAutofill();
     console.log("ready() called");
 
     // things to do after cart loads for the first time.

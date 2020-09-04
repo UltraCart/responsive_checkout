@@ -4,10 +4,6 @@ var source = require('vinyl-source-stream');
 var concat = require('gulp-concat');
 var cleanCSS = require('gulp-clean-css');
 
-gulp.task('default', ['js', 'css'], function() {
-
-});
-
 gulp.task('js', function() {
     return browserify('./scripts/main.js')
         .bundle()
@@ -26,6 +22,9 @@ gulp.task('css', function(){
 });
 
 gulp.task('watch', function() {
-    gulp.watch('scripts/*.js', ['default']);
-    gulp.watch('stylesheets/*.css', ['default']);
+    gulp.watch('scripts/*.js', gulp.series('default'));
+    gulp.watch('stylesheets/*.css', gulp.series('default'));
 });
+
+gulp.task('default', gulp.series(gulp.parallel('js', 'css')));
+

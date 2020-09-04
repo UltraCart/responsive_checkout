@@ -166,7 +166,7 @@
 </section>
 
 <section class="container customerInfo">
-    <form id="frmCheckout" method="post" name="checkout" action="#">
+    <form id="frmCheckout" method="post" name="checkout" action="#" autocomplete="on">
         <div id="checkoutFields" class='hidden'>
 
             <!-- ============================================================= -->
@@ -183,13 +183,13 @@
                 <label class="name four columns alpha">
                     <span>*First Name</span>
                     <input type="text" id="shipToFirstName" name="shipping[firstName]" required class="required"
-                           value=""/>
+                           value="" autocomplete="section-shipping shipping given-name"/>
                 </label>
 
                 <label class="name four columns alpha">
                     <span>*Last Name</span>
                     <input type="text" id="shipToLastName" name="shipping[lastName]" required class="required"
-                           value=""/>
+                           value="" autocomplete="section-shipping shipping family-name"/>
                 </label>
 
                 <label class="company seven columns alpha">
@@ -200,22 +200,22 @@
                 <label class="address four columns alpha">
                     <span>*Address 1</span>
                     <input type="text" id="shipToAddress1" name="shipping[address1]" required class="required"
-                           value=""/>
+                           value="" autocomplete="section-shipping shipping address-line1"/>
                 </label>
 
                 <label class="address four columns alpha">
                     <span>Address 2</span>
-                    <input type="text" id="shipToAddress2" name="shipping[address2]" value=""/>
+                    <input type="text" id="shipToAddress2" name="shipping[address2]" value="" autocomplete="section-shipping shipping address-line2"/>
                 </label>
 
                 <label class="four columns alpha">
                     <span>*City</span>
-                    <input type="text" id="shipToCity" name="shipping[city]" required class="required" value=""/>
+                    <input type="text" id="shipToCity" name="shipping[city]" required class="required" value="" autocomplete="section-shipping shipping address-level2"/>
                 </label>
 
                 <label class="four columns alpha">
                     <span>*State/Province/Region</span>
-                    <select id="shipToState" name="shipping[state]" required class="required" >
+                    <select id="shipToState" name="shipping[state]" required class="required" autocomplete="section-shipping shipping address-level1">
                         <option value="">&nbsp;</option>
                     </select>
                 </label>
@@ -223,7 +223,7 @@
                 <label class="four columns alpha">
                     <span>*Zip/Postal Code</span>
                     <input type="text" id="shipToPostalCode" name="shipping[postalCode]" required class="required"
-                           value=""/>
+                           value="" autocomplete="section-shipping shipping postal-code"/>
                 </label>
 
                 <label class="four columns alpha">
@@ -237,7 +237,7 @@
 
                 <label class="four columns alpha">
                     <span>*Email Address</span>
-                    <input type="email" id="email" name="shipping[email]" required class="required" value=""/>
+                    <input type="email" id="email" name="shipping[email]" required class="required" value="" autocomplete="email"/>
                 </label>
 
                 <label class="four columns alpha">
@@ -269,12 +269,12 @@
                 <label class="name four columns alpha">
                     <span>*First Name</span>
                     <input type="text" id="billToFirstName" name="billing[firstName]" required class="required"
-                           value=""/>
+                           value="" autocomplete="section-billing billing given-name"/>
                 </label>
 
                 <label class="name four columns alpha">
                     <span>*Last Name</span>
-                    <input type="text" id="billToLastName" name="billing[lastName]" required class="required" value=""/>
+                    <input type="text" id="billToLastName" name="billing[lastName]" required class="required" value="" autocomplete="section-billing billing family-name"/>
                 </label>
 
                 <label class="company seven columns alpha">
@@ -284,22 +284,22 @@
 
                 <label class="address four columns alpha">
                     <span>*Address 1</span>
-                    <input type="text" id="billToAddress1" name="billing[address1]" required class="required" value=""/>
+                    <input type="text" id="billToAddress1" name="billing[address1]" required class="required" value="" autocomplete="section-billing billing address-line1"/>
                 </label>
 
                 <label class="address four columns alpha">
                     <span>Address 2</span>
-                    <input type="text" id="billToAddress2" name="billing[address2]" value=""/>
+                    <input type="text" id="billToAddress2" name="billing[address2]" value="" autocomplete="section-billing billing address-line2"/>
                 </label>
 
                 <label class="four columns alpha">
                     <span>*City</span>
-                    <input type="text" id="billToCity" name="billing[city]" required class="required" value=""/>
+                    <input type="text" id="billToCity" name="billing[city]" required class="required" value="" autocomplete="section-billing billing address-level2"/>
                 </label>
 
                 <label class="four columns alpha">
                     <span>*State/Province/Region</span>
-                    <select id="billToState" name="billing[state]" required class="required" >
+                    <select id="billToState" name="billing[state]" required class="required"  autocomplete="section-billing billing address-level1">
                         <option value="">&nbsp;</option>
                     </select>
                 </label>
@@ -307,7 +307,7 @@
                 <label class="four columns alpha">
                     <span>*Zip/Postal Code</span>
                     <input type="text" id="billToPostalCode" name="billing[postalCode]" required class="required"
-                           value=""/>
+                           value="" autocomplete="section-billing billing postal-code"/>
                 </label>
 
                 <label class="four columns omega">
@@ -533,7 +533,7 @@
     }
 
     // See https://ultracart.atlassian.net/wiki/spaces/ucdoc/pages/419364865/Creating+a+Browser+Key+for+a+JavaScript+checkout
-    uc.browserKey = "d7f38666b17e60016306f071d41e3700";
+    uc.browserKey = "abcdefa5b35939480174594538ad1eb100";
     uc.cookieName = 'UltraCartShoppingCartID'; // if you don't have a good reason to change this, leave it alone.
     uc.continueShoppingUrl = document.referrer || '/index.html';  // fallback.
     uc.storeFront = "demo.ultracartstore.com"; // this should be your StoreFront.  It's needed to show the proper look and feel on the receipt.
